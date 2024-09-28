@@ -102,7 +102,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseThrow(() -> new RuntimeException("Profile not found"));
         AvatarEntity avatar = avatarRepository.findByProfileId(userId);
         return ProfileInternalResponse.builder()
-                .userId(userId)
+                .id(userId)
                 .userName(profile.getFirstName() + " " + profile.getLastName())
                 .avatar(avatar !=  null ? avatar.getUrl() : null)
                 .build();

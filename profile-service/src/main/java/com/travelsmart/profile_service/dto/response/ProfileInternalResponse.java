@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ProfileInternalResponse {
-    private String userId;
+    private String id;
     private String userName;
     private String avatar;
 }

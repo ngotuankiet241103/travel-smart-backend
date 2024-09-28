@@ -15,6 +15,8 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
+  liquibase:
+    enabled: false
 api:
   prefix: /blog
 springdoc:
