@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: checkTables
+      author: tuankiet2411
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        sqlCheck:
+          expectedResult: "0"
+          sql: |
+            SELECT 
+              (SELECT COUNT(*) FROM information_schema.tables 
+               WHERE table_schema = 'identity_travel_db' 
+               AND table_name = 'users')  AS total_tables;
+
+  - changeSet:
+      id: createTables
+      author: tuankiet2411
+      preConditions:
+        onFail: CONTINUE
+        sqlCheck:
+          expectedResult: "0"
+          sql: |
+            SELECT 
+              (SELECT COUNT(*) FROM information_schema.tables 
+               WHERE table_schema = 'identity_travel_db' 
+               AND table_name = 'users') AS location_exists;
+
+      changes:
+        - sqlFile:
+            path: db/changelog/ddl/changelog-0001.sql
+        - sqlFile:
+            path: db/changelog/data/changelog-0001.sql

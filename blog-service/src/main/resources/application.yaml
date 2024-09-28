@@ -1,0 +1,29 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: blog-service
+  datasource:
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/blog_travel_db}
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    password: ${DBMS_PASSWORD:1234}
+    username: ${DBMS_USERNAME:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+      enable_lazy_load_no_trans: true
+  cloud:
+    compatibility-verifier:
+      enabled: false
+api:
+  prefix: /blog
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+swagger: "2.0"
+openapi: "3.0.0"
+app:
+  cors:
+    allowedOrigins: http://localhost:3000,http://localhost:8888

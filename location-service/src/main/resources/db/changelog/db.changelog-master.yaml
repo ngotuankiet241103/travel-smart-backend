@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: createDB
+      author: tuankiet2411
+      changes:
+        - sql:
+            sql: |
+              CREATE DATABASE IF NOT EXISTS identity_travel_db;
+              CREATE DATABASE IF NOT EXISTS trip_travel_db;
+              CREATE DATABASE IF NOT EXISTS profile_travel_db;
+              CREATE DATABASE IF NOT EXISTS media_travel_db;
+              CREATE DATABASE IF NOT EXISTS location_travel_db;
+  - changeSet:
+      id: checkTables
+      author: tuankiet2411
+      preConditions:
+        onFail: MARK_RAN
+        onError: MARK_RAN
+        sqlCheck:
+          expectedResult: "0"
+          sql: |
+            SELECT 
+              (SELECT COUNT(*) FROM information_schema.tables 
+               WHERE table_schema = 'location_travel_db' 
+               AND table_name = 'location') + 
+              (SELECT COUNT(*) FROM information_schema.tables 
+               WHERE table_schema = 'location_travel_db' 
+               AND table_name = 'location_image') + 
+              (SELECT COUNT(*) FROM information_schema.tables 
+               WHERE table_schema = 'location_travel_db' 
+               AND table_name = 'location_collections') AS total_tables;
+
+  - changeSet:
+      id: createTables
+      author: tuankiet2411
+      preConditions:
+        onFail: CONTINUE
+        sqlCheck:
+          expectedResult: "0"
+          sql: |
+            SELECT 
+              (SELECT COUNT(*) FROM information_schema.tables 
+               WHERE table_schema = 'location_travel_db' 
+               AND table_name = 'location') AS location_exists;
+
+      changes:
+        - sqlFile:
+              path: db/changelog/ddl/changelog-0002.sql
+        - sqlFile:
+            path: db/changelog/ddl/changelog-0001.sql
+        - sqlFile:
+            path: db/changelog/data/changelog-0001.sql

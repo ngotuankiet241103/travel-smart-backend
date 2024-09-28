@@ -1,0 +1,95 @@
+server:
+  port: 8888
+api:
+  prefix: /api/v1
+spring:
+  application:
+    name: api-gateway
+  liquibase:
+    enabled: true
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://127.0.0.1:3000"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
+              - OPTIONS
+      routes:
+        - id: openapi
+          uri: http://localhost:8888
+          predicates:
+              - Path=/v3/api-docs/**
+          filters:
+              - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
+        - id: identity-service
+          uri: http://localhost:8080
+          predicates:
+            - Path=${api.prefix}/identity/**
+          filters:
+            - StripPrefix=2
+        - id: profile-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=${api.prefix}/profile/**
+          filters:
+            - StripPrefix=2
+        - id: profile-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=${api.prefix}/blog/**
+          filters:
+            - StripPrefix=2
+        - id: location-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=${api.prefix}/location/**
+          filters:
+            - StripPrefix=2
+        - id: trip-service
+          uri: http://localhost:8085
+          predicates:
+            - Path=${api.prefix}/trip/**
+          filters:
+            - StripPrefix=2
+springdoc:
+  enable-native-support: true
+  api-docs:
+    groups:
+      enabled: true
+    enabled: true
+  group-configs:
+    - group: identity-service
+      paths-to-match:
+        - /identity-service/**
+      display-name: Identity service
+    - group: location-service
+      paths-to-match:
+        - /location-service/**
+      display-name: Location service
+    - group: profile-service
+      paths-to-match:
+        - /profile-service/**
+      display-name: Profile service
+    - group: trip-service
+      paths-to-match:
+        - /trip-service/**
+      display-name: Trip service
+  swagger-ui:
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs
+    urls:
+      - url: http://localhost:8080/v3/api-docs
+        name: Identity Service
+      - url: http://localhost:8084/v3/api-docs
+        name: Location Service
+      - url: http://localhost:8081/v3/api-docs
+        name: Profile Service
+      - url: http://localhost:8085/v3/api-docs
+        name: Trip Service
+

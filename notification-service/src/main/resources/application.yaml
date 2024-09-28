@@ -1,0 +1,59 @@
+server:
+  port: 8082
+spring:
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/profile_travel_db
+    username: root
+    password: 1234
+  cloud:
+    compatibility-verifier:
+      enabled: false
+  application:
+    name: notification-service
+
+management:
+  tracing:
+    sampling:
+      probability:1.0
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+    tags:
+      application: ${spring.application.name}
+
+eventuatelocal:
+  kafka:
+    bootstrap:
+      servers: localhost:9094
+eventuate:
+  database:
+    schema: eventuate
+
+
+
+api:
+  prefix: /notification
+notification:
+  email:
+    brevo-url: https://api.brevo.com
+    brevo-apiKey: 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
+## Additional configuration if needed
+#logging:
+#  level:
+#    io.eventuate.tram: DEBUG
+#    org.apache.kafka: DEBUG

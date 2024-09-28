@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: media-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/media_travel_db
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: none
+      enable_lazy_load_no_trans: true
+  liquibase:
+    enabled: true
+
+server:
+  port: 8088
+api:
+  prefix: /api/v1
+cloud:
+  cloudName: dzumda5fa
+  apiKey: 959631823469922
+  apiSecret: NFULtoFFUlC6qCPN1BSiRw5KUGk
+  secure: true

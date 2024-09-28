@@ -1,0 +1,50 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: location-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/location_travel_db
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+      enable_lazy_load_no_trans: true
+  liquibase:
+    enabled: true
+
+  cloud:
+    compatibility-verifier:
+      enabled: false
+api:
+  prefix: /location
+#geoapify:
+#  key: d1e2afb1ba924f9ebbbb3bd407e72b63
+#  url: https://api.geoapify.com/
+#  search: /v1/geocode/search
+#  reverse: /v1/geocode/reverse
+#  placeDetail: /v2/place-details
+nominatim:
+  url: https://nominatim.openstreetmap.org
+  version: jsonv2
+  search: /search
+  reverse: /reverse
+  lookup: /lookup
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+swagger: "2.0"
+openapi: "3.0.0"
+app:
+  cors:
+    allowedOrigins: http://localhost:3000,http://localhost:8888
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+

@@ -1,0 +1,37 @@
+server:
+  port: 8085
+api:
+  prefix: /trip
+spring:
+  application:
+    name: trip-service
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/trip_travel_db
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: none
+      enable_lazy_load_no_trans: true
+  liquibase:
+    enabled: true
+
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+swagger: "2.0"
+openapi: "3.0.0"
+app:
+  cors:
+    allowedOrigins: http://localhost:3000,http://localhost:8888
+

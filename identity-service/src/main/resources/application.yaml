@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: identity-service
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: identity
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+  datasource:
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/identity_travel_db}
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    password: ${DBMS_PASSWORD:1234}
+    username: ${DBMS_USERNAME:root}
+  jpa:
+    hibernate:
+      ddl-auto: none
+      enable_lazy_load_no_trans: true
+  liquibase:
+    enabled: true
+  main:
+    allow-bean-definition-overriding: true
+
+management:
+  tracing:
+    sampling:
+      probability:1.0
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+    tags:
+      application: ${spring.application.name}
+#
+#eventuatelocal:
+#  kafka:
+#    bootstrap:
+#      servers: localhost:9094
+#
+#
+#eventuate:
+#  database:
+#    schema: eventuate
+server:
+
+api:
+  prefix: /identity
+token:
+  tokenSecret: 04ca023b39512e46d0c2cf4b48d5aac61d34302994c87ed4eff225dcf3b0a218739f3897051a057f9b846a69ea2927a587044164b7bae5e1306219d50b588cb1
+  accessExpiration: 3600
+  refreshExpiration: 36000
+## Additional configuration if needed
+#logging:
+#  level:
+#    io.eventuate.tram: DEBUG
+#    org.apache.kafka: DEBUG
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+
+  swagger-ui:
+    path: /swagger-ui.html
+swagger: "2.0"
+openapi: "3.0.0"
+app:
+  cors:
+    allowedOrigins: http://localhost:3000,http://localhost:8888
+#springdoc:
+#  swagger-ui.path: /swagger-ui
+#  packagesToScan: com.backend.identity-service
+#  swagger-ui.oauth.use-pkce-with-authorization-code-grant: true
+#  swagger-ui.oauth.client-id: swagger-ui
