@@ -1,15 +1,16 @@
 package com.travelsmart.blog_service.controller;
 
-import com.travelsmart.blog_service.dto.request.BlogLikeRequest;
-import com.travelsmart.blog_service.dto.request.BlogRequest;
-import com.travelsmart.blog_service.dto.request.BlogUpdateRequest;
+import com.travelsmart.blog_service.constant.BlogStatus;
+import com.travelsmart.blog_service.dto.request.*;
 import com.travelsmart.blog_service.dto.response.ApiResponse;
+import com.travelsmart.blog_service.dto.response.BlogImageResponse;
 import com.travelsmart.blog_service.dto.response.BlogResponse;
 import com.travelsmart.blog_service.dto.response.PageableResponse;
 import com.travelsmart.blog_service.service.BlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,6 +51,13 @@ public class BlogController {
                 .result(blogService.findByCode(blogCode))
                 .build();
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/status")
+    public  ApiResponse<List<BlogStatus>> getBlogStatuses(){
+        return ApiResponse.<List<BlogStatus>>builder()
+                .result(BlogStatus.getBlogStatues())
+                .build();
+    }
 
     @PutMapping("/{blog-id}")
     public ApiResponse<BlogResponse> update(@PathVariable("blog-id") Long blogId,
@@ -73,6 +81,25 @@ public class BlogController {
     public ApiResponse<BlogResponse> unlikePost(@RequestBody BlogLikeRequest blogLikeRequest){
         return ApiResponse.<BlogResponse>builder()
                 .result(blogService.unlikePost(blogLikeRequest))
+                .build();
+    }
+    @PutMapping("/status/{blog-id}")
+    public ApiResponse<BlogResponse> updateStatus(@PathVariable("blog-id") Long id,
+                                                  @RequestBody BlogStatusRequest blogStatusRequest){
+        return ApiResponse.<BlogResponse>builder()
+                .result(blogService.updateStatus(id,blogStatusRequest))
+                .build();
+    }
+    @PostMapping("/image")
+    public ApiResponse<BlogImageResponse> uploadImage(@ModelAttribute BlogImageRequest blogImageRequest){
+        return ApiResponse.<BlogImageResponse>builder()
+                .result(blogService.uploadImage(blogImageRequest))
+                .build();
+    }
+    @DeleteMapping("/image/{image-id}")
+    public ApiResponse<Void> deleteImage(@PathVariable("image-id") Long id){
+        blogService.deleteImage(id);
+        return ApiResponse.<Void>builder()
                 .build();
     }
 

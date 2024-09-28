@@ -1,5 +1,6 @@
 package com.travelsmart.blog_service.entity;
 
+import com.travelsmart.blog_service.constant.BlogStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,10 @@ public class BlogEntity {
     private String content;
     @Column
     private List<String> tags;
+    @Column
+    private BlogStatus status;
+    @OneToOne
+    private BlogImageEntity image;
     @ManyToMany
     @JoinTable(
             name = "blog_category",

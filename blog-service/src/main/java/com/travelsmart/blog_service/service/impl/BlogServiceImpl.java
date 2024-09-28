@@ -1,20 +1,18 @@
 package com.travelsmart.blog_service.service.impl;
 
-import com.travelsmart.blog_service.dto.request.BlogLikeRequest;
-import com.travelsmart.blog_service.dto.request.BlogRequest;
-import com.travelsmart.blog_service.dto.request.BlogUpdateRequest;
-import com.travelsmart.blog_service.dto.response.BlogResponse;
-import com.travelsmart.blog_service.dto.response.PageableResponse;
-import com.travelsmart.blog_service.dto.response.Paging;
-import com.travelsmart.blog_service.dto.response.ProfileUserResponse;
-import com.travelsmart.blog_service.entity.BlogEntity;
-import com.travelsmart.blog_service.entity.BlogFavoriteEntity;
-import com.travelsmart.blog_service.entity.BlogFavoriteId;
-import com.travelsmart.blog_service.entity.CategoryEntity;
+import com.travelsmart.blog_service.constant.BlogStatus;
+import com.travelsmart.blog_service.dto.request.*;
+import com.travelsmart.blog_service.dto.response.*;
+import com.travelsmart.blog_service.dto.response.httpclient.MediaHttpResponse;
+import com.travelsmart.blog_service.entity.*;
+import com.travelsmart.blog_service.exception.CustomRuntimeException;
+import com.travelsmart.blog_service.exception.ErrorCode;
 import com.travelsmart.blog_service.mapper.BlogMapper;
 import com.travelsmart.blog_service.repository.BlogFavoriteRepository;
+import com.travelsmart.blog_service.repository.BlogImageRepository;
 import com.travelsmart.blog_service.repository.BlogRepository;
 import com.travelsmart.blog_service.repository.CategoryRepository;
+import com.travelsmart.blog_service.repository.httpclient.MediaClient;
 import com.travelsmart.blog_service.repository.httpclient.ProfileClient;
 import com.travelsmart.blog_service.service.BlogService;
 import com.travelsmart.blog_service.utils.HandleString;
@@ -38,12 +36,17 @@ public class BlogServiceImpl implements BlogService {
     private final BlogMapper blogMapper;
     private final BlogFavoriteRepository blogFavoriteRepository;
     private final ProfileClient profileClient;
+    private final MediaClient mediaClient;
+    private final BlogImageRepository blogImageRepository;
     @Override
     public BlogResponse create(BlogRequest blogRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(role -> role.toString().equals("ROLE_ADMIN"));
         BlogEntity blog = blogMapper.toBlogEntity(blogRequest);
         blog.setCode(HandleString.strToCode(blog.getTitle()));
+
         Set<CategoryEntity> categories = blogRequest.getCategories()
                 .stream()
                 .map(categoryName -> {
@@ -61,16 +64,22 @@ public class BlogServiceImpl implements BlogService {
                 })
                 .collect(Collectors.toSet());
         blog.setCategories(categories);
+        if(blogRequest.getImageId() != null){
+
+            blog.setImage(blogImageRepository.findById(blogRequest.getImageId())
+                    .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND)));
+        }
         ProfileUserResponse profileUserResponse = profileClient.getUserById(userId).getResult();
         blog.setUserId(userId);
         blog.setCreateDate(new Date());
         blog.setUserName(profileUserResponse.getUserName());
+        blog.setStatus(isAdmin ? BlogStatus.ACCEPT : BlogStatus.PENDING);
         return mappingOne(blogRepository.save(blog));
     }
 
     @Override
     public PageableResponse<List<BlogResponse>> findAll(Pageable pageable) {
-        Page<BlogEntity> page = blogRepository.findAll(pageable);
+        Page<BlogEntity> page = blogRepository.findByStatus(pageable, BlogStatus.ACCEPT);
         Paging paging = Paging.buildPaging(pageable,page.getTotalPages());
         PageableResponse<List<BlogResponse>> response = PageableResponse.<List<BlogResponse>>builder()
                 .data(mappingList(page.getContent()))
@@ -87,7 +96,7 @@ public class BlogServiceImpl implements BlogService {
             return null;
         }
         System.out.println(category.getName());
-        Page<BlogEntity> page = blogRepository.findByCategoryName(pageable,category.getName());
+        Page<BlogEntity> page = blogRepository.findByCategoryNameAndStatus(pageable,category.getName(),BlogStatus.ACCEPT);
         Paging paging = Paging.buildPaging(pageable,page.getTotalPages());
         return PageableResponse.<List<BlogResponse>>builder()
                 .data(mappingList(page.getContent()))
@@ -99,12 +108,25 @@ public class BlogServiceImpl implements BlogService {
     public BlogResponse update(Long blogId, BlogUpdateRequest blogUpdateRequest) {
         BlogEntity blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new RuntimeException("Blog not found"));
-
+        BlogImageEntity image = null;
+        if(blog.getImage() != null){
+            image = blog.getImage();
+        }
+        blog.setImage(blogUpdateRequest.getImageId() != null ?
+                blogImageRepository.findById(blogUpdateRequest.getImageId()).orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND)) :
+                null
+        );
         blog.setTitle(blogUpdateRequest.getTitle());
         blog.setTags(blogUpdateRequest.getTags());
         blog.setContent(blogUpdateRequest.getContent());
         blog.setCode(HandleString.strToCode(blogUpdateRequest.getTitle()));
-        return mappingOne(blogRepository.save(blog));
+        blogRepository.save(blog);
+
+        if(image != null &&  !image.getId().equals(blogUpdateRequest.getImageId())){
+            blogImageRepository.deleteById(image.getId());
+        }
+
+        return mappingOne(blog);
     }
 
     @Override
@@ -118,7 +140,7 @@ public class BlogServiceImpl implements BlogService {
         String userId = authentication.getName();
 
         BlogEntity blog = blogRepository.findById(blogLikeRequest.getBlogId())
-                .orElseThrow(() -> new RuntimeException("Blog not found"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.BLOG_NOT_FOUND));
 
         BlogFavoriteEntity blogFavoriteEntity = BlogFavoriteEntity.builder()
                 .id(BlogFavoriteId.builder()
@@ -135,7 +157,7 @@ public class BlogServiceImpl implements BlogService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
         BlogEntity blog = blogRepository.findById(blogLikeRequest.getBlogId())
-                .orElseThrow(() -> new RuntimeException("Blog not found"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.BLOG_NOT_FOUND));
         BlogFavoriteEntity blogFavoriteEntity = blogFavoriteRepository.findById(BlogFavoriteId.builder()
                         .userId(userId)
                         .blogId(blog.getId()).build())
@@ -147,9 +169,37 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public BlogResponse findByCode(String blogCode) {
         BlogEntity blogEntity = blogRepository.findByCode(blogCode)
-                .orElseThrow(() -> new RuntimeException("Blog not found"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.BLOG_NOT_FOUND));
 
         return mappingOne(blogEntity);
+    }
+
+    @Override
+    public BlogResponse updateStatus(Long id, BlogStatusRequest blogStatusRequest) {
+        BlogEntity blog = blogRepository.findById(id)
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.BLOG_NOT_FOUND));
+        blog.setStatus(blogStatusRequest.getStatus());
+        return mappingOne(blogRepository.save(blog));
+    }
+
+    @Override
+    public BlogImageResponse uploadImage(BlogImageRequest blogImageRequest) {
+        MediaHttpResponse mediaHttpResponse = mediaClient.uploadFile(blogImageRequest.getFile()).getResult();
+        BlogImageEntity blogImageEntity = BlogImageEntity.builder()
+                .url(mediaHttpResponse.getUrl())
+                .id(mediaHttpResponse.getId())
+                .build();
+        blogImageRepository.save(blogImageEntity);
+        return BlogImageResponse.builder()
+                .id(blogImageEntity.getId())
+                .url(blogImageEntity.getUrl())
+                .build();
+    }
+
+    @Override
+    public void deleteImage(Long id) {
+        mediaClient.deleteById(id);
+        blogImageRepository.deleteById(id);
     }
 
     private List<BlogResponse> mappingList(List<BlogEntity> e){

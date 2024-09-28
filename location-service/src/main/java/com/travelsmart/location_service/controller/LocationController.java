@@ -52,6 +52,16 @@ public class LocationController {
                 .result(locationService.findByCoordinatesLocal(lon,lat))
                 .build();
     }
+    @Operation(summary = "Get newest location",description = "Returns list location")
+    @GetMapping("/news")
+    public ApiResponse<List<LocationResponse>> getNewestLocation(@RequestParam(value = "limit",defaultValue = "5") int limit){
+        return ApiResponse.<List<LocationResponse>>builder()
+                .result(locationService.findNewest(limit))
+                .build();
+    }
+
+
+
     @Operation(summary = "Create new location",description = "Returns single location")
     @PostMapping
     public ApiResponse<LocationResponse> create(@RequestBody LocationRequest locationRequest){

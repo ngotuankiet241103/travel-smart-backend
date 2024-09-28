@@ -1,6 +1,7 @@
 package com.travelsmart.blog_service.service.impl;
 
 import com.travelsmart.blog_service.dto.request.CommentRequest;
+import com.travelsmart.blog_service.dto.request.CommentUpdateRequest;
 import com.travelsmart.blog_service.dto.response.CommentResponse;
 import com.travelsmart.blog_service.entity.BlogEntity;
 import com.travelsmart.blog_service.entity.CommentEntity;
@@ -68,6 +69,14 @@ public class CommentServiceImpl implements CommentService {
         List<CommentEntity> comments = commentRepository.findByBlogId(blogId);
 
         return mappingList(comments);
+    }
+
+    @Override
+    public CommentResponse updateComment(Long id, CommentUpdateRequest commentUpdateRequest) {
+        CommentEntity commentEntity =  commentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not exists"));
+        commentEntity.setContent(commentUpdateRequest.getContent());
+        return mappingOne(commentRepository.save(commentEntity));
     }
 
     private CommentResponse mappingOne(CommentEntity commentEntity){

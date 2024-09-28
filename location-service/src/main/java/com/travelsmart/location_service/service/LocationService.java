@@ -27,4 +27,6 @@ public interface LocationService {
     LocationResponse update(Long id,LocationUpdateRequest locationUpdateRequest);
 
     LocationResponse findById(Long id);
+
+    List<LocationResponse> findNewest(int limit);
 }

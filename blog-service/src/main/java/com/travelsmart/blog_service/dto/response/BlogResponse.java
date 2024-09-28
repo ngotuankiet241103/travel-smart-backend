@@ -1,5 +1,6 @@
 package com.travelsmart.blog_service.dto.response;
 
+import com.travelsmart.blog_service.constant.BlogStatus;
 import lombok.Data;
 
 import java.util.Date;
@@ -16,4 +17,5 @@ public class BlogResponse {
     private List<String> categories;
     private String userName;
     private Long totalLike;
+    private BlogStatus status;
 }

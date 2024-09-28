@@ -9,5 +9,6 @@ public class BlogRequest {
     private String content;
     private List<String> tags;
     private List<String> categories;
+    private Long imageId;
 
 }

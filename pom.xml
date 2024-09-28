@@ -24,6 +24,7 @@
 		<module>media-service</module>
 		<module>trip-service</module>
 		<module>api-gateway</module>
+		<module>review-service</module>
 		<module>saga</module>
 	</modules>
 	<licenses>

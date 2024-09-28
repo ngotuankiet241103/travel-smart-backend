@@ -19,6 +19,7 @@ import com.travelsmart.location_service.repository.httpclient.MediaClient;
 import com.travelsmart.location_service.service.LocationService;
 import com.travelsmart.location_service.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -193,6 +194,12 @@ public class LocationServiceImpl implements LocationService {
     public LocationResponse findById(Long id) {
         return mappingOne(locationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Location not found")));
+    }
+
+    @Override
+    public List<LocationResponse> findNewest(int limit) {
+        Pageable pageable = PageRequest.of(0,limit);
+        return mappingList(locationRepository.findAll(pageable).getContent());
     }
 
     private List<LocationResponse> mappingList(List<LocationEntity> e){

@@ -1,8 +1,7 @@
 package com.travelsmart.blog_service.service;
 
-import com.travelsmart.blog_service.dto.request.BlogLikeRequest;
-import com.travelsmart.blog_service.dto.request.BlogRequest;
-import com.travelsmart.blog_service.dto.request.BlogUpdateRequest;
+import com.travelsmart.blog_service.dto.request.*;
+import com.travelsmart.blog_service.dto.response.BlogImageResponse;
 import com.travelsmart.blog_service.dto.response.BlogResponse;
 import com.travelsmart.blog_service.dto.response.PageableResponse;
 import org.springframework.data.domain.Pageable;
@@ -26,4 +25,10 @@ public interface BlogService {
     BlogResponse unlikePost(BlogLikeRequest blogLikeRequest);
 
     BlogResponse findByCode(String blogCode);
+
+    BlogResponse updateStatus(Long id, BlogStatusRequest blogStatusRequest);
+
+    BlogImageResponse uploadImage(BlogImageRequest blogImageRequest);
+
+    void deleteImage(Long id);
 }
