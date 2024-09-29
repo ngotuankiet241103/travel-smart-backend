@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -22,17 +23,20 @@ public class WebClientConfig {
     }
 
     @Bean
-    CorsWebFilter corsWebFilter(){
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("*"));
-        corsConfiguration.setAllowedHeaders(List.of("*"));
-        corsConfiguration.setAllowedMethods(List.of("*"));
+    public CorsWebFilter corsWebFilter() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000"));
+        corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfig.addAllowedHeader("*");
+        corsConfig.setAllowCredentials(true);
+        corsConfig.setMaxAge(3600L);  // Cache preflight response for 1 hour
 
-        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);  // Apply to all paths
 
-        return new CorsWebFilter(urlBasedCorsConfigurationSource);
+        return new CorsWebFilter(source);
     }
+
 
     @Bean
     IdentityClient identityClient(WebClient webClient){

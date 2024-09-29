@@ -47,6 +47,7 @@ public class ProfileController {
     @GetMapping("/my-profile")
     public ApiResponse<ProfileResponse> getMyProfile(){
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println(userId);
         return ApiResponse.<ProfileResponse>builder()
                 .result(profileService.findById(userId))
                 .build();

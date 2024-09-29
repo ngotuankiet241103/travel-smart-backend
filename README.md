@@ -5,4 +5,9 @@
 - Create database like file initDB.sql in project
 - Need to set up connect mysql with ``username: root`` and ``password: 1234``
 - Start all service
-- Swagger local: ``http:localhost:8888/swagger-ui.html``
+### Swagger service
+- identity-service: ``http:localhost:8080/swagger-ui/index.html``
+- profile-service: ``http:localhost:8081/swagger-ui/index.html``
+- blog-service: ``http:localhost:8082/swagger-ui/index.html``
+- location-service: ``http:localhost:8084/swagger-ui/index.html``
+- trip-service: ``http:localhost:8085/swagger-ui/index.html``

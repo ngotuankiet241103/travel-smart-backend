@@ -80,4 +80,4 @@ swagger: "2.0"
 openapi: "3.0.0"
 app:
   cors:
-    allowedOrigins: http://localhost:3000,http://localhost:8888
+    allowedOrigins: http://localhost:8888
