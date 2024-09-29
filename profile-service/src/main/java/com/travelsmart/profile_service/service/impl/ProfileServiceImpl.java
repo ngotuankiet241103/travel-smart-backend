@@ -48,6 +48,8 @@ public class ProfileServiceImpl implements ProfileService {
         if(!isExist) throw new CustomRuntimeException(ErrorCode.USER_NOT_FOUND);
         ProfileEntity profileEntity = profileMapper.toProfileEntity(profileUpdateRequest);
         profileEntity.setId(id);
+        profileEntity.setFirstName(profileUpdateRequest.getFirstName());
+        profileEntity.setLastName(profileUpdateRequest.getLastName());
         return mappingOne(profileRepository.save(profileEntity));
     }
 

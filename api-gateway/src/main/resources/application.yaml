@@ -60,6 +60,12 @@ spring:
             - Path=${api.prefix}/trip/**
           filters:
             - StripPrefix=2
+        - id: review-service
+          uri: http://localhost:8086
+          predicates:
+            - Path=${api.prefix}/review/**
+          filters:
+            - StripPrefix=2
 springdoc:
   enable-native-support: true
   api-docs:

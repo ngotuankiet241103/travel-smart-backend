@@ -1,14 +1,12 @@
 package com.travelsmart.review_service.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "review")
@@ -16,9 +14,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Column
     private String content;
-    @OneToMany(mappedBy = "review")
-    private List<ReviewImageEntity> images;
+    @Column
     private int starRate;
+    @Column
+    private String userId;
+    @Column
+    private Long locationId;
+
 }

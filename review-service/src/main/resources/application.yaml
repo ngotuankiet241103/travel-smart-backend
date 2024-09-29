@@ -1,0 +1,29 @@
+server:
+  port: 8086
+api:
+  prefix: /review
+spring:
+  application:
+    name: review-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/review_travel_db
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: update
+      enable_lazy_load_no_trans: true
+  cloud:
+    compatibility-verifier:
+      enabled: false
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+swagger: "2.0"
+openapi: "3.0.0"
+app:
+  cors:
+    allowedOrigins: http://localhost:3000,http://localhost:8888

@@ -31,4 +31,5 @@ public class TripEntity {
     @Column
     private Date endDate;
 
+
 }
