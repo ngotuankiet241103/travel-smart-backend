@@ -6,6 +6,7 @@ import com.travelsmart.blog_service.dto.response.BlogResponse;
 import com.travelsmart.blog_service.dto.response.CategoryResponse;
 import com.travelsmart.blog_service.dto.response.PageableResponse;
 import com.travelsmart.blog_service.service.CategoryService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,12 +19,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
+    @Operation(summary = "Create new category of blog",description = "Returns single category")
     @PostMapping
     public ApiResponse<CategoryResponse> create(@RequestBody CategoryRequest categoryRequest){
         return ApiResponse.<CategoryResponse>builder()
                 .result(categoryService.create(categoryRequest))
                 .build();
     }
+    @Operation(summary = "Get categories",description = "Returns categories")
     @GetMapping
     public ApiResponse<PageableResponse<List<CategoryResponse>>> getAll(@RequestParam(value = "page",defaultValue = "1") int page,
                                                                     @RequestParam(value = "limit",defaultValue = "5") int limit){

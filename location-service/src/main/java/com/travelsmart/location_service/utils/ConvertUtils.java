@@ -1,4 +1,4 @@
-package com.travel.travel.utils;
+package com.travelsmart.location_service.utils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

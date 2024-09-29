@@ -6,6 +6,8 @@ import com.travelsmart.trip_service.dto.response.ItineraryResponse;
 import com.travelsmart.trip_service.entity.DestinationEntity;
 import com.travelsmart.trip_service.entity.ItineraryEntity;
 import com.travelsmart.trip_service.entity.TripEntity;
+import com.travelsmart.trip_service.exception.CustomRuntimeException;
+import com.travelsmart.trip_service.exception.ErrorCode;
 import com.travelsmart.trip_service.mapper.ItineraryMapper;
 import com.travelsmart.trip_service.repository.DestinationRepository;
 import com.travelsmart.trip_service.repository.ItineraryRepository;
@@ -81,7 +83,7 @@ public class ItineraryServiceImpl implements ItineraryService {
     @Override
     public ItineraryResponse createItinerary(Long tripId, ItineraryCreateRequest itineraryCreateRequest) {
        TripEntity trip = tripRepository.findById(tripId)
-               .orElseThrow(() -> new RuntimeException("Trip not found"));
+               .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TRIP_NOT_FOUND));
        ItineraryEntity itineraryEntity = itineraryMapper.toItineraryEntity(itineraryCreateRequest);
        Calendar calendar = Calendar.getInstance();
        calendar.setTime(trip.getEndDate());
@@ -96,7 +98,7 @@ public class ItineraryServiceImpl implements ItineraryService {
     @Override
     public ItineraryResponse create(Long id, ItineraryRequest itineraryRequest) {
         ItineraryEntity itinerary = itineraryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Itinerary not found"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.ITINERARY_NOT_FOUND));
         List<DestinationEntity> destinationEntities = destinationRepository.findByItineraryId(id);
 
         DestinationEntity destination = DestinationEntity.builder()
@@ -116,11 +118,11 @@ public class ItineraryServiceImpl implements ItineraryService {
     @Override
     public ItineraryResponse swapItinerary(ItinerarySwapRequest itinerarySwapRequest) {
        DestinationEntity fromDestination = destinationRepository.findById(itinerarySwapRequest.getFromId())
-               .orElseThrow(() -> new RuntimeException("Destination not found"));
+               .orElseThrow(() -> new CustomRuntimeException(ErrorCode.DESTINATION_NOT_FOUND));
        DestinationEntity toDestination = itinerarySwapRequest.getToId() == null ? null : destinationRepository.findById(itinerarySwapRequest.getToId())
                .orElse(null);
        if(itinerarySwapRequest.getSourceId().equals(itinerarySwapRequest.getDestinationId())){
-           if(toDestination == null) throw  new RuntimeException("Destination not valid");
+           if(toDestination == null) throw  new CustomRuntimeException(ErrorCode.DESTINATION_INVALID);
            if(fromDestination.getPosition() > toDestination.getPosition()){
                destinationRepository.moveUpPosition(itinerarySwapRequest.getSourceId(),toDestination.getPosition(),fromDestination.getPosition());
            }
@@ -148,9 +150,9 @@ public class ItineraryServiceImpl implements ItineraryService {
     @Override
     public void deleteById(Long id, ItineraryDeleteRequest itineraryDeleteRequest) {
         TripEntity trip = tripRepository.findById(itineraryDeleteRequest.getTripId())
-                .orElseThrow(() -> new RuntimeException("Trip not found"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TRIP_NOT_FOUND));
         ItineraryEntity itinerary = itineraryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Itinerary not found"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.ITINERARY_NOT_FOUND));
         Calendar calendar = Calendar.getInstance();
         if(trip.getStartDate().compareTo(itinerary.getDay()) == 0){
             calendar.setTime(trip.getStartDate());
@@ -176,7 +178,7 @@ public class ItineraryServiceImpl implements ItineraryService {
     @Override
     public void deleteDestinationById(Long id, DestinationDeleteRequest destinationDeleteRequest) {
         DestinationEntity destination = destinationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Destination not found") );
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.DESTINATION_NOT_FOUND));
         destinationRepository.updatePositionDown(destinationDeleteRequest.getItineraryId(),destination.getPosition());
         destinationRepository.deleteById(id);
     }

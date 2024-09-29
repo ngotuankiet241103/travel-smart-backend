@@ -31,7 +31,7 @@ public class WebSecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
-                        .requestMatchers(api + "/internal/**").permitAll()
+                        .requestMatchers(api + "/reviews/internal/**").permitAll()
                         .anyRequest()
                         .authenticated())
                 .oauth2ResourceServer(rss -> rss.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)

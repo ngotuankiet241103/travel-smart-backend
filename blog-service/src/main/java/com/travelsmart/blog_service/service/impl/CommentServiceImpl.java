@@ -5,6 +5,8 @@ import com.travelsmart.blog_service.dto.request.CommentUpdateRequest;
 import com.travelsmart.blog_service.dto.response.CommentResponse;
 import com.travelsmart.blog_service.entity.BlogEntity;
 import com.travelsmart.blog_service.entity.CommentEntity;
+import com.travelsmart.blog_service.exception.CustomRuntimeException;
+import com.travelsmart.blog_service.exception.ErrorCode;
 import com.travelsmart.blog_service.mapper.CommentMapper;
 import com.travelsmart.blog_service.repository.BlogRepository;
 import com.travelsmart.blog_service.repository.CommentRepository;
@@ -32,11 +34,11 @@ public class CommentServiceImpl implements CommentService {
         String userId = authentication.getName();
         CommentEntity comment = null;
         BlogEntity blog = blogRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.BLOG_NOT_FOUND));
 
         if(commentRequest.getParentId() != null && commentRequest.getTreeId() != null){
             CommentEntity parentComment = commentRepository.findById(commentRequest.getParentId())
-                    .orElseThrow(() -> new RuntimeException("Comment not exist"));
+                    .orElseThrow(() -> new CustomRuntimeException(ErrorCode.COMMENT_NOT_FOUND));
             comment = CommentEntity.builder()
                     .nodeLeft(parentComment.getNodeLeft() + 1)
                     .nodeRight(parentComment.getNodeLeft() + 2)
@@ -73,8 +75,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponse updateComment(Long id, CommentUpdateRequest commentUpdateRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
         CommentEntity commentEntity =  commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comment not exists"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.COMMENT_NOT_FOUND));
+        if(!commentEntity.getUserId().equals(userId)){
+            throw new CustomRuntimeException(ErrorCode.COMMENT_INVALID);
+        }
         commentEntity.setContent(commentUpdateRequest.getContent());
         return mappingOne(commentRepository.save(commentEntity));
     }

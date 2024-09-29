@@ -1,4 +1,5 @@
-package com.travelsmart.blog_service.exception;
+package com.travelsmart.trip_service.exception;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,10 +9,12 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999,"Uncategorized error",HttpStatus.INTERNAL_SERVER_ERROR),
-    BLOG_NOT_FOUND(1004,"Blog not found",HttpStatus.NOT_FOUND),
-    IMAGE_NOT_FOUND(1004,"Blog not found",HttpStatus.NOT_FOUND),
-    COMMENT_NOT_FOUND(1004,"Comment not found",HttpStatus.NOT_FOUND),
-    COMMENT_INVALID(1004,"This comment not your",HttpStatus.BAD_REQUEST),
+    TRIP_NOT_FOUND(1004,"Trip not found",HttpStatus.NOT_FOUND),
+    ITINERARY_NOT_FOUND(1004,"Itinerary not found",HttpStatus.NOT_FOUND),
+    DESTINATION_NOT_FOUND(1004,"Destination not found",HttpStatus.NOT_FOUND),
+    DESTINATION_INVALID(1004,"Destination not valid",HttpStatus.BAD_REQUEST),
+    TRIP_DENIED(1004,"This trip not belong to user",HttpStatus.BAD_REQUEST),
+    IMAGE_NOT_FOUND(1004,"Image of location not exists",HttpStatus.NOT_FOUND),
     FILE_INVALID(1003, "File must be not null", HttpStatus.BAD_REQUEST),
     FORBIDDEN(1003, "You don't have permission to access resources", HttpStatus.FORBIDDEN),
     UNAUTHORIZED(1003, "Unauthorized user", HttpStatus.UNAUTHORIZED),
@@ -32,3 +35,4 @@ public enum ErrorCode {
     private String message;
     private HttpStatus status;
 }
+

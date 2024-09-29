@@ -8,6 +8,8 @@ import com.travelsmart.review_service.dto.response.PageableResponse;
 import com.travelsmart.review_service.dto.response.ReviewImageResponse;
 import com.travelsmart.review_service.dto.response.ReviewResponse;
 import com.travelsmart.review_service.service.ReviewService;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,12 +22,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
+    @Operation(summary = "Create new review for location",description = "Returns single review")
     @PostMapping
     public ApiResponse<ReviewResponse> create(@RequestBody ReviewRequest reviewRequest){
         return ApiResponse.<ReviewResponse>builder()
                 .result(reviewService.create(reviewRequest))
                 .build();
     }
+    @Operation(summary = "Get reviews by location id",description = "Returns reviews")
     @GetMapping("/{location-id}/location")
     public ApiResponse<PageableResponse<List<ReviewResponse>>> getByLocationId(@PathVariable("location-id") Long locationId,
                                                                                @RequestParam(value = "page",defaultValue = "1") int page,
@@ -35,6 +39,7 @@ public class ReviewController {
                 .result(reviewService.getByLocationId(locationId,pageable))
                 .build();
     }
+    @Operation(summary = "Update review",description = "Returns single review")
     @PutMapping("/{id}")
     public ApiResponse<ReviewResponse> update(@PathVariable("id") Long id,
                                               @RequestBody ReviewUpdateRequest reviewUpdateRequest){
@@ -42,17 +47,20 @@ public class ReviewController {
                 .result(reviewService.update(id,reviewUpdateRequest))
                 .build();
     }
+    @Operation(summary = "Upload image review",description = "Returns single image")
     @PostMapping("/image")
     public ApiResponse<ReviewImageResponse> uploadImage(@ModelAttribute ReviewImageRequest reviewImageRequest){
         return ApiResponse.<ReviewImageResponse>builder()
                 .result(reviewService.uploadImage(reviewImageRequest))
                 .build();
     }
+    @Operation(summary = "Delete image review by id")
     @DeleteMapping("/image/{image-id}")
     public ApiResponse<Void> deleteImage(@PathVariable("image-id") Long id){
         reviewService.deleteImage(id);
         return ApiResponse.<Void>builder().build();
     }
+    @Hidden
     @GetMapping("/internal/{location-id}/location")
     public ApiResponse<Double> getAverageRatingByLocation(@PathVariable("location-id") Long locationId){
         return ApiResponse.<Double>builder()

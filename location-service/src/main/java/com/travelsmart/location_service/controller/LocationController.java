@@ -1,8 +1,6 @@
 package com.travelsmart.location_service.controller;
 
-import com.travelsmart.location_service.dto.request.ImageCreateRequest;
-import com.travelsmart.location_service.dto.request.LocationRequest;
-import com.travelsmart.location_service.dto.request.LocationUpdateRequest;
+import com.travelsmart.location_service.dto.request.*;
 import com.travelsmart.location_service.dto.response.ApiResponse;
 import com.travelsmart.location_service.dto.response.LocationImageResponse;
 import com.travelsmart.location_service.dto.response.LocationResponse;
@@ -12,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,7 +58,13 @@ public class LocationController {
                 .result(locationService.findNewest(limit))
                 .build();
     }
-
+    @Operation(summary = "Create new location by coordinates",description = "Returns single location")
+    @PostMapping("/coordinates")
+    public ApiResponse<LocationResponse> createByCoordinates(@RequestBody LocationCoordinateRequest locationCoordinateRequest){
+        return ApiResponse.<LocationResponse>builder()
+                .result(locationService.createByCoordinates(locationCoordinateRequest))
+                .build();
+    }
 
 
     @Operation(summary = "Create new location",description = "Returns single location")
@@ -88,6 +93,14 @@ public class LocationController {
     public ApiResponse<LocationResponse> createImageLocation(@PathVariable("place-id") Long id, @RequestBody LocationUpdateRequest locationUpdateRequest){
         return ApiResponse.<LocationResponse>builder()
                 .result(locationService.update(id,locationUpdateRequest))
+                .build();
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Update status location",description = "Returns single location")
+    @PutMapping("/status/{place-id}")
+    public ApiResponse<LocationResponse> updateLocationStatus(@PathVariable("place-id") Long id, @RequestBody LocationStatusRequest locationStatusRequest){
+        return ApiResponse.<LocationResponse>builder()
+                .result(locationService.updateStatus(id, locationStatusRequest))
                 .build();
     }
     @Hidden

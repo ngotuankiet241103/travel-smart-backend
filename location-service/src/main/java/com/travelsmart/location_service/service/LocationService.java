@@ -1,8 +1,6 @@
 package com.travelsmart.location_service.service;
 
-import com.travelsmart.location_service.dto.request.ImageCreateRequest;
-import com.travelsmart.location_service.dto.request.LocationRequest;
-import com.travelsmart.location_service.dto.request.LocationUpdateRequest;
+import com.travelsmart.location_service.dto.request.*;
 import com.travelsmart.location_service.dto.response.LocationImageResponse;
 import com.travelsmart.location_service.dto.response.LocationResponse;
 import org.springframework.data.domain.Pageable;
@@ -29,4 +27,8 @@ public interface LocationService {
     LocationResponse findById(Long id);
 
     List<LocationResponse> findNewest(int limit);
+
+    LocationResponse createByCoordinates(LocationCoordinateRequest locationCoordinateRequest);
+
+    LocationResponse updateStatus(Long id, LocationStatusRequest locationStatusRequest);
 }

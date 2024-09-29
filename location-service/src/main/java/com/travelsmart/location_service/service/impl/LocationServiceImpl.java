@@ -2,21 +2,23 @@ package com.travelsmart.location_service.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travelsmart.location_service.constant.LocationStatus;
-import com.travelsmart.location_service.dto.request.ImageCreateRequest;
-import com.travelsmart.location_service.dto.request.LocationRequest;
-import com.travelsmart.location_service.dto.request.LocationUpdateRequest;
+import com.travelsmart.location_service.dto.request.*;
 import com.travelsmart.location_service.dto.response.LocationImageResponse;
 import com.travelsmart.location_service.dto.response.LocationResponse;
 import com.travelsmart.location_service.dto.response.http.MediaHttpResponse;
 import com.travelsmart.location_service.entity.LocationEntity;
 import com.travelsmart.location_service.entity.LocationImageEntity;
+import com.travelsmart.location_service.exception.CustomRuntimeException;
+import com.travelsmart.location_service.exception.ErrorCode;
 import com.travelsmart.location_service.mapper.LocationImageMapper;
 import com.travelsmart.location_service.mapper.LocationMapper;
 import com.travelsmart.location_service.repository.LocationImageRepository;
 import com.travelsmart.location_service.repository.LocationRepository;
 import com.travelsmart.location_service.repository.httpclient.LocationClient;
 import com.travelsmart.location_service.repository.httpclient.MediaClient;
+import com.travelsmart.location_service.repository.httpclient.ReviewClient;
 import com.travelsmart.location_service.service.LocationService;
+import com.travelsmart.location_service.utils.ConvertUtils;
 import com.travelsmart.location_service.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -41,11 +43,12 @@ public class LocationServiceImpl implements LocationService {
     private final LocationImageMapper locationImageMapper;
     private final LocationRepository locationRepository;
     private final MediaClient mediaClient;
+    private final ReviewClient reviewClient;
     @Override
     public List<LocationResponse> findBySearch(String search, int limit) {
         return locationClient.getBySearch(search,limit)
                 .stream()
-                .map(object -> com.travel.travel.utils.ConvertUtils.convert(object,LocationResponse.class))
+                .map(object -> ConvertUtils.convert(object,LocationResponse.class))
                 .toList();
     }
 
@@ -61,7 +64,7 @@ public class LocationServiceImpl implements LocationService {
 
         if(locationRequest.getImageId() != null){
             LocationImageEntity locationImageEntity = locationImageRepository.findById(locationRequest.getImageId())
-                    .orElseThrow(() -> new RuntimeException("Image of location not exists"));
+                    .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND));
             location.setThumbnail(locationImageEntity);
         }
 
@@ -69,7 +72,7 @@ public class LocationServiceImpl implements LocationService {
             List<LocationImageEntity> imageCollections = locationRequest.getCollectionIds()
                     .stream()
                     .map(id -> locationImageRepository.findById(id)
-                            .orElseThrow(() -> new RuntimeException("Image of location not exists")))
+                            .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND)))
                     .toList();
             location.setCollections(new HashSet<>(imageCollections));
         }
@@ -85,12 +88,13 @@ public class LocationServiceImpl implements LocationService {
         if(locationEntity.getCollections() != null) {
             locationResponse.setCollections(locationEntity.getCollections().stream().map(locationImageMapper::toLocationImageResponse).collect(Collectors.toSet()));
         }
+        locationResponse.setStarRate(reviewClient.getStarRateByLocation(locationEntity.getPlace_id()).getResult());
         return locationResponse;
     }
 
     @Override
     public LocationResponse findByCoordinates(String lon, String lat) {
-        return com.travel.travel.utils.ConvertUtils.convert(locationClient.getByCoordinates(lon,lat),LocationResponse.class);
+        return ConvertUtils.convert(locationClient.getByCoordinates(lon,lat),LocationResponse.class);
     }
 
     @Override
@@ -107,7 +111,7 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public void deleteImageLocation(Long id) {
         LocationImageEntity locationImageEntity = locationImageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Image not exists"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND));
         mediaClient.deleteById(locationImageEntity.getId());
         locationImageRepository.deleteById(id);
     }
@@ -129,7 +133,7 @@ public class LocationServiceImpl implements LocationService {
     public LocationResponse update(Long placeId, LocationUpdateRequest locationUpdateRequest) {
 
         LocationEntity location = locationRepository.findById(placeId)
-                .orElseThrow(() -> new RuntimeException("Location not found"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.LOCATION_NOT_FOUND));
         LocationImageEntity thumbnail = location.getThumbnail();
         List<LocationImageEntity> images= location.getCollections() != null ? new ArrayList<>(location.getCollections()) : null;
         location = locationMapper.toLocationEntity(locationUpdateRequest);
@@ -138,13 +142,13 @@ public class LocationServiceImpl implements LocationService {
         if(locationUpdateRequest.getImageId() != null){
             if(thumbnail == null){
                 LocationImageEntity locationImageEntity = locationImageRepository.findById(locationUpdateRequest.getImageId())
-                        .orElseThrow(() -> new RuntimeException("Image of location not exists"));
+                        .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND));
                 location.setThumbnail(locationImageEntity);
             }
             else{
                if (!thumbnail.getId().equals(locationUpdateRequest.getImageId())){
                    LocationImageEntity locationImageEntity = locationImageRepository.findById(locationUpdateRequest.getImageId())
-                           .orElseThrow(() -> new RuntimeException("Image of location not exists"));
+                           .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND));
                    locationImageRepository.deleteById(location.getThumbnail().getId());
                    location.setThumbnail(locationImageEntity);
                }
@@ -158,7 +162,7 @@ public class LocationServiceImpl implements LocationService {
                 List<LocationImageEntity> imageCollections = locationUpdateRequest.getCollectionIds()
                         .stream()
                         .map(id -> locationImageRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Image of location not exists")))
+                                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND)))
                         .toList();
                 location.setCollections(new HashSet<>(imageCollections));
             }
@@ -166,7 +170,7 @@ public class LocationServiceImpl implements LocationService {
                 List<LocationImageEntity> imageCollections = locationUpdateRequest.getCollectionIds()
                         .stream()
                         .map(id -> locationImageRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Image of location not exists")))
+                                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND)))
                         .toList();
                 Map<Long,Long> table = locationUpdateRequest.getCollectionIds()
                         .stream()
@@ -193,13 +197,50 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public LocationResponse findById(Long id) {
         return mappingOne(locationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Location not found")));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.LOCATION_NOT_FOUND)));
     }
 
     @Override
     public List<LocationResponse> findNewest(int limit) {
         Pageable pageable = PageRequest.of(0,limit);
         return mappingList(locationRepository.findAll(pageable).getContent());
+    }
+
+    @Override
+    public LocationResponse createByCoordinates(LocationCoordinateRequest locationCoordinateRequest) {
+        LocationEntity location =  ConvertUtils
+                .convert(locationClient.
+                        getByCoordinates(locationCoordinateRequest.getLon(),
+                                        locationCoordinateRequest.getLat()),
+                                        LocationEntity.class);
+        if(location == null){
+            return null;
+        }
+        location.setStatus(LocationStatus.PENDING);
+        if(locationCoordinateRequest.getImageId() != null){
+            LocationImageEntity locationImageEntity = locationImageRepository.findById(locationCoordinateRequest.getImageId())
+                    .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND));
+            location.setThumbnail(locationImageEntity);
+        }
+
+        if(locationCoordinateRequest.getCollectionIds() != null){
+            List<LocationImageEntity> imageCollections = locationCoordinateRequest.getCollectionIds()
+                    .stream()
+                    .map(id -> locationImageRepository.findById(id)
+                            .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND)))
+                    .toList();
+            location.setCollections(new HashSet<>(imageCollections));
+        }
+
+        return mappingOne(locationRepository.save(location));
+    }
+
+    @Override
+    public LocationResponse updateStatus(Long id, LocationStatusRequest locationStatusRequest) {
+       LocationEntity location = locationRepository.findById(id)
+               .orElseThrow(() -> new CustomRuntimeException(ErrorCode.LOCATION_NOT_FOUND));
+       location.setStatus(locationStatusRequest.getStatus());
+       return mappingOne(locationRepository.save(location));
     }
 
     private List<LocationResponse> mappingList(List<LocationEntity> e){

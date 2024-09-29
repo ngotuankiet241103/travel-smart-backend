@@ -8,6 +8,8 @@ import com.travelsmart.trip_service.dto.request.TripUpdateRequest;
 import com.travelsmart.trip_service.dto.response.TripResponse;
 import com.travelsmart.trip_service.entity.TripEntity;
 import com.travelsmart.trip_service.entity.UserTripEntity;
+import com.travelsmart.trip_service.exception.CustomRuntimeException;
+import com.travelsmart.trip_service.exception.ErrorCode;
 import com.travelsmart.trip_service.mapper.TripMapper;
 import com.travelsmart.trip_service.repository.TripRepository;
 import com.travelsmart.trip_service.repository.UserTripRepository;
@@ -68,7 +70,7 @@ public class TripServiceImpl implements TripService {
     public TripResponse update(Long id, TripUpdateRequest tripUpdateRequest) {
 
         TripEntity trip = tripRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trip not exists"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TRIP_NOT_FOUND));
         trip.setTitle(tripUpdateRequest.getTitle());
         trip.setCode(HandleString.strToCode(trip.getTitle()));
         Calendar startDate = Calendar.getInstance();
@@ -86,7 +88,7 @@ public class TripServiceImpl implements TripService {
     @Override
     public String shareTrip(Long id, TripShareRequest tripShareRequest) {
         TripEntity trip = tripRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Trip not exist"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TRIP_NOT_FOUND));
         String userId = identityClient.getUserToShare(tripShareRequest.getEmail()).getResult();
         UserTripEntity userTripEntity = UserTripEntity.builder()
                 .permission(tripShareRequest.getTripPermission())
@@ -102,7 +104,7 @@ public class TripServiceImpl implements TripService {
 
         TripResponse tripResponse = tripMapper.toTripResponse(trip);
         UserTripEntity userTripEntity = userTripRepository.findByUserIdAndTripId(authentication.getName(),trip.getId())
-                .orElseThrow(() -> new RuntimeException("This trip not belong to user"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TRIP_DENIED));
         tripResponse.setPermission(userTripEntity.getPermission());
         return tripResponse;
     }

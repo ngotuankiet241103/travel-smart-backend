@@ -31,7 +31,7 @@ public class WebSecurityConfig {
         String[] apis = Arrays.stream(permitApi).map(url -> api + url).toArray(String[]::new);
         System.out.println(Arrays.toString(Arrays.stream(permitApi).map(url -> api + url).toArray()));
         http
-               
+
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(apis).permitAll()
