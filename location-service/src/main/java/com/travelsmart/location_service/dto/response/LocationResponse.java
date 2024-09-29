@@ -22,4 +22,5 @@ public class LocationResponse {
     private LocationImageResponse thumbnail;
     private Set<LocationImageResponse> collections;
     private List<String> boundingbox;
+    private Double starRate;
 }

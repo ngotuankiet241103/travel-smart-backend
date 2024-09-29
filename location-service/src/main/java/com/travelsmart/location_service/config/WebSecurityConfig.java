@@ -31,13 +31,13 @@ public class WebSecurityConfig {
         String[] apis = Arrays.stream(permitApi).map(url -> api + url).toArray(String[]::new);
         System.out.println(Arrays.toString(Arrays.stream(permitApi).map(url -> api + url).toArray()));
         http
-                .cors(Customizer.withDefaults())
+               
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(apis).permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .anyRequest()
-                        .permitAll())
+                        .authenticated())
                 .oauth2ResourceServer(rss -> rss.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter() )));
 
