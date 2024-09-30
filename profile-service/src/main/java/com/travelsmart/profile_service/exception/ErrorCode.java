@@ -14,6 +14,7 @@ public enum ErrorCode {
     FORBIDDEN(1003, "You don't have permission to access resources", HttpStatus.FORBIDDEN),
     UNAUTHORIZED(1003, "Unauthorizated user", HttpStatus.UNAUTHORIZED),
     USER_NOT_FOUND(1003, "User not found", HttpStatus.NOT_FOUND),
+    AVATAR_NOT_FOUND(1003, "Avatar not found", HttpStatus.NOT_FOUND),
     PASSWORD_INVALID(1003, "Password must be greater than {min} characters", HttpStatus.BAD_REQUEST),
     PASSWORD_NOT_MATCH(1003, "Wrong password", HttpStatus.BAD_REQUEST),
     UNUPLOADFILE_EXCEPTION( 1004,"Upload file failed",HttpStatus.BAD_REQUEST),

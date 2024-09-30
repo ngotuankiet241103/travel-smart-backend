@@ -88,12 +88,14 @@ public class ProfileServiceImpl implements ProfileService {
     public ProfileResponse changeAvatar(ProfileUpdateAvatar profileUpdateAvatar) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         ProfileEntity profile = profileRepository.findById(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.USER_NOT_FOUND));
         AvatarEntity avatarEntity = avatarRepository.findByProfileId(profile.getId());
         AvatarEntity avatar = avatarRepository.findById(profileUpdateAvatar.getId())
-                        .orElseThrow(() -> new RuntimeException("Avatar not exists"));
+                        .orElseThrow(() -> new CustomRuntimeException(ErrorCode.AVATAR_NOT_FOUND));
         avatar.setProfile(profile);
-        avatarRepository.deleteById(avatarEntity.getId());
+        if(avatarEntity != null){
+            avatarRepository.deleteById(avatarEntity.getId());
+        }
         avatarRepository.save(avatar);
         return mappingOne(profile);
     }
