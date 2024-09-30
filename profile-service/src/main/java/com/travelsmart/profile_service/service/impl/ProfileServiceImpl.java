@@ -94,6 +94,7 @@ public class ProfileServiceImpl implements ProfileService {
                         .orElseThrow(() -> new CustomRuntimeException(ErrorCode.AVATAR_NOT_FOUND));
         avatar.setProfile(profile);
         if(avatarEntity != null){
+            mediaClient.deleteById(avatarEntity.getId());
             avatarRepository.deleteById(avatarEntity.getId());
         }
         avatarRepository.save(avatar);
