@@ -9,4 +9,5 @@ public class CommentResponse {
     private int nodeLeft;
     private int nodeRight;
     private ProfileUserResponse user;
+    private String content;
 }

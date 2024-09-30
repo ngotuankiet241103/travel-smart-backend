@@ -10,13 +10,13 @@ spring:
     username: ${DBMS_USERNAME:root}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       enable_lazy_load_no_trans: true
   cloud:
     compatibility-verifier:
       enabled: false
   liquibase:
-    enabled: false
+    enabled: true
 api:
   prefix: /blog
 springdoc:

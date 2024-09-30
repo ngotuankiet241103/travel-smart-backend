@@ -12,11 +12,13 @@ spring:
     password: 1234
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       enable_lazy_load_no_trans: true
   cloud:
     compatibility-verifier:
       enabled: false
+  liquibase:
+    enabled: true
 springdoc:
   api-docs:
     path: /v3/api-docs

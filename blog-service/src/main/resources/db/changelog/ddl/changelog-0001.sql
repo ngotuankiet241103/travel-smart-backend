@@ -5,7 +5,7 @@ create table blog (
     content text,
     tags varchar(255),
     user_id varchar(255) not null,
-    userName varchar(255) not null,
+    user_name varchar(255) not null,
     create_date datetime,
     status tinyint,
     image_id bigint,
@@ -22,7 +22,7 @@ create table category (
     primary key (name)
 );
 create table blog_category (
-    blog_id bigint,
+    blog_id bigint not null,
     category_name varchar(255),
     primary key (blog_id,category_name)
 );
@@ -38,13 +38,13 @@ create table comment (
     node_right int,
     tree_id varchar(255),
     parent_id bigint,
-    blog_id bigint,
+    blog_id bigint not null,
     user_id varchar(255),
     create_date datetime,
     primary key (id)
 
 );
-ALTER TABLE   blog ADD  CONSTRAINT  fk_blogCategory_blog FOREIGN  KEY  (image_id)  REFERENCES  blog_image(id);
+ALTER TABLE   blog ADD  CONSTRAINT  fk_blog_blogImage FOREIGN  KEY  (image_id)  REFERENCES  blog_image(id);
 ALTER  TABLE  blog_category  ADD  CONSTRAINT  fk_blogCategory_blog FOREIGN  KEY  (blog_id)  REFERENCES  blog(id);
 ALTER  TABLE  blog_category  ADD  CONSTRAINT  fk_blogCategory_category FOREIGN  KEY  (category_name)  REFERENCES  category(name);
 ALTER  TABLE  blog_favorite  ADD  CONSTRAINT  fk_blogFavorite_blog FOREIGN  KEY  (blog_id)  REFERENCES  blog(id);

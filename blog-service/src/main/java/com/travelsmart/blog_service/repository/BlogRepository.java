@@ -17,6 +17,6 @@ public interface BlogRepository extends JpaRepository<BlogEntity,Long> {
     Optional<BlogEntity> findByCode(String blogCode);
 
     Page<BlogEntity> findByStatus(Pageable pageable, BlogStatus blogStatus);
-    @Query(value = "SELECT b.id,b.title,b.code,b.create_date,b.userName,c.* FROM blog b JOIN blog_category c ON b.id = c.blog_id WHERE c.category_name = ?1 AND b.status = ?2",nativeQuery = true)
+    @Query(value = "SELECT b.*,c.* FROM blog b JOIN blog_category c ON b.id = c.blog_id WHERE c.category_name = ?1 AND b.status = ?2",nativeQuery = true)
     Page<BlogEntity> findByCategoryNameAndStatus(Pageable pageable, String name, BlogStatus blogStatus);
 }

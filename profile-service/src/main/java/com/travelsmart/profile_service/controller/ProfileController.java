@@ -70,7 +70,7 @@ public class ProfileController {
     }
     @Operation(summary = "Change avatar", description = "Returns single profile")
     @PutMapping("/change-avatar")
-    public ApiResponse<ProfileResponse> changeAvatar(@ModelAttribute ProfileUpdateAvatar profileUpdateAvatar) {
+    public ApiResponse<ProfileResponse> changeAvatar(@RequestBody ProfileUpdateAvatar profileUpdateAvatar) {
         return ApiResponse.<ProfileResponse>builder()
                 .result(profileService.changeAvatar(profileUpdateAvatar))
                 .build();

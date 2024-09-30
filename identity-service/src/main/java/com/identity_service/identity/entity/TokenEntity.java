@@ -1,9 +1,6 @@
 package com.identity_service.identity.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class TokenEntity {
     @Id
     private String token;
+    @Column
     private boolean isExpired;
     @ManyToOne
     private UserEntity user;

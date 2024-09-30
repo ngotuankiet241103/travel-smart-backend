@@ -1,6 +1,7 @@
 package com.travelsmart.blog_service.entity;
 
 import com.travelsmart.blog_service.constant.BlogStatus;
+import com.travelsmart.blog_service.utils.StringListConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +35,7 @@ public class BlogEntity {
 
     @Column
     private String content;
-    @Column
+    @Convert(converter = StringListConverter.class)
     private List<String> tags;
     @Column
     private BlogStatus status;
