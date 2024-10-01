@@ -39,12 +39,6 @@ public class LocationEntity {
     private LocationStatus status;
     @OneToOne
     private LocationImageEntity thumbnail;
-    @ManyToMany
-    @JoinTable(
-            name = "location_collections",
-            joinColumns = @JoinColumn(name = "location_place_id"),
-            inverseJoinColumns = @JoinColumn(name = "collections_id"))
-    private Set<LocationImageEntity> collections;
     @Convert(converter = StringListConverter.class)
     private List<String> boundingbox;
 }

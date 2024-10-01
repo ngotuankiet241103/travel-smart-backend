@@ -9,5 +9,5 @@ public class LocationCoordinateRequest {
     private String lon;
     private String lat;
     private Long imageId;
-    private List<Long> collectionIds;
+
 }

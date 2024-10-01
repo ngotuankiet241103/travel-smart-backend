@@ -20,6 +20,5 @@ public class LocationRequest {
     private String type;
     private Address address;
     private Long imageId;
-    private List<Long> collectionIds;
     private List<String> boundingbox;
 }

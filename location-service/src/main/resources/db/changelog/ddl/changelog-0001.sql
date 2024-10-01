@@ -28,13 +28,22 @@ create table location (
     thumbnail_id bigint,
     primary key (place_id)
  );
- create table location_collections (
-    location_place_id bigint,
+ create table introduce_location(
+    id bigint not null auto_increment,
+    title varchar(255),
+    content text,
+    location_place_id bigint not null,
+    primary key (id)
+ );
+ create table introduce_collections (
+    introduce_id bigint,
     collections_id bigint,
-    primary key (location_place_id,collections_id)
+    primary key (introduce_id,collections_id)
 
  );
+
  ALTER  TABLE  location  ADD  CONSTRAINT  fk_location_locationImage FOREIGN  KEY  (thumbnail_id)  REFERENCES  location_image(id);
-alter table location_collections add constraint FKs6cydsualtsrprvlf2bb3lcam foreign key (location_place_id) references location(place_id);
-alter table location_collections add constraint FKgmb19wbjvpu06559t7w33wqoc foreign key (collections_id) references location_image(id);
+ ALTER  TABLE  introduce_location  ADD  CONSTRAINT  fk_introduce_location FOREIGN  KEY  (location_place_id)  REFERENCES  location(place_id);
+alter table introduce_collections add constraint FKs6cydsualtsrprvlf2bb3lcam foreign key (introduce_id) references introduce_location(id);
+alter table introduce_collections add constraint FKgmb19wbjvpu06559t7w33wqoc foreign key (collections_id) references location_image(id);
 

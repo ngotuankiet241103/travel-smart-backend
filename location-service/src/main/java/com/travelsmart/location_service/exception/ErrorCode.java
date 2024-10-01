@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999,"Uncategorized error",HttpStatus.INTERNAL_SERVER_ERROR),
     LOCATION_NOT_FOUND(1004,"Location not found",HttpStatus.NOT_FOUND),
+    INTRODUCE_NOT_FOUND(1004,"Introduce not found",HttpStatus.NOT_FOUND),
     IMAGE_NOT_FOUND(1004,"Image of location not exists",HttpStatus.NOT_FOUND),
     FILE_INVALID(1003, "File must be not null", HttpStatus.BAD_REQUEST),
     FORBIDDEN(1003, "You don't have permission to access resources", HttpStatus.FORBIDDEN),

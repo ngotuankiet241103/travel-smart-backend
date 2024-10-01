@@ -68,14 +68,7 @@ public class LocationServiceImpl implements LocationService {
             location.setThumbnail(locationImageEntity);
         }
 
-        if(locationRequest.getCollectionIds() != null){
-            List<LocationImageEntity> imageCollections = locationRequest.getCollectionIds()
-                    .stream()
-                    .map(id -> locationImageRepository.findById(id)
-                            .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND)))
-                    .toList();
-            location.setCollections(new HashSet<>(imageCollections));
-        }
+
 
         return mappingOne(locationRepository.save(location));
     }
@@ -85,9 +78,7 @@ public class LocationServiceImpl implements LocationService {
         if(locationEntity.getThumbnail() != null){
             locationResponse.setThumbnail(locationImageMapper.toLocationImageResponse(locationEntity.getThumbnail()));
         }
-        if(locationEntity.getCollections() != null) {
-            locationResponse.setCollections(locationEntity.getCollections().stream().map(locationImageMapper::toLocationImageResponse).collect(Collectors.toSet()));
-        }
+
         locationResponse.setStarRate(reviewClient.getStarRateByLocation(locationEntity.getPlace_id()).getResult());
         return locationResponse;
     }
@@ -135,10 +126,9 @@ public class LocationServiceImpl implements LocationService {
         LocationEntity location = locationRepository.findById(placeId)
                 .orElseThrow(() -> new CustomRuntimeException(ErrorCode.LOCATION_NOT_FOUND));
         LocationImageEntity thumbnail = location.getThumbnail();
-        List<LocationImageEntity> images= location.getCollections() != null ? new ArrayList<>(location.getCollections()) : null;
+
         location = locationMapper.toLocationEntity(locationUpdateRequest);
         location.setPlace_id(placeId);
-        List<LocationImageEntity> deleteImages = new ArrayList<>();
         if(locationUpdateRequest.getImageId() != null){
             if(thumbnail == null){
                 LocationImageEntity locationImageEntity = locationImageRepository.findById(locationUpdateRequest.getImageId())
@@ -155,42 +145,8 @@ public class LocationServiceImpl implements LocationService {
             }
         }
 
-
-        if(locationUpdateRequest.getCollectionIds() != null){
-            if(images == null){
-
-                List<LocationImageEntity> imageCollections = locationUpdateRequest.getCollectionIds()
-                        .stream()
-                        .map(id -> locationImageRepository.findById(id)
-                                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND)))
-                        .toList();
-                location.setCollections(new HashSet<>(imageCollections));
-            }
-            else{
-                List<LocationImageEntity> imageCollections = locationUpdateRequest.getCollectionIds()
-                        .stream()
-                        .map(id -> locationImageRepository.findById(id)
-                                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND)))
-                        .toList();
-                Map<Long,Long> table = locationUpdateRequest.getCollectionIds()
-                        .stream()
-                        .collect(Collectors.toMap(
-                                item -> item,
-                                item -> item
-                        ));
-
-                deleteImages = images.stream()
-                        .filter(image -> !table.containsKey(image.getId()))
-                        .toList();
-                System.out.println(deleteImages.size());
-
-                location.setCollections(new HashSet<>(imageCollections));
-
-            }
-        }
         locationRepository.save(location);
-        deleteImages.forEach(item -> mediaClient.deleteById(item.getId()));
-        locationImageRepository.deleteAll(deleteImages);
+
         return mappingOne(location);
     }
 
@@ -223,14 +179,7 @@ public class LocationServiceImpl implements LocationService {
             location.setThumbnail(locationImageEntity);
         }
 
-        if(locationCoordinateRequest.getCollectionIds() != null){
-            List<LocationImageEntity> imageCollections = locationCoordinateRequest.getCollectionIds()
-                    .stream()
-                    .map(id -> locationImageRepository.findById(id)
-                            .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND)))
-                    .toList();
-            location.setCollections(new HashSet<>(imageCollections));
-        }
+
 
         return mappingOne(locationRepository.save(location));
     }

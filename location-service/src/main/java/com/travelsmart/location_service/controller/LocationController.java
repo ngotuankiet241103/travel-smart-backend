@@ -2,6 +2,7 @@ package com.travelsmart.location_service.controller;
 
 import com.travelsmart.location_service.dto.request.*;
 import com.travelsmart.location_service.dto.response.ApiResponse;
+import com.travelsmart.location_service.dto.response.IntroduceResponse;
 import com.travelsmart.location_service.dto.response.LocationImageResponse;
 import com.travelsmart.location_service.dto.response.LocationResponse;
 import com.travelsmart.location_service.service.LocationService;
@@ -110,5 +111,6 @@ public class LocationController {
                 .result(locationService.findById(id))
                 .build();
     }
+
 
 }

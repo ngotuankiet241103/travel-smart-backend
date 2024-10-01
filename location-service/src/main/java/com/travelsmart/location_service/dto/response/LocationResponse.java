@@ -20,7 +20,6 @@ public class LocationResponse {
     private String type;
     private Address address;
     private LocationImageResponse thumbnail;
-    private Set<LocationImageResponse> collections;
     private List<String> boundingbox;
     private Double starRate;
 }
