@@ -1,5 +1,6 @@
 package com.travelsmart.trip_service.service;
 
+import com.travelsmart.trip_service.constant.LocationType;
 import com.travelsmart.trip_service.dto.request.*;
 import com.travelsmart.trip_service.dto.response.ItineraryResponse;
 import com.travelsmart.trip_service.entity.TripEntity;
@@ -22,4 +23,6 @@ public interface ItineraryService {
     void deleteById(Long id, ItineraryDeleteRequest itineraryDeleteRequest);
 
     void deleteDestinationById(Long id,DestinationDeleteRequest destinationDeleteRequest);
+
+    List<ItineraryResponse> generateTrip(TripEntity trip, List<LocationType> types);
 }

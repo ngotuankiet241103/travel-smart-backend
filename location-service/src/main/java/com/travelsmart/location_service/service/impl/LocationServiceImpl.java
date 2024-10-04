@@ -2,9 +2,9 @@ package com.travelsmart.location_service.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travelsmart.location_service.constant.LocationStatus;
+import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.dto.request.*;
-import com.travelsmart.location_service.dto.response.LocationImageResponse;
-import com.travelsmart.location_service.dto.response.LocationResponse;
+import com.travelsmart.location_service.dto.response.*;
 import com.travelsmart.location_service.dto.response.http.MediaHttpResponse;
 import com.travelsmart.location_service.entity.LocationEntity;
 import com.travelsmart.location_service.entity.LocationImageEntity;
@@ -21,6 +21,7 @@ import com.travelsmart.location_service.service.LocationService;
 import com.travelsmart.location_service.utils.ConvertUtils;
 import com.travelsmart.location_service.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -45,10 +46,10 @@ public class LocationServiceImpl implements LocationService {
     private final MediaClient mediaClient;
     private final ReviewClient reviewClient;
     @Override
-    public List<LocationResponse> findBySearch(String search, int limit) {
+    public List<LocationTemplateResponse> findBySearch(String search, int limit) {
         return locationClient.getBySearch(search,limit)
                 .stream()
-                .map(object -> ConvertUtils.convert(object,LocationResponse.class))
+                .map(object -> ConvertUtils.convert(object, LocationTemplateResponse.class))
                 .toList();
     }
 
@@ -60,7 +61,7 @@ public class LocationServiceImpl implements LocationService {
                 .stream().anyMatch(role -> role.equals("ROLE_ADMIN"));
 
         location.setStatus(isAdmin ?  LocationStatus.ACCEPT : LocationStatus.PENDING);
-
+        location.setTimeVisit(locationRequest.getType().getTimeToVisitMinutes());
 
         if(locationRequest.getImageId() != null){
             LocationImageEntity locationImageEntity = locationImageRepository.findById(locationRequest.getImageId())
@@ -73,19 +74,21 @@ public class LocationServiceImpl implements LocationService {
         return mappingOne(locationRepository.save(location));
     }
     private LocationResponse mappingOne(LocationEntity locationEntity){
+        System.out.println("1");
         if(locationEntity  == null) return null;
         LocationResponse locationResponse = locationMapper.toLocationResponse(locationEntity);
         if(locationEntity.getThumbnail() != null){
             locationResponse.setThumbnail(locationImageMapper.toLocationImageResponse(locationEntity.getThumbnail()));
         }
+        System.out.println("2");
 
         locationResponse.setStarRate(reviewClient.getStarRateByLocation(locationEntity.getPlace_id()).getResult());
         return locationResponse;
     }
 
     @Override
-    public LocationResponse findByCoordinates(String lon, String lat) {
-        return ConvertUtils.convert(locationClient.getByCoordinates(lon,lat),LocationResponse.class);
+    public LocationTemplateResponse findByCoordinates(String lon, String lat) {
+        return ConvertUtils.convert(locationClient.getByCoordinates(lon,lat),LocationTemplateResponse.class);
     }
 
     @Override
@@ -152,14 +155,16 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationResponse findById(Long id) {
-        return mappingOne(locationRepository.findById(id)
+        LocationEntity location = locationRepository.findByPlaceId(id).orElse(null);
+        System.out.println("location" + location);
+        return mappingOne(locationRepository.findByPlaceId(id)
                 .orElseThrow(() -> new CustomRuntimeException(ErrorCode.LOCATION_NOT_FOUND)));
     }
 
     @Override
     public List<LocationResponse> findNewest(int limit) {
         Pageable pageable = PageRequest.of(0,limit);
-        return mappingList(locationRepository.findAll(pageable).getContent());
+        return mappingList(locationRepository.findAllOrderByIdDesc(pageable).getContent());
     }
 
     @Override
@@ -192,7 +197,30 @@ public class LocationServiceImpl implements LocationService {
        return mappingOne(locationRepository.save(location));
     }
 
+    @Override
+    public List<LocationResponse> findByCategory(List<String> categories) {
+
+        return mappingList(locationRepository.findByCategoryIn(categories));
+    }
+
+    @Override
+    public PageableResponse<List<LocationResponse>> findAll(Pageable pageable) {
+        Page<LocationEntity> page = locationRepository.findAll(pageable);
+        Paging paging = Paging.buildPaging(pageable, page.getTotalPages());
+        PageableResponse<List<LocationResponse>> response = PageableResponse.<List<LocationResponse>>builder()
+                .data(mappingList(page.getContent()))
+                .paging(paging)
+                .build();
+        return response;
+    }
+
+    @Override
+    public List<LocationResponse> findByType(Long id ,List<LocationType> types) {
+        return mappingList(locationRepository.findByTypeIn(id,types));
+    }
+
     private List<LocationResponse> mappingList(List<LocationEntity> e){
+
         return e.stream()
                 .map(this::mappingOne)
                 .toList();

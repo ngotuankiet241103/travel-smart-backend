@@ -1,5 +1,6 @@
 package com.travelsmart.location_service.dto.request;
 
+import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.entity.Address;
 import com.travelsmart.location_service.entity.LocationImageEntity;
 import com.travelsmart.location_service.utils.StringListConverter;
@@ -17,7 +18,7 @@ public class LocationRequest {
     private String lon;
     private String lat;
     private String name;
-    private String type;
+    private LocationType type;
     private Address address;
     private Long imageId;
     private List<String> boundingbox;

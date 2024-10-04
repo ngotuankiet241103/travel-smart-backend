@@ -2,9 +2,13 @@ package com.travelsmart.trip_service.service.impl;
 
 import com.travelsmart.location_service.dto.response.LocationImageResponse;
 import com.travelsmart.trip_service.constant.TripPermission;
+import com.travelsmart.trip_service.dto.request.TripGenerateRequest;
 import com.travelsmart.trip_service.dto.request.TripRequest;
 import com.travelsmart.trip_service.dto.request.TripShareRequest;
 import com.travelsmart.trip_service.dto.request.TripUpdateRequest;
+import com.travelsmart.trip_service.dto.response.ItineraryResponse;
+import com.travelsmart.trip_service.dto.response.LocationResponse;
+import com.travelsmart.trip_service.dto.response.TripGenerateResponse;
 import com.travelsmart.trip_service.dto.response.TripResponse;
 import com.travelsmart.trip_service.entity.TripEntity;
 import com.travelsmart.trip_service.entity.UserTripEntity;
@@ -13,6 +17,7 @@ import com.travelsmart.trip_service.exception.ErrorCode;
 import com.travelsmart.trip_service.mapper.TripMapper;
 import com.travelsmart.trip_service.repository.TripRepository;
 import com.travelsmart.trip_service.repository.UserTripRepository;
+import com.travelsmart.trip_service.repository.httpclient.GeoapifyClient;
 import com.travelsmart.trip_service.repository.httpclient.IdentityClient;
 import com.travelsmart.trip_service.repository.httpclient.LocationClient;
 import com.travelsmart.trip_service.service.ItineraryService;
@@ -36,9 +41,10 @@ public class TripServiceImpl implements TripService {
     private final LocationClient locationClient;
     private final UserTripRepository userTripRepository;
     private final IdentityClient identityClient;
+
     @Override
     public TripResponse create(TripRequest tripRequest) {
-        Authentication authentication  = SecurityContextHolder.getContext().getAuthentication();
+
         TripEntity trip = tripMapper.toTripEntity(tripRequest);
 
         trip.setCode(HandleString.strToCode(trip.getTitle()));
@@ -51,16 +57,20 @@ public class TripServiceImpl implements TripService {
         LocationImageResponse locationImageResponse = locationClient.getLocationById(tripRequest.getLocationId()).getResult().getThumbnail();
         trip.setImage(locationImageResponse != null ? locationImageResponse.getUrl() : "");
         tripRepository.save(trip);
+        buildUserTrip(trip);
+        itineraryService.creatItinerariesByTrip(trip);
+        return mappingOne(trip);
+    }
+
+    private void buildUserTrip(TripEntity trip){
+        Authentication authentication  = SecurityContextHolder.getContext().getAuthentication();
         UserTripEntity userTripEntity = UserTripEntity.builder()
                 .permission(TripPermission.OWNER)
                 .userId(authentication.getName())
                 .trip(trip)
                 .build();
         userTripRepository.save(userTripEntity);
-        itineraryService.creatItinerariesByTrip(trip);
-        return mappingOne(trip);
     }
-
     @Override
     public List<TripResponse> findMyTrip(String name) {
         return mappingList(tripRepository.findMyTrip(name));
@@ -97,6 +107,33 @@ public class TripServiceImpl implements TripService {
                 .build();
         userTripRepository.save(userTripEntity);
         return "Share email " + tripShareRequest.getEmail() + " success";
+    }
+
+    @Override
+    public TripGenerateResponse generateTrip(TripGenerateRequest tripGenerateRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        TripEntity trip = TripEntity.builder()
+                .title(tripGenerateRequest.getTitle())
+                .code(HandleString.strToCode(tripGenerateRequest.getTitle()))
+                .locationId(tripGenerateRequest.getLocationId())
+                .build();
+        Calendar startDate = Calendar.getInstance();
+        startDate.setTime(tripGenerateRequest.getStartDate());
+        Calendar endDate = Calendar.getInstance();
+        endDate.setTime(tripGenerateRequest.getEndDate());
+        trip.setStartDate(DateUtils.setTime(startDate,23,59,59).getTime());
+        trip.setEndDate(DateUtils.setTime(endDate,23,59,59).getTime());
+//        tripRepository.save(trip);
+//        buildUserTrip(trip);
+        List<ItineraryResponse> itineraries  = itineraryService.generateTrip(trip,tripGenerateRequest.getType());
+
+        return TripGenerateResponse.builder()
+                .itineraries(itineraries)
+                .title(tripGenerateRequest.getTitle())
+                .startDate(tripGenerateRequest.getStartDate())
+                .endDate(tripGenerateRequest.getEndDate())
+                .build();
     }
 
     private TripResponse mappingOne(TripEntity trip){

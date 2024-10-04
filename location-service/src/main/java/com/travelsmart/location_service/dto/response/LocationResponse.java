@@ -1,25 +1,20 @@
 package com.travelsmart.location_service.dto.response;
 
+import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.entity.Address;
 import com.travelsmart.location_service.entity.LocationImageEntity;
 import com.travelsmart.location_service.utils.StringListConverter;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class LocationResponse {
-    private Long place_id;
-    private String category;
-    private String display_name;
-    private String lon;
-    private String lat;
-    private String name;
-    private String type;
-    private Address address;
+public class LocationResponse extends LocationTemplateResponse{
+    private LocationType type;
     private LocationImageResponse thumbnail;
-    private List<String> boundingbox;
-    private Double starRate;
+    private int timeVisit;
 }

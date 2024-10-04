@@ -1,18 +1,21 @@
 package com.travelsmart.location_service.service;
 
+import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.dto.request.*;
 import com.travelsmart.location_service.dto.response.LocationImageResponse;
 import com.travelsmart.location_service.dto.response.LocationResponse;
+import com.travelsmart.location_service.dto.response.LocationTemplateResponse;
+import com.travelsmart.location_service.dto.response.PageableResponse;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface LocationService {
-    List<LocationResponse> findBySearch(String search, int limit);
+    List<LocationTemplateResponse> findBySearch(String search, int limit);
 
     LocationResponse create(LocationRequest locationRequest);
 
-    LocationResponse findByCoordinates(String lon, String lat);
+    LocationTemplateResponse findByCoordinates(String lon, String lat);
 
     LocationImageResponse createImageLocation(ImageCreateRequest imageCreateRequest);
 
@@ -31,4 +34,10 @@ public interface LocationService {
     LocationResponse createByCoordinates(LocationCoordinateRequest locationCoordinateRequest);
 
     LocationResponse updateStatus(Long id, LocationStatusRequest locationStatusRequest);
+
+    List<LocationResponse> findByCategory(List<String> categories);
+
+    PageableResponse<List<LocationResponse>> findAll(Pageable pageable);
+
+    List<LocationResponse> findByType(Long id,List<LocationType> types);
 }

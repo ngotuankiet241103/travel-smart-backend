@@ -1,10 +1,8 @@
 package com.travelsmart.location_service.controller;
 
+import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.dto.request.*;
-import com.travelsmart.location_service.dto.response.ApiResponse;
-import com.travelsmart.location_service.dto.response.IntroduceResponse;
-import com.travelsmart.location_service.dto.response.LocationImageResponse;
-import com.travelsmart.location_service.dto.response.LocationResponse;
+import com.travelsmart.location_service.dto.response.*;
 import com.travelsmart.location_service.service.LocationService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,16 +21,16 @@ public class LocationController {
     private final LocationService locationService;
     @Operation(summary = "Get locations by search param through third part api",description = "Returns list location")
     @GetMapping("/search")
-    public ApiResponse<List<LocationResponse>> getBySearchAndLimit(@RequestParam("q") String search, @RequestParam(value = "limit", defaultValue = "1") int limit){
-        return ApiResponse.<List<LocationResponse>>builder()
+    public ApiResponse<List<LocationTemplateResponse>> getBySearchAndLimit(@RequestParam("q") String search, @RequestParam(value = "limit", defaultValue = "1") int limit){
+        return ApiResponse.<List<LocationTemplateResponse>>builder()
                 .result(locationService.findBySearch(search,limit))
                 .build();
     }
     @Operation(summary = "Get location by coordinates",description = "Returns single location")
     @GetMapping("/search/reverse")
-    public ApiResponse<LocationResponse> getByCoordinates(@RequestParam("lon") String lon, @RequestParam("lat") String lat ){
+    public ApiResponse<LocationTemplateResponse> getByCoordinates(@RequestParam("lon") String lon, @RequestParam("lat") String lat ){
 
-        return ApiResponse.<LocationResponse>builder()
+        return ApiResponse.<LocationTemplateResponse>builder()
                 .result(locationService.findByCoordinates(lon,lat))
                 .build();
     }
@@ -50,6 +48,16 @@ public class LocationController {
 
         return ApiResponse.<LocationResponse>builder()
                 .result(locationService.findByCoordinatesLocal(lon,lat))
+                .build();
+    }
+
+    @Operation(summary = "Get all location",description = "Returns list location")
+    @GetMapping("/all")
+    public ApiResponse<PageableResponse<List<LocationResponse>>> getAll(@RequestParam(value = "limit",defaultValue = "5") int limit,
+                                                                        @RequestParam(value = "page",defaultValue = "1") int page){
+        Pageable pageable = PageRequest.of(page - 1,limit);
+        return ApiResponse.<PageableResponse<List<LocationResponse>>>builder()
+                .result(locationService.findAll(pageable))
                 .build();
     }
     @Operation(summary = "Get newest location",description = "Returns list location")
@@ -104,13 +112,27 @@ public class LocationController {
                 .result(locationService.updateStatus(id, locationStatusRequest))
                 .build();
     }
-    @Hidden
+    @GetMapping("/type")
+    public ApiResponse<List<LocationType>> getLocationTypes(){
+        return ApiResponse.<List<LocationType>>builder()
+                .result(LocationType.getLocationTypes())
+                .build();
+    }
+
     @GetMapping("/internal/{id}")
     public ApiResponse<LocationResponse> getById(@PathVariable("id") Long id){
         return ApiResponse.<LocationResponse>builder()
                 .result(locationService.findById(id))
                 .build();
     }
+    @Hidden
+    @GetMapping("/internal/type")
+    public ApiResponse<List<LocationResponse>> getById(@RequestParam("types") List<LocationType> types,@RequestParam("locationId") Long id){
+        return ApiResponse.<List<LocationResponse>>builder()
+                .result(locationService.findByType(id,types))
+                .build();
+    }
+
 
 
 }

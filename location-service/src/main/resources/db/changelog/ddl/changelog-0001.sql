@@ -22,10 +22,11 @@ create table location (
     lat varchar(255) unique,
     lon varchar(255) unique,
     name varchar(255),
-    type varchar(255),
+    type tinyint,
     status TINYINT,
     housenumber varchar(255),
     thumbnail_id bigint,
+    time_visit int,
     primary key (place_id)
  );
  create table introduce_location(

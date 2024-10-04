@@ -1,8 +1,11 @@
 package com.travelsmart.trip_service.service.impl;
 
+import com.travelsmart.trip_service.constant.LocationType;
 import com.travelsmart.trip_service.dto.request.*;
 import com.travelsmart.trip_service.dto.response.DestinationResponse;
 import com.travelsmart.trip_service.dto.response.ItineraryResponse;
+import com.travelsmart.trip_service.dto.response.LocationResponse;
+import com.travelsmart.trip_service.dto.response.httpclient.DistanceResponse;
 import com.travelsmart.trip_service.entity.DestinationEntity;
 import com.travelsmart.trip_service.entity.ItineraryEntity;
 import com.travelsmart.trip_service.entity.TripEntity;
@@ -12,9 +15,11 @@ import com.travelsmart.trip_service.mapper.ItineraryMapper;
 import com.travelsmart.trip_service.repository.DestinationRepository;
 import com.travelsmart.trip_service.repository.ItineraryRepository;
 import com.travelsmart.trip_service.repository.TripRepository;
+import com.travelsmart.trip_service.repository.httpclient.GeoapifyClient;
 import com.travelsmart.trip_service.repository.httpclient.LocationClient;
 import com.travelsmart.trip_service.service.ItineraryService;
 import com.travelsmart.trip_service.utils.DateUtils;
+import com.travelsmart.trip_service.utils.NearestNeighborTSP;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +35,8 @@ public class ItineraryServiceImpl implements ItineraryService {
     private final ItineraryMapper itineraryMapper;
     private final DestinationRepository destinationRepository;
     private final LocationClient locationClient;
+    private final GeoapifyClient geoapifyClient;
+
 
     @Override
     public void creatItinerariesByTrip(TripEntity trip) {
@@ -181,6 +188,99 @@ public class ItineraryServiceImpl implements ItineraryService {
                 .orElseThrow(() -> new CustomRuntimeException(ErrorCode.DESTINATION_NOT_FOUND));
         destinationRepository.updatePositionDown(destinationDeleteRequest.getItineraryId(),destination.getPosition());
         destinationRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ItineraryResponse> generateTrip(TripEntity trip, List<LocationType> types) {
+        List<LocationResponse> locationResponses = locationClient.getByTypes(types,trip.getLocationId()).getResult();
+        System.out.println(locationResponses.size());
+        int col = 0;
+        Map<String,DistanceResponse> table = new HashMap<>();
+        DistanceResponse[][] distancesMatrix = new DistanceResponse[locationResponses.size()][locationResponses.size()] ;
+        for(int i = 0; i <= locationResponses.size() - 1; i++){
+            for(int j = 0 ; j <= locationResponses.size() - 1;j++){
+                if(i== j){
+                    distancesMatrix[j][col] = new DistanceResponse();
+                }
+                String regex1 = locationResponses.get(i).getPlace_id()+ "-" + locationResponses.get(j).getPlace_id();
+                String regex2 = locationResponses.get(j).getPlace_id()+ "-" + locationResponses.get(i).getPlace_id();
+                if(table.containsKey(regex1) || table.containsKey(regex2)){
+                    distancesMatrix[j][col] = table.get(regex1);
+                }
+                else{
+                    StringBuilder waypoints = new StringBuilder();
+                    waypoints.append(locationResponses.get(i).getLat());
+                    waypoints.append(",");
+                    waypoints.append(locationResponses.get(i).getLon());
+                    waypoints.append("|");
+                    waypoints.append( locationResponses.get(j).getLat());
+                    waypoints.append(",");
+                    waypoints.append(locationResponses.get(j).getLon());
+
+                    Map<String,Object> objectMap = geoapifyClient.routingLocation(waypoints.toString());
+                    System.out.println(objectMap);
+                    List<Map<String,Object>> arr = (List<Map<String, Object>>) objectMap.get("features");
+                    Map<String,Object> obj = arr.get(0);
+                    Map<String,Object> properties = (Map<String, Object>) obj.get("properties");
+                    double time  = Double.parseDouble(properties.get("time").toString());
+                    double distance = Double.parseDouble(properties.get("distance").toString());
+                    System.out.println("time" +  time);
+                    System.out.println("distance" +  distance);
+                    DistanceResponse distanceResponse = DistanceResponse.builder()
+                            .distance(distance)
+                            .time(time)
+                            .build();
+                    table.put(regex1,distanceResponse);
+                    table.put(regex2,distanceResponse);
+                    distancesMatrix[j][col] = distanceResponse;
+                }
+
+            }
+            col++;
+        }
+        double[] timeVisits = new double[locationResponses.size()];
+        boolean[] visited = new boolean[distancesMatrix.length];
+        for(int i = 0; i <= distancesMatrix.length - 1 ; i ++){
+            for(int j = 0; j <= distancesMatrix[i].length - 1; j++){
+                System.out.print(distancesMatrix[i][j].getDistance() +" ");
+            }
+            System.out.println("");
+        }
+        Calendar day = Calendar.getInstance();
+        day.setTime(trip.getStartDate());
+        List<ItineraryResponse> itineraryResponses = new ArrayList<>();
+        visited[0] = true;
+        boolean isFirst = true;
+        int currentLocation = 0;
+        while (day.getTime().before(trip.getEndDate())){
+
+            Map<String,Object> response  = NearestNeighborTSP.planDay(distancesMatrix,visited,timeVisits,8 * 60,currentLocation);
+            List<Integer> path = (List<Integer>) response.get("path");
+            visited = (boolean[]) response.get("visited");
+            currentLocation = Integer.parseInt(response.get("currentLocation").toString());
+            for(int i : path){
+                System.out.println(i);
+            }
+            ItineraryResponse itineraryResponse = ItineraryResponse.builder().build();
+            List<DestinationResponse>  destinations =  path.stream()
+                    .map(index -> {
+
+                        return DestinationResponse.builder()
+                                .location(locationResponses.get(index))
+                                .build();
+                    }).collect(Collectors.toList());
+
+            itineraryResponse.setDestinations(destinations);
+            day.add(Calendar.DAY_OF_MONTH,1);
+            itineraryResponses.add(itineraryResponse);
+        }
+//        for (int i=0; i <= locationResponses.size() - 1;i++){
+//            timeVisits[i] = Double.parseDouble(locationResponses.get(i).getTimeVisit()+"") / 10;
+//        }
+
+
+
+        return itineraryResponses;
     }
 
     private ItineraryResponse mappingOne(ItineraryEntity itineraryEntity){

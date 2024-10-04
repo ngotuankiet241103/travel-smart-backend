@@ -38,6 +38,7 @@ public class WebSecurityConfig {
                         .requestMatchers(apis).permitAll()
                         .requestMatchers(HttpMethod.GET,api + "/introduces/**").permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,api+ "/location/locations/news").permitAll()
                         .anyRequest()
                         .authenticated())
                 .oauth2ResourceServer(rss -> rss.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)

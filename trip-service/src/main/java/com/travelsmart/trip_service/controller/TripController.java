@@ -1,11 +1,13 @@
 package com.travelsmart.trip_service.controller;
 
 import com.travelsmart.trip_service.constant.TripPermission;
+import com.travelsmart.trip_service.dto.request.TripGenerateRequest;
 import com.travelsmart.trip_service.dto.request.TripRequest;
 import com.travelsmart.trip_service.dto.request.TripShareRequest;
 import com.travelsmart.trip_service.dto.request.TripUpdateRequest;
 import com.travelsmart.trip_service.dto.response.ApiResponse;
 import com.travelsmart.trip_service.dto.response.ItineraryResponse;
+import com.travelsmart.trip_service.dto.response.TripGenerateResponse;
 import com.travelsmart.trip_service.dto.response.TripResponse;
 import com.travelsmart.trip_service.service.TripService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +36,13 @@ public class TripController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ApiResponse.<List<TripResponse>>builder()
                 .result(tripService.findMyTrip(authentication.getName()))
+                .build();
+    }
+    @PostMapping("/generate")
+    public ApiResponse<TripGenerateResponse> generateTrip(@RequestBody TripGenerateRequest tripGenerateRequest){
+
+        return ApiResponse.<TripGenerateResponse>builder()
+                .result(tripService.generateTrip(tripGenerateRequest))
                 .build();
     }
     @Operation(summary = "Update information trip",description = "Returns single trip")

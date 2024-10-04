@@ -22,7 +22,13 @@ spring:
       enable_lazy_load_no_trans: true
   liquibase:
     enabled: true
-
+geoapify:
+  key: d1e2afb1ba924f9ebbbb3bd407e72b63
+  url: https://api.geoapify.com/
+  search: /v1/geocode/search
+  reverse: /v1/geocode/reverse
+  placeDetail: /v2/place-details
+  routing: /v1/routing
 
 springdoc:
   api-docs:

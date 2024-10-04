@@ -1,6 +1,7 @@
 package com.travelsmart.location_service.entity;
 
 import com.travelsmart.location_service.constant.LocationStatus;
+import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.utils.StringListConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,8 +32,10 @@ public class LocationEntity {
     private String lat;
     @Column(columnDefinition = "VARCHAR(100)")
     private String name;
-    @Column(columnDefinition = "VARCHAR(100)")
-    private String type;
+    @Column
+    private LocationType type;
+    @Column
+    private int timeVisit;
     @Embedded
     private Address address;
     @Column
