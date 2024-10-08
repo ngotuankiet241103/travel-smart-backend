@@ -13,4 +13,5 @@ public class TripResponse {
     private Date endDate;
     private String image;
     private TripPermission permission;
+    private LocationResponse location;
 }

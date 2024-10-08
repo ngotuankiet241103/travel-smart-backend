@@ -19,8 +19,16 @@ import com.travelsmart.location_service.repository.httpclient.MediaClient;
 import com.travelsmart.location_service.repository.httpclient.ReviewClient;
 import com.travelsmart.location_service.service.LocationService;
 import com.travelsmart.location_service.utils.ConvertUtils;
+import com.travelsmart.location_service.utils.GeoJsonConverter;
 import com.travelsmart.location_service.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,11 +62,12 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public LocationResponse create(LocationRequest locationRequest) {
+    public LocationResponse create(LocationRequest locationRequest) throws ParseException {
         LocationEntity location = locationMapper.toLocationEntity(locationRequest);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = authentication.getAuthorities()
-                .stream().anyMatch(role -> role.equals("ROLE_ADMIN"));
+                .stream().anyMatch(role -> role.toString().equals("ROLE_ADMIN"));
+
 
         location.setStatus(isAdmin ?  LocationStatus.ACCEPT : LocationStatus.PENDING);
         location.setTimeVisit(locationRequest.getType().getTimeToVisitMinutes());
@@ -69,18 +78,21 @@ public class LocationServiceImpl implements LocationService {
             location.setThumbnail(locationImageEntity);
         }
 
+        locationRepository.save(location);
 
 
-        return mappingOne(locationRepository.save(location));
+
+
+        return mappingOne(location);
     }
     private LocationResponse mappingOne(LocationEntity locationEntity){
-        System.out.println("1");
+
         if(locationEntity  == null) return null;
         LocationResponse locationResponse = locationMapper.toLocationResponse(locationEntity);
         if(locationEntity.getThumbnail() != null){
             locationResponse.setThumbnail(locationImageMapper.toLocationImageResponse(locationEntity.getThumbnail()));
         }
-        System.out.println("2");
+
 
         locationResponse.setStarRate(reviewClient.getStarRateByLocation(locationEntity.getPlace_id()).getResult());
         return locationResponse;
@@ -111,9 +123,12 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public List<LocationResponse> findBySearchLocal(String search, Pageable pageable) {
+    public List<LocationResponse> findBySearchLocal(LocationType type,String search, Pageable pageable) {
+        if( type == LocationType.ADMINISTRATIVE){
+            return mappingList(locationRepository.findByTypeAndStatus(LocationType.ADMINISTRATIVE,LocationStatus.ACCEPT));
+        }
         search = StringUtils.buildParamSearch(search);
-        return mappingList(locationRepository.findBySearchParam(pageable,search, LocationStatus.ACCEPT));
+      return mappingList(locationRepository.findBySearchParam(pageable,search, LocationStatus.ACCEPT));
     }
 
     @Override
@@ -169,11 +184,13 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationResponse createByCoordinates(LocationCoordinateRequest locationCoordinateRequest) {
-        LocationEntity location =  ConvertUtils
+        LocationTemplateResponse locationTemplateResponse =  ConvertUtils
                 .convert(locationClient.
                         getByCoordinates(locationCoordinateRequest.getLon(),
                                         locationCoordinateRequest.getLat()),
-                                        LocationEntity.class);
+                                        LocationTemplateResponse.class);
+
+        LocationEntity location = locationMapper.toLocationEntity(locationTemplateResponse);
         if(location == null){
             return null;
         }
@@ -183,7 +200,7 @@ public class LocationServiceImpl implements LocationService {
                     .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND));
             location.setThumbnail(locationImageEntity);
         }
-
+        location.setType(locationCoordinateRequest.getType());
 
 
         return mappingOne(locationRepository.save(location));
@@ -220,7 +237,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     private List<LocationResponse> mappingList(List<LocationEntity> e){
-
+        System.out.println(e.size());
         return e.stream()
                 .map(this::mappingOne)
                 .toList();

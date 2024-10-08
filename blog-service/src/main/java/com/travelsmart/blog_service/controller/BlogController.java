@@ -56,6 +56,7 @@ public class BlogController {
                 .result(blogService.findByCode(blogCode))
                 .build();
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Get statuses of blog",description = "Returns statues of blog")
     @GetMapping("/status")

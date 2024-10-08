@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public interface DestinationRepository extends JpaRepository<DestinationEntity,Long> {
-  List<DestinationEntity> findByItineraryId(Long id);
+  List<DestinationEntity> findByItineraryIdOrderByPosition(Long id);
   @Modifying
   @Query("UPDATE DestinationEntity d SET d.position = d.position - 1 WHERE d.itinerary.id = ?1 AND  d.position > ?2 AND d.position <= ?3")
   void moveDownPosition(Long sourceId, int position, int position1);
@@ -22,5 +23,8 @@ public interface DestinationRepository extends JpaRepository<DestinationEntity,L
   @Query("UPDATE DestinationEntity d SET d.position = d.position - 1 WHERE d.itinerary.id = ?1 AND  d.position > ?2 ")
   void updatePositionDown(Long sourceId, int position);
 
-    void deleteByItineraryId(Long id);
+  void deleteByItineraryId(Long id);
+  @Modifying
+  @Query("UPDATE DestinationEntity SET position = ?2 WHERE id = ?1")
+  void updatePositionById(Long destinationId, int position);
 }

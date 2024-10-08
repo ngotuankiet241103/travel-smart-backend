@@ -32,7 +32,6 @@ public class BlogEntity {
     private String userName;
     @Column
     private String userId;
-
     @Column
     private String content;
     @Convert(converter = StringListConverter.class)

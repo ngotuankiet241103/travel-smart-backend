@@ -79,7 +79,11 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public PageableResponse<List<BlogResponse>> findAll(Pageable pageable) {
-        Page<BlogEntity> page = blogRepository.findByStatus(pageable, BlogStatus.ACCEPT);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(role -> role.toString().equals("ROLE_ADMIN"));
+        Page<BlogEntity> page = isAdmin ? blogRepository.findAll(pageable) : blogRepository.findByStatus(pageable, BlogStatus.ACCEPT);
         Paging paging = Paging.buildPaging(pageable,page.getTotalPages());
         PageableResponse<List<BlogResponse>> response = PageableResponse.<List<BlogResponse>>builder()
                 .data(mappingList(page.getContent()))
@@ -211,6 +215,9 @@ public class BlogServiceImpl implements BlogService {
         BlogResponse blog = blogMapper.toBLogResponse(blogEntity);
         blog.setTotalLike(blogFavoriteRepository.countByIdBlogId(blog.getId()));
         blog.setCategories(blogEntity.getCategories().stream().map(CategoryEntity::getName).toList());
+        blog.setThumbnail(blogEntity.getImage() != null ?  BlogImageResponse.builder()
+                        .id(blogEntity.getImage().getId())
+                        .url(blogEntity.getImage().getUrl()).build() : null);
         return blog;
     }
 }

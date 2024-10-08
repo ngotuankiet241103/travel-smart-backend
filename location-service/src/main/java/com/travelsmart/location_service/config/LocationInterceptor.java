@@ -14,5 +14,6 @@ public class LocationInterceptor implements RequestInterceptor {
     public void apply(RequestTemplate template) {
        template.query("format",format);
        template.query("addressdetails", String.valueOf(1));
+       template.query("polygon_geojson",String.valueOf(1));
     }
 }

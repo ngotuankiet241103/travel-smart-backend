@@ -18,4 +18,5 @@ public class BlogResponse {
     private String userName;
     private Long totalLike;
     private BlogStatus status;
+    private BlogImageResponse thumbnail;
 }

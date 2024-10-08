@@ -10,8 +10,11 @@ spring:
     password: 1234
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       enable_lazy_load_no_trans: true
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect
   liquibase:
     enabled: true
 

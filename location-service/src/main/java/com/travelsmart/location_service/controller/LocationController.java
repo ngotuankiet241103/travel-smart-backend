@@ -7,6 +7,7 @@ import com.travelsmart.location_service.service.LocationService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.io.ParseException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,10 +37,12 @@ public class LocationController {
     }
     @Operation(summary = "Get locations by param search",description = "Returns all location")
     @GetMapping
-    public ApiResponse<List<LocationResponse>> getBySearch(@RequestParam("q") String search, @RequestParam(value = "limit", defaultValue = "1") int limit){
+    public ApiResponse<List<LocationResponse>> getBySearch(@RequestParam("q") String search,
+                                                           @RequestParam(value = "type",defaultValue = "TOURIST_ATTRACTION") LocationType locationType,
+                                                           @RequestParam(value = "limit", defaultValue = "4") int limit){
         Pageable pageable = PageRequest.of(0,limit);
         return ApiResponse.<List<LocationResponse>>builder()
-                .result(locationService.findBySearchLocal(search,pageable))
+                .result(locationService.findBySearchLocal(locationType,search,pageable))
                 .build();
     }
     @Operation(summary = "Get location by coordinates",description = "Returns single location")
@@ -78,7 +81,7 @@ public class LocationController {
 
     @Operation(summary = "Create new location",description = "Returns single location")
     @PostMapping
-    public ApiResponse<LocationResponse> create(@RequestBody LocationRequest locationRequest){
+    public ApiResponse<LocationResponse> create(@RequestBody LocationRequest locationRequest) throws ParseException {
         return ApiResponse.<LocationResponse>builder()
                 .result(locationService.create(locationRequest))
                 .build();

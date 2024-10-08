@@ -2,6 +2,8 @@ package com.identity_service.identity.service.impl;
 
 import com.identity_service.identity.dto.request.ChangePasswordRequest;
 import com.identity_service.identity.dto.request.RegisterRequest;
+import com.identity_service.identity.dto.request.UserBlockRequest;
+import com.identity_service.identity.dto.request.UserUpdatePermission;
 import com.identity_service.identity.dto.response.PageableResponse;
 import com.identity_service.identity.dto.response.Paging;
 import com.identity_service.identity.dto.response.UserResponse;
@@ -79,6 +81,29 @@ public class UserServiceImpl implements UserService {
                 .paging(paging)
                 .build();
         return response;
+    }
+
+    @Override
+    public UserResponse updateRole(String userId, UserUpdatePermission role) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.USER_NOT_FOUND));
+
+        List<RoleEntity> roles = role.getNames().stream()
+                .map(name -> roleRepository.findByName(name)
+                        .orElseThrow(() -> new CustomRuntimeException(ErrorCode.ROLE_NOT_FOUND)))
+                .toList();
+
+        user.setRoles(new HashSet<>(roles));
+        return mappingOne(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponse blockUser(String userId, UserBlockRequest userBlockRequest) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.USER_NOT_FOUND));
+        System.out.println(userBlockRequest.isBlock());
+        user.setBlock(userBlockRequest.isBlock());
+        return mappingOne(userRepository.save(user));
     }
 
     private List<UserResponse> mappingList(List<UserEntity> e){

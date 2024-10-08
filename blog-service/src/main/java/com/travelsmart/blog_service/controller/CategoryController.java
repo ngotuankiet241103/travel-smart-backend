@@ -28,11 +28,19 @@ public class CategoryController {
     }
     @Operation(summary = "Get categories",description = "Returns categories")
     @GetMapping
-    public ApiResponse<PageableResponse<List<CategoryResponse>>> getAll(@RequestParam(value = "page",defaultValue = "1") int page,
+    public ApiResponse<PageableResponse<List<CategoryResponse>>> getCategories(@RequestParam(value = "page",defaultValue = "1") int page,
                                                                     @RequestParam(value = "limit",defaultValue = "5") int limit){
         Pageable pageable = PageRequest.of(page - 1,limit);
         return ApiResponse.<PageableResponse<List<CategoryResponse>>>builder()
                 .result(categoryService.findAll(pageable))
+                .build();
+    }
+    @Operation(summary = "Get all category",description = "Returns categories")
+    @GetMapping("/all")
+    public ApiResponse<List<CategoryResponse>> getAll(){
+
+        return ApiResponse.<List<CategoryResponse>>builder()
+                .result(categoryService.findAll())
                 .build();
     }
 }

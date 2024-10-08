@@ -59,6 +59,7 @@ public class TripController {
                 .result(TripPermission.getPermssions())
                 .build();
     }
+
     @Operation(summary = "Share trip with other user",description = "Returns notification")
     @PostMapping("/share/{id}")
     public ApiResponse<String> shareTrip(@PathVariable("id") Long id, @RequestBody TripShareRequest tripShareRequest){

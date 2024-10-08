@@ -12,4 +12,5 @@ public interface CategoryService
     CategoryResponse create(CategoryRequest categoryRequest);
 
     PageableResponse<List<CategoryResponse>> findAll(Pageable pageable);
+    List<CategoryResponse> findAll();
 }

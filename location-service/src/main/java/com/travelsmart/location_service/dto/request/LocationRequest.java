@@ -1,6 +1,7 @@
 package com.travelsmart.location_service.dto.request;
 
 import com.travelsmart.location_service.constant.LocationType;
+import com.travelsmart.location_service.dto.response.Geojson;
 import com.travelsmart.location_service.entity.Address;
 import com.travelsmart.location_service.entity.LocationImageEntity;
 import com.travelsmart.location_service.utils.StringListConverter;
@@ -22,4 +23,5 @@ public class LocationRequest {
     private Address address;
     private Long imageId;
     private List<String> boundingbox;
+
 }

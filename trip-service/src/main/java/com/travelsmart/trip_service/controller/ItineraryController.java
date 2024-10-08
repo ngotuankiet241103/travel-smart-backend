@@ -47,6 +47,13 @@ public class ItineraryController {
                 .result(itineraryService.swapItinerary(itinerarySwapRequest))
                 .build();
     }
+    @Operation(summary = "Optimize itineraries in trip",description = "Returns list itinerary")
+    @PutMapping("/optimize/{trip-id}")
+    public ApiResponse<List<ItineraryResponse>> optimizeItinerary(@PathVariable("trip-id") Long tripId){
+        return ApiResponse.<List<ItineraryResponse>>builder()
+                .result(itineraryService.optimzeItinerariesInTrip(tripId))
+                .build();
+    }
     @Operation(summary = "Delete itinerary")
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteById(@PathVariable("id") Long id, @RequestBody ItineraryDeleteRequest itineraryDeleteRequest){
@@ -54,6 +61,7 @@ public class ItineraryController {
         return ApiResponse.<Void>builder()
                 .build();
     }
+
     @Operation(summary = "Delete destination in itinerary")
     @DeleteMapping("/{destination-id}/destination")
     public ApiResponse<Void> deleteDestinationById(@PathVariable("destination-id") Long id,

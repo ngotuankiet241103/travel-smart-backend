@@ -40,6 +40,12 @@ public class CategoryServiceImpl implements CategoryService {
                 .build();
         return response;
     }
+
+    @Override
+    public List<CategoryResponse> findAll() {
+        return mappingList(categoryRepository.findAll());
+    }
+
     private List<CategoryResponse> mappingList(List<CategoryEntity> e){
 
         return e.stream()

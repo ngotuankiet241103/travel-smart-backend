@@ -6,6 +6,7 @@ import com.travelsmart.location_service.dto.response.LocationImageResponse;
 import com.travelsmart.location_service.dto.response.LocationResponse;
 import com.travelsmart.location_service.dto.response.LocationTemplateResponse;
 import com.travelsmart.location_service.dto.response.PageableResponse;
+import org.locationtech.jts.io.ParseException;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface LocationService {
     List<LocationTemplateResponse> findBySearch(String search, int limit);
 
-    LocationResponse create(LocationRequest locationRequest);
+    LocationResponse create(LocationRequest locationRequest) throws ParseException;
 
     LocationTemplateResponse findByCoordinates(String lon, String lat);
 
@@ -21,7 +22,7 @@ public interface LocationService {
 
     void deleteImageLocation(Long id);
 
-    List<LocationResponse> findBySearchLocal(String search, Pageable pageable);
+    List<LocationResponse> findBySearchLocal(LocationType type,String search, Pageable pageable);
 
     LocationResponse findByCoordinatesLocal(String lon, String lat);
 

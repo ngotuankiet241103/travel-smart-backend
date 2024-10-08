@@ -143,6 +143,7 @@ public class TripServiceImpl implements TripService {
         UserTripEntity userTripEntity = userTripRepository.findByUserIdAndTripId(authentication.getName(),trip.getId())
                 .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TRIP_DENIED));
         tripResponse.setPermission(userTripEntity.getPermission());
+        tripResponse.setLocation(locationClient.getLocationById(trip.getLocationId()).getResult());
         return tripResponse;
     }
     private List<TripResponse> mappingList(List<TripEntity> trips){

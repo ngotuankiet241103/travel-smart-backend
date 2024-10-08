@@ -6,7 +6,7 @@ create table location_image(
     primary key (id)
 );
 create table location (
-    place_id bigint not null auto_increment,
+    place_id bigint not null AUTO_INCREMENT,
     city varchar(255),
     country varchar(255),
     country_code varchar(255),
@@ -28,7 +28,7 @@ create table location (
     thumbnail_id bigint,
     time_visit int,
     primary key (place_id)
- );
+ )AUTO_INCREMENT=100;
  create table introduce_location(
     id bigint not null auto_increment,
     title varchar(255),

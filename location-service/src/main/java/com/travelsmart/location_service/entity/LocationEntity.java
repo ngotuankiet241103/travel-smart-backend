@@ -1,5 +1,6 @@
 package com.travelsmart.location_service.entity;
-
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import com.travelsmart.location_service.constant.LocationStatus;
 import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.utils.StringListConverter;
@@ -44,4 +45,5 @@ public class LocationEntity {
     private LocationImageEntity thumbnail;
     @Convert(converter = StringListConverter.class)
     private List<String> boundingbox;
+
 }

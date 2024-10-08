@@ -18,4 +18,5 @@ public class LocationTemplateResponse {
     private List<String> boundingbox;
     private Double starRate;
     private int timeVisit;
+
 }

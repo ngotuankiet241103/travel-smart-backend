@@ -1,5 +1,8 @@
 package com.identity_service.identity.controller;
 
+import com.identity_service.identity.dto.request.PermissionRequest;
+import com.identity_service.identity.dto.request.UserBlockRequest;
+import com.identity_service.identity.dto.request.UserUpdatePermission;
 import com.identity_service.identity.dto.response.ApiResponse;
 import com.identity_service.identity.dto.response.PageableResponse;
 import com.identity_service.identity.dto.response.UserResponse;
@@ -34,6 +37,23 @@ public class UserController {
         Pageable pageable = PageRequest.of(page - 1, limit);
         return ApiResponse.<PageableResponse<List<UserResponse>>>builder()
                 .result(userService.findAll(pageable))
+                .build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/permissions/{user-id}/user")
+    public ApiResponse<UserResponse> updatePermission(@PathVariable("user-id") String userId,
+                                                      @RequestBody UserUpdatePermission updatePermission){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateRole(userId,updatePermission))
+                .build();
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/block/{user-id}")
+    public ApiResponse<UserResponse> blockUser(@PathVariable("user-id") String userId,
+                                               @RequestBody UserBlockRequest userBlockRequest){
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.blockUser(userId,userBlockRequest))
                 .build();
     }
 
