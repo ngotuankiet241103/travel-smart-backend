@@ -22,4 +22,6 @@ public interface ReviewService {
     void deleteImage(Long id);
 
     Double getAverageRatingByLocation(Long locationId);
+
+    ReviewResponse getDetailReviewByUser(Long locationId,String name);
 }

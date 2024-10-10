@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,14 @@ public class ReviewController {
         Pageable pageable = PageRequest.of(page - 1,limit);
         return ApiResponse.<PageableResponse<List<ReviewResponse>>>builder()
                 .result(reviewService.getByLocationId(locationId,pageable))
+                .build();
+    }
+    @Operation(summary = "Get detail review by location and user",description = "Returns single review")
+    @GetMapping("/detail/{location-id}")
+    public ApiResponse<ReviewResponse> getDetailReviewByUser(@PathVariable("location-id") Long locationId,
+                                                             Authentication authentication){
+        return ApiResponse.<ReviewResponse>builder()
+                .result(reviewService.getDetailReviewByUser(locationId,authentication.getName()))
                 .build();
     }
     @Operation(summary = "Update review",description = "Returns single review")

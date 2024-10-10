@@ -19,6 +19,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public EmailResponse sendEmail(EmailRequest emailRequest) {
         try{
+            System.out.println(apiKey);
             return emailClient.sendEmail(apiKey,emailRequest);
         }
         catch (FeignException.FeignClientException exception){

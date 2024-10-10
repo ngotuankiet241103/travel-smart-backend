@@ -11,4 +11,6 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity,Long> {
     Page<ReviewEntity> findByLocationId(Pageable pageable, Long locationId);
     @Query(value = "SELECT AVG(r.star_rate) FROM review r  WHERE r.location_id =?1 ",nativeQuery = true)
     Double averageRatingByLocation(Long locationId);
+
+    ReviewEntity findByLocationIdAndUserId(Long locationId, String name);
 }

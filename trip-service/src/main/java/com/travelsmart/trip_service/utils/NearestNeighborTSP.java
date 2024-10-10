@@ -18,6 +18,7 @@ public class NearestNeighborTSP {
 
     // Hàm tìm đường đi theo thuật toán Nearest Neighbor
     public static int[] nearestNeighbor(double[][] distanceMatrix, int start) {
+        System.out.println(distanceMatrix.length);
         int n = distanceMatrix.length; // Số lượng điểm
         boolean[] visited = new boolean[n]; // Đánh dấu các điểm đã ghé thăm
         int[] path = new int[n]; // Lưu đường đi
@@ -52,10 +53,13 @@ public class NearestNeighborTSP {
         List<Integer> dailyItinerary = new ArrayList<>();
         int startLocation = 0;
         double totalHours = 0;
+        System.out.println(visited[currentLocation]);
+        if(!visited[currentLocation]){
 
+            dailyItinerary.add(currentLocation);
+            visited[currentLocation] = true;
+        }
 
-        dailyItinerary.add(currentLocation);
-        visited[currentLocation] = true;
 
         while (true) {
             double minDistance = Double.MAX_VALUE;
@@ -89,6 +93,7 @@ public class NearestNeighborTSP {
             } else {
                 break;
             }
+
         }
         Map<String,Object> response = new HashMap<>();
         response.put("visited",visited);

@@ -134,6 +134,13 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewRepository.averageRatingByLocation(locationId);
     }
 
+    @Override
+    public ReviewResponse getDetailReviewByUser(Long locationId, String name) {
+        ReviewEntity reviewEntity = reviewRepository.findByLocationIdAndUserId(locationId,name);
+        List<ReviewImageEntity> reviewImageEntities = reviewImageRepository.findByReviewId(reviewEntity.getId());
+        return mappingOne(reviewEntity,reviewImageEntities);
+    }
+
     private void deleteImageById(Long id){
         mediaClient.deleteById(id);
         reviewImageRepository.deleteById(id);

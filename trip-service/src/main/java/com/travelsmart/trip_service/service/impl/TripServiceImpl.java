@@ -62,6 +62,7 @@ public class TripServiceImpl implements TripService {
         return mappingOne(trip);
     }
 
+
     private void buildUserTrip(TripEntity trip){
         Authentication authentication  = SecurityContextHolder.getContext().getAuthentication();
         UserTripEntity userTripEntity = UserTripEntity.builder()
@@ -124,15 +125,19 @@ public class TripServiceImpl implements TripService {
         endDate.setTime(tripGenerateRequest.getEndDate());
         trip.setStartDate(DateUtils.setTime(startDate,23,59,59).getTime());
         trip.setEndDate(DateUtils.setTime(endDate,23,59,59).getTime());
-//        tripRepository.save(trip);
-//        buildUserTrip(trip);
+        LocationImageResponse locationImageResponse = locationClient.getLocationById(tripGenerateRequest.getLocationId()).getResult().getThumbnail();
+        trip.setImage(locationImageResponse != null ? locationImageResponse.getUrl() : "");
+        tripRepository.save(trip);
+        buildUserTrip(trip);
         List<ItineraryResponse> itineraries  = itineraryService.generateTrip(trip,tripGenerateRequest.getType());
 
         return TripGenerateResponse.builder()
+                .id(trip.getId())
                 .itineraries(itineraries)
                 .title(tripGenerateRequest.getTitle())
                 .startDate(tripGenerateRequest.getStartDate())
                 .endDate(tripGenerateRequest.getEndDate())
+                .permission(TripPermission.OWNER)
                 .build();
     }
 

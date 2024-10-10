@@ -1,6 +1,7 @@
 package com.travelsmart.trip_service.repository;
 
 import com.travelsmart.trip_service.entity.DestinationEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,6 +25,7 @@ public interface DestinationRepository extends JpaRepository<DestinationEntity,L
   void updatePositionDown(Long sourceId, int position);
 
   void deleteByItineraryId(Long id);
+  @Transactional
   @Modifying
   @Query("UPDATE DestinationEntity SET position = ?2 WHERE id = ?1")
   void updatePositionById(Long destinationId, int position);

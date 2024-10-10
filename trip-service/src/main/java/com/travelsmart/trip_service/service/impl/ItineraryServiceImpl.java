@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -193,7 +194,7 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public List<ItineraryResponse> generateTrip(TripEntity trip, List<LocationType> types) {
+    public List<ItineraryResponse>  generateTrip(TripEntity trip, List<LocationType> types) {
         List<LocationResponse> locationResponses = locationClient.getByTypes(types,trip.getLocationId()).getResult();
         System.out.println(locationResponses.size());
         int col = 0;
@@ -254,30 +255,39 @@ public class ItineraryServiceImpl implements ItineraryService {
         visited[0] = true;
         boolean isFirst = true;
         int currentLocation = 0;
-        while (day.getTime().compareTo(trip.getEndDate()) == 0){
+
+        while (day.getTime().compareTo(trip.getEndDate()) <= 0){
 
             Map<String,Object> response  = NearestNeighborTSP.planDay(distancesMatrix,visited,timeVisits,8 * 60,currentLocation);
+
             List<Integer> path = (List<Integer>) response.get("path");
             visited = (boolean[]) response.get("visited");
             currentLocation = Integer.parseInt(response.get("currentLocation").toString());
             for(int i : path){
                 System.out.println(i);
             }
-            ItineraryResponse itineraryResponse = ItineraryResponse.builder().build();
-            List<DestinationResponse>  destinations =  path.stream()
-                    .map(index -> {
-                        return DestinationResponse.builder()
-                                .location(locationResponses.get(index))
-                                .build();
-                    }).collect(Collectors.toList());
 
-            itineraryResponse.setDestinations(destinations);
+            ItineraryEntity itineraryEntity = ItineraryEntity.builder()
+                    .trip(trip)
+                    .day(day.getTime())
+                    .build();
+            itineraryRepository.save(itineraryEntity);
+            AtomicInteger position = new AtomicInteger(1);
+            List<DestinationEntity>  destinations =  path.stream()
+                    .map(index -> {
+                        DestinationEntity destination = DestinationEntity.builder()
+                                .position(position.get())
+                                .itinerary(itineraryEntity)
+                                .locationId(locationResponses.get(index).getPlace_id())
+                                .build();
+                        position.getAndIncrement();
+                        return destination;
+                    }).collect(Collectors.toList());
+            destinationRepository.saveAll(destinations);
             day.add(Calendar.DAY_OF_MONTH,1);
-            itineraryResponses.add(itineraryResponse);
+            itineraryResponses.add(mappingOne(itineraryEntity));
+
         }
-//        for (int i=0; i <= locationResponses.size() - 1;i++){
-//            timeVisits[i] = Double.parseDouble(locationResponses.get(i).getTimeVisit()+"") / 10;
-//        }
 
 
 
@@ -288,11 +298,11 @@ public class ItineraryServiceImpl implements ItineraryService {
     public List<ItineraryResponse> optimzeItinerariesInTrip(Long tripId) {
         List<ItineraryEntity> itineraryEntities = itineraryRepository.findByTripId(tripId);
         itineraryEntities.forEach(itineraryEntity -> {
-            Map<Long,Long> tableDes = destinationRepository.findByItineraryIdOrderByPosition(itineraryEntity.getId())
+            List<DestinationEntity> destinationEntities = destinationRepository.findByItineraryIdOrderByPosition(itineraryEntity.getId());
+            if(destinationEntities.isEmpty()) return;;
+            List<LocationResponse> locationResponses = destinationEntities
                     .stream()
-                    .collect(Collectors.toMap(DestinationEntity::getLocationId, DestinationEntity::getId));
-            List<LocationResponse> locationResponses = new ArrayList<>(tableDes.keySet())
-                    .stream()
+                    .map(DestinationEntity::getLocationId)
                     .map(locationId -> locationClient.getLocationById(locationId).getResult())
                     .toList();
             double[][] distancesMatrix = new double[locationResponses.size()][locationResponses.size()] ;
@@ -317,7 +327,7 @@ public class ItineraryServiceImpl implements ItineraryService {
                         waypoints.append( locationResponses.get(j).getLat());
                         waypoints.append(",");
                         waypoints.append(locationResponses.get(j).getLon());
-
+                        System.out.println("waypoints: "+ waypoints.toString());
                         Map<String,Object> objectMap = geoapifyClient.routingLocation(waypoints.toString());
                         System.out.println(objectMap);
                         List<Map<String,Object>> arr = (List<Map<String, Object>>) objectMap.get("features");
@@ -339,9 +349,21 @@ public class ItineraryServiceImpl implements ItineraryService {
                 }
                 col++;
             }
+            for(int i = 0; i <= distancesMatrix.length - 1 ; i ++){
+                for(int j = 0; j <= distancesMatrix[i].length - 1; j++){
+                    System.out.print(distancesMatrix[i][j] +" ");
+                }
+                System.out.println("");
+            }
+
             int[] path = NearestNeighborTSP.nearestNeighbor(distancesMatrix,0);
-            List<Long> destinationIds =  List.of(path).stream().map(locationId -> {
-                return Long.parseLong(tableDes.get(locationId).toString());
+            for(int i : path) {
+                System.out.print(i + " ");
+            }
+            List<Long> destinationIds = Arrays.stream(path)
+                    .boxed()
+                    .map(locationId -> {
+                return destinationEntities.get(locationId).getId();
             }).toList();
             AtomicInteger position = new AtomicInteger(1);
             destinationIds.forEach(destinationId -> {

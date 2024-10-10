@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Data
 public class LocationRequest {
-    private Long place_id;
+
     private String category;
     private String display_name;
     private String lon;
