@@ -5,6 +5,7 @@ import com.identity_service.identity.dto.response.ApiResponse;
 import com.identity_service.identity.dto.response.PermissionResponse;
 import com.identity_service.identity.service.PermissionService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class PermissionController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create new permission",description = "Returns single permission")
     @PostMapping
-    public ApiResponse<PermissionResponse> create(@RequestBody PermissionRequest permissionRequest){
+    public ApiResponse<PermissionResponse> create(@Valid @RequestBody PermissionRequest permissionRequest){
         return ApiResponse.<PermissionResponse>builder()
                 .result(permissionService.create(permissionRequest))
                 .build();

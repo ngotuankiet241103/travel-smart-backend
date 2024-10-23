@@ -8,6 +8,7 @@ import com.travelsmart.blog_service.dto.response.BlogResponse;
 import com.travelsmart.blog_service.dto.response.PageableResponse;
 import com.travelsmart.blog_service.service.BlogService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ public class BlogController {
     private final BlogService blogService;
     @Operation(summary = "Create new blog",description = "Returns single blog")
     @PostMapping
-    public ApiResponse<BlogResponse> create(@RequestBody BlogRequest blogRequest){
+    public ApiResponse<BlogResponse> create(@Valid @RequestBody BlogRequest blogRequest){
         return ApiResponse.<BlogResponse>builder()
                 .result(blogService.create(blogRequest))
                 .build();
@@ -68,7 +69,7 @@ public class BlogController {
     @Operation(summary = "Update blog ",description = "Returns single blog")
     @PutMapping("/{blog-id}")
     public ApiResponse<BlogResponse> update(@PathVariable("blog-id") Long blogId,
-                                            @RequestBody BlogUpdateRequest blogUpdateRequest){
+                                            @Valid @RequestBody BlogUpdateRequest blogUpdateRequest){
         return ApiResponse.<BlogResponse>builder()
                 .result(blogService.update(blogId,blogUpdateRequest))
                 .build();
@@ -81,14 +82,14 @@ public class BlogController {
     }
     @Operation(summary = "Like a blog",description = "Returns single blog")
     @PostMapping("/like")
-    public ApiResponse<BlogResponse> likePost(@RequestBody BlogLikeRequest blogLikeRequest){
+    public ApiResponse<BlogResponse> likePost(@Valid @RequestBody BlogLikeRequest blogLikeRequest){
         return ApiResponse.<BlogResponse>builder()
                 .result(blogService.likePost(blogLikeRequest))
                 .build();
     }
     @Operation(summary = "Unlike a blog",description = "Returns single blog")
     @PutMapping("/unlike")
-    public ApiResponse<BlogResponse> unlikePost(@RequestBody BlogLikeRequest blogLikeRequest){
+    public ApiResponse<BlogResponse> unlikePost(@Valid @RequestBody BlogLikeRequest blogLikeRequest){
         return ApiResponse.<BlogResponse>builder()
                 .result(blogService.unlikePost(blogLikeRequest))
                 .build();
@@ -97,7 +98,7 @@ public class BlogController {
     @Operation(summary = "Update status blog",description = "Returns single blog")
     @PutMapping("/status/{blog-id}")
     public ApiResponse<BlogResponse> updateStatus(@PathVariable("blog-id") Long id,
-                                                  @RequestBody BlogStatusRequest blogStatusRequest){
+                                                  @Valid @RequestBody BlogStatusRequest blogStatusRequest){
         return ApiResponse.<BlogResponse>builder()
                 .result(blogService.updateStatus(id,blogStatusRequest))
                 .build();

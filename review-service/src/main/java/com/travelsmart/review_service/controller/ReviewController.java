@@ -10,6 +10,7 @@ import com.travelsmart.review_service.dto.response.ReviewResponse;
 import com.travelsmart.review_service.service.ReviewService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class ReviewController {
     private final ReviewService reviewService;
     @Operation(summary = "Create new review for location",description = "Returns single review")
     @PostMapping
-    public ApiResponse<ReviewResponse> create(@RequestBody ReviewRequest reviewRequest){
+    public ApiResponse<ReviewResponse> create(@Valid @RequestBody ReviewRequest reviewRequest){
         return ApiResponse.<ReviewResponse>builder()
                 .result(reviewService.create(reviewRequest))
                 .build();
@@ -51,14 +52,14 @@ public class ReviewController {
     @Operation(summary = "Update review",description = "Returns single review")
     @PutMapping("/{id}")
     public ApiResponse<ReviewResponse> update(@PathVariable("id") Long id,
-                                              @RequestBody ReviewUpdateRequest reviewUpdateRequest){
+                                              @Valid @RequestBody ReviewUpdateRequest reviewUpdateRequest){
         return ApiResponse.<ReviewResponse>builder()
                 .result(reviewService.update(id,reviewUpdateRequest))
                 .build();
     }
     @Operation(summary = "Upload image review",description = "Returns single image")
     @PostMapping("/image")
-    public ApiResponse<ReviewImageResponse> uploadImage(@ModelAttribute ReviewImageRequest reviewImageRequest){
+    public ApiResponse<ReviewImageResponse> uploadImage(@Valid @ModelAttribute ReviewImageRequest reviewImageRequest){
         return ApiResponse.<ReviewImageResponse>builder()
                 .result(reviewService.uploadImage(reviewImageRequest))
                 .build();

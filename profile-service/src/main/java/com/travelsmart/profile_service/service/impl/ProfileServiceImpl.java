@@ -105,7 +105,9 @@ public class ProfileServiceImpl implements ProfileService {
     public ProfileInternalResponse findInternalById(String userId) {
         ProfileEntity profile = profileRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Profile not found"));
+        System.out.println(userId);
         AvatarEntity avatar = avatarRepository.findByProfileId(userId);
+        System.out.println(avatar.getUrl());
         return ProfileInternalResponse.builder()
                 .id(userId)
                 .userName(profile.getFirstName() + " " + profile.getLastName())

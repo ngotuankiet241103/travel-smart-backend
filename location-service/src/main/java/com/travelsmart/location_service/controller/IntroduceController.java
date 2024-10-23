@@ -8,6 +8,7 @@ import com.travelsmart.location_service.dto.response.IntroduceResponse;
 import com.travelsmart.location_service.dto.response.LocationResponse;
 import com.travelsmart.location_service.service.IntroduceService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class IntroduceController {
     @Operation(summary = "Create new introduce for location",description = "Returns single introduce")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ApiResponse<IntroduceResponse> createIntroduce(@RequestBody IntroduceRequest introduceRequest){
+    public ApiResponse<IntroduceResponse> createIntroduce(@Valid @RequestBody IntroduceRequest introduceRequest){
         return ApiResponse.<IntroduceResponse>builder()
                 .result(introduceService.create(introduceRequest))
                 .build();
@@ -36,7 +37,7 @@ public class IntroduceController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ApiResponse<IntroduceResponse> update(@PathVariable("id") Long locationId,
-                                                 @RequestBody IntroduceUpdateRequest updateRequest){
+                                                @Valid @RequestBody IntroduceUpdateRequest updateRequest){
         return ApiResponse.<IntroduceResponse>builder()
                 .result(introduceService.update(locationId,updateRequest))
                 .build();

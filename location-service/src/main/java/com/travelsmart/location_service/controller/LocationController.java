@@ -6,6 +6,7 @@ import com.travelsmart.location_service.dto.response.*;
 import com.travelsmart.location_service.service.LocationService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.data.domain.PageRequest;
@@ -72,7 +73,7 @@ public class LocationController {
     }
     @Operation(summary = "Create new location by coordinates",description = "Returns single location")
     @PostMapping("/coordinates")
-    public ApiResponse<LocationResponse> createByCoordinates(@RequestBody LocationCoordinateRequest locationCoordinateRequest){
+    public ApiResponse<LocationResponse> createByCoordinates(@Valid @RequestBody LocationCoordinateRequest locationCoordinateRequest){
         return ApiResponse.<LocationResponse>builder()
                 .result(locationService.createByCoordinates(locationCoordinateRequest))
                 .build();
@@ -81,14 +82,14 @@ public class LocationController {
 
     @Operation(summary = "Create new location",description = "Returns single location")
     @PostMapping
-    public ApiResponse<LocationResponse> create(@RequestBody LocationRequest locationRequest) throws ParseException {
+    public ApiResponse<LocationResponse> create(@Valid @RequestBody LocationRequest locationRequest) throws ParseException {
         return ApiResponse.<LocationResponse>builder()
                 .result(locationService.create(locationRequest))
                 .build();
     }
     @Operation(summary = "Create new location image",description = "Returns single location image")
     @PostMapping("/image")
-    public ApiResponse<LocationImageResponse> createImageLocation(@ModelAttribute ImageCreateRequest imageCreateRequest){
+    public ApiResponse<LocationImageResponse> createImageLocation(@Valid @ModelAttribute ImageCreateRequest imageCreateRequest){
         return ApiResponse.<LocationImageResponse>builder()
                 .result(locationService.createImageLocation(imageCreateRequest))
                 .build();
@@ -102,7 +103,7 @@ public class LocationController {
     }
     @Operation(summary = "Update information location",description = "Returns single location image")
     @PutMapping("/{place-id}")
-    public ApiResponse<LocationResponse> createImageLocation(@PathVariable("place-id") Long id, @RequestBody LocationUpdateRequest locationUpdateRequest){
+    public ApiResponse<LocationResponse> createImageLocation(@PathVariable("place-id") Long id,@Valid @RequestBody LocationUpdateRequest locationUpdateRequest){
         return ApiResponse.<LocationResponse>builder()
                 .result(locationService.update(id,locationUpdateRequest))
                 .build();
@@ -110,7 +111,7 @@ public class LocationController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update status location",description = "Returns single location")
     @PutMapping("/status/{place-id}")
-    public ApiResponse<LocationResponse> updateLocationStatus(@PathVariable("place-id") Long id, @RequestBody LocationStatusRequest locationStatusRequest){
+    public ApiResponse<LocationResponse> updateLocationStatus(@PathVariable("place-id") Long id,@Valid @RequestBody LocationStatusRequest locationStatusRequest){
         return ApiResponse.<LocationResponse>builder()
                 .result(locationService.updateStatus(id, locationStatusRequest))
                 .build();

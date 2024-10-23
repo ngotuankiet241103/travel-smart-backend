@@ -11,6 +11,7 @@ import com.travelsmart.trip_service.dto.response.TripGenerateResponse;
 import com.travelsmart.trip_service.dto.response.TripResponse;
 import com.travelsmart.trip_service.service.TripService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +26,7 @@ public class TripController {
     private final TripService tripService;
     @Operation(summary = "Create new trip",description = "Returns single trip")
     @PostMapping
-    public ApiResponse<TripResponse> create(@RequestBody TripRequest tripRequest){
+    public ApiResponse<TripResponse> create(@Valid @RequestBody TripRequest tripRequest){
         return  ApiResponse.<TripResponse>builder()
                 .result(tripService.create(tripRequest))
                 .build();
@@ -39,7 +40,7 @@ public class TripController {
                 .build();
     }
     @PostMapping("/generate")
-    public ApiResponse<TripGenerateResponse> generateTrip(@RequestBody TripGenerateRequest tripGenerateRequest){
+    public ApiResponse<TripGenerateResponse> generateTrip(@Valid @RequestBody TripGenerateRequest tripGenerateRequest){
 
         return ApiResponse.<TripGenerateResponse>builder()
                 .result(tripService.generateTrip(tripGenerateRequest))
@@ -47,7 +48,7 @@ public class TripController {
     }
     @Operation(summary = "Update information trip",description = "Returns single trip")
     @PutMapping("/{id}")
-    public ApiResponse<TripResponse> update(@PathVariable("id") Long id, @RequestBody TripUpdateRequest tripUpdateRequest){
+    public ApiResponse<TripResponse> update(@PathVariable("id") Long id, @Valid @RequestBody TripUpdateRequest tripUpdateRequest){
         return  ApiResponse.<TripResponse>builder()
                 .result(tripService.update(id,tripUpdateRequest))
                 .build();
@@ -62,7 +63,7 @@ public class TripController {
 
     @Operation(summary = "Share trip with other user",description = "Returns notification")
     @PostMapping("/share/{id}")
-    public ApiResponse<String> shareTrip(@PathVariable("id") Long id, @RequestBody TripShareRequest tripShareRequest){
+    public ApiResponse<String> shareTrip(@PathVariable("id") Long id,@Valid @RequestBody TripShareRequest tripShareRequest){
         return  ApiResponse.<String>builder()
                 .result(tripService.shareTrip(id,tripShareRequest))
                 .build();

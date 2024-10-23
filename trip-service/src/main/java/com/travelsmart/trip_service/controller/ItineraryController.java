@@ -5,6 +5,7 @@ import com.travelsmart.trip_service.dto.response.ApiResponse;
 import com.travelsmart.trip_service.dto.response.ItineraryResponse;
 import com.travelsmart.trip_service.service.ItineraryService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.kafka.shaded.com.google.protobuf.Api;
@@ -28,7 +29,7 @@ public class ItineraryController {
     @Operation(summary = "Create new destination in itinerary",description = "Returns single itinerary")
     @PostMapping("/{id}")
     public ApiResponse<ItineraryResponse> create(@PathVariable("id") Long id,
-                                                          @RequestBody ItineraryRequest itineraryRequest) {
+                                                 @Valid @RequestBody ItineraryRequest itineraryRequest) {
         return ApiResponse.<ItineraryResponse>builder()
                 .result(itineraryService.create(id,itineraryRequest))
                 .build();
@@ -42,7 +43,7 @@ public class ItineraryController {
     }
     @Operation(summary = "Swap destination in all itinerary",description = "Returns single itinerary")
     @PutMapping("/swap")
-    public ApiResponse<ItineraryResponse> swapItinerary(@RequestBody ItinerarySwapRequest itinerarySwapRequest){
+    public ApiResponse<ItineraryResponse> swapItinerary(@Valid @RequestBody ItinerarySwapRequest itinerarySwapRequest){
         return ApiResponse.<ItineraryResponse>builder()
                 .result(itineraryService.swapItinerary(itinerarySwapRequest))
                 .build();
@@ -56,7 +57,8 @@ public class ItineraryController {
     }
     @Operation(summary = "Delete itinerary")
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteById(@PathVariable("id") Long id, @RequestBody ItineraryDeleteRequest itineraryDeleteRequest){
+    public ApiResponse<Void> deleteById(@PathVariable("id") Long id,
+                                        @Valid @RequestBody ItineraryDeleteRequest itineraryDeleteRequest){
         itineraryService.deleteById(id,itineraryDeleteRequest);
         return ApiResponse.<Void>builder()
                 .build();
@@ -65,7 +67,7 @@ public class ItineraryController {
     @Operation(summary = "Delete destination in itinerary")
     @DeleteMapping("/{destination-id}/destination")
     public ApiResponse<Void> deleteDestinationById(@PathVariable("destination-id") Long id,
-                                                   @RequestBody DestinationDeleteRequest destinationDeleteRequest){
+                                                   @Valid @RequestBody DestinationDeleteRequest destinationDeleteRequest){
         itineraryService.deleteDestinationById(id,destinationDeleteRequest);
         return ApiResponse.<Void>builder()
                 .build();

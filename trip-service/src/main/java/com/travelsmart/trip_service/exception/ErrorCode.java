@@ -9,6 +9,17 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999,"Uncategorized error",HttpStatus.INTERNAL_SERVER_ERROR),
+    TRIP_INVALID(1003,"Trip must be not null",HttpStatus.BAD_REQUEST),
+    TITLE_INVALID(1003,"Title must be not empty",HttpStatus.BAD_REQUEST),
+    START_DATE_INVALID(1003,"Start date must be not null",HttpStatus.BAD_REQUEST),
+    END_DATE_INVALID(1003,"End date must be not null",HttpStatus.BAD_REQUEST),
+    LOCATION_INVALID(1003,"Location msut be not null",HttpStatus.BAD_REQUEST),
+    EMAIL_INVALID(1003,"Email must be not empty",HttpStatus.BAD_REQUEST),
+    PERMISSION_INVALID(1003,"Permission must be not null",HttpStatus.BAD_REQUEST),
+    DESTINATION_FROM_INVALID(1003,"Destination from must be not null",HttpStatus.BAD_REQUEST),
+    ITINERARY_INVALID(1003,"Itinerary must be not null",HttpStatus.BAD_REQUEST),
+    ITINERARY_FROM_INVALID(1003,"Itinerary must be not null",HttpStatus.BAD_REQUEST),
+    TYPES_INVALID(1003,"Trip not found",HttpStatus.BAD_REQUEST),
     TRIP_NOT_FOUND(1004,"Trip not found",HttpStatus.NOT_FOUND),
     ITINERARY_NOT_FOUND(1004,"Itinerary not found",HttpStatus.NOT_FOUND),
     DESTINATION_NOT_FOUND(1004,"Destination not found",HttpStatus.NOT_FOUND),

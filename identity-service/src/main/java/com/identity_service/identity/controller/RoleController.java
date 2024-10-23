@@ -5,6 +5,7 @@ import com.identity_service.identity.dto.response.ApiResponse;
 import com.identity_service.identity.dto.response.RoleResponse;
 import com.identity_service.identity.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
@@ -20,7 +21,7 @@ public class RoleController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create new role",description = "Returns single role")
     @PostMapping
-    public ApiResponse<RoleResponse> create(@RequestBody RoleRequest roleRequest){
+    public ApiResponse<RoleResponse> create(@Valid @RequestBody RoleRequest roleRequest){
         return ApiResponse.<RoleResponse>builder()
                 .result(roleService.create(roleRequest))
                 .build();

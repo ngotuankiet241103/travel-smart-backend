@@ -157,13 +157,15 @@ public class LocationServiceImpl implements LocationService {
                if (!thumbnail.getId().equals(locationUpdateRequest.getImageId())){
                    LocationImageEntity locationImageEntity = locationImageRepository.findById(locationUpdateRequest.getImageId())
                            .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND));
-                   locationImageRepository.deleteById(location.getThumbnail().getId());
                    location.setThumbnail(locationImageEntity);
+                   locationRepository.save(location);
+                   locationImageRepository.deleteById(location.getThumbnail().getId());
+
                }
             }
         }
 
-        locationRepository.save(location);
+
 
         return mappingOne(location);
     }

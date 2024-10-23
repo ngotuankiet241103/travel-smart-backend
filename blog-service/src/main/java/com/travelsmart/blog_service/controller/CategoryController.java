@@ -7,6 +7,7 @@ import com.travelsmart.blog_service.dto.response.CategoryResponse;
 import com.travelsmart.blog_service.dto.response.PageableResponse;
 import com.travelsmart.blog_service.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +22,7 @@ public class CategoryController {
     private final CategoryService categoryService;
     @Operation(summary = "Create new category of blog",description = "Returns single category")
     @PostMapping
-    public ApiResponse<CategoryResponse> create(@RequestBody CategoryRequest categoryRequest){
+    public ApiResponse<CategoryResponse> create(@Valid @RequestBody CategoryRequest categoryRequest){
         return ApiResponse.<CategoryResponse>builder()
                 .result(categoryService.create(categoryRequest))
                 .build();

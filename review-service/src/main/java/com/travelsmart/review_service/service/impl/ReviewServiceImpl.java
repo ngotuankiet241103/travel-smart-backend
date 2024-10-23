@@ -136,7 +136,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponse getDetailReviewByUser(Long locationId, String name) {
-        ReviewEntity reviewEntity = reviewRepository.findByLocationIdAndUserId(locationId,name);
+        ReviewEntity reviewEntity = reviewRepository.findByLocationIdAndUserId(locationId,name).orElse(null);
+        if(reviewEntity == null) return  null;
         List<ReviewImageEntity> reviewImageEntities = reviewImageRepository.findByReviewId(reviewEntity.getId());
         return mappingOne(reviewEntity,reviewImageEntities);
     }

@@ -7,6 +7,7 @@ import com.travelsmart.blog_service.dto.response.CommentResponse;
 import com.travelsmart.blog_service.dto.response.PageableResponse;
 import com.travelsmart.blog_service.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class CommentController {
     private final CommentService commentService;
     @Operation(summary = "Create new comment in blog",description = "Returns single comment")
     @PostMapping("/{post-id}/post")
-    public ApiResponse<CommentResponse> create(@PathVariable("post-id") Long postId, @RequestBody CommentRequest commentRequest){
+    public ApiResponse<CommentResponse> create(@PathVariable("post-id") Long postId, @Valid @RequestBody CommentRequest commentRequest){
         return ApiResponse.<CommentResponse>builder()
                 .result(commentService.create(postId,commentRequest))
                 .build();
@@ -34,7 +35,7 @@ public class CommentController {
     @Operation(summary = "Update comment",description = "Returns single comment")
     @PutMapping("/{id}")
     public ApiResponse<CommentResponse> updateComment(@PathVariable("id") Long id,
-                                                      @RequestBody CommentUpdateRequest commentUpdateRequest){
+                                                      @Valid @RequestBody CommentUpdateRequest commentUpdateRequest){
         return ApiResponse.<CommentResponse>builder()
                 .result(commentService.updateComment(id,commentUpdateRequest))
                 .build();

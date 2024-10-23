@@ -12,6 +12,7 @@ import com.identity_service.identity.service.ConfirmTokenService;
 import com.identity_service.identity.service.UserService;
 import com.nimbusds.jose.JOSEException;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.kafka.annotation.KafkaListener;
@@ -36,41 +37,41 @@ public class AuthenticationController {
     }
     @Operation(summary = "Login user", description = "Returns token")
     @PostMapping("/login")
-    public ApiResponse<TokenResponse> login(@RequestBody AuthenticationRequest authenticationRequest){
+    public ApiResponse<TokenResponse> login(@Valid @RequestBody AuthenticationRequest authenticationRequest){
         return ApiResponse.<TokenResponse>builder()
                 .result(authenticationService.login(authenticationRequest))
                 .build();
     }
     @Operation(summary = "Reset password", description = "Returns notification")
     @PostMapping("/reset-password")
-    public ApiResponse<String> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest){
+    public ApiResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest){
         return ApiResponse.<String>builder()
                 .result(authenticationService.resetPassword(resetPasswordRequest))
                 .build();
     }
     @Operation(summary = "Logout")
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(@RequestBody RefreshRequest refreshRequest) throws ParseException, JOSEException {
+    public ApiResponse<Void> logout(@Valid @RequestBody RefreshRequest refreshRequest) throws ParseException, JOSEException {
         authenticationService.logout(refreshRequest);
         return ApiResponse.<Void>builder().build();
     }
     @Operation(summary = "Refresh token", description = "Returns new token")
     @PostMapping("/refresh-token")
-    public ApiResponse<TokenResponse> refreshToken(@RequestBody RefreshRequest refreshRequest) throws ParseException {
+    public ApiResponse<TokenResponse> refreshToken(@Valid @RequestBody RefreshRequest refreshRequest) throws ParseException {
         return ApiResponse.<TokenResponse>builder()
                 .result(authenticationService.refreshToken(refreshRequest))
                 .build();
     }
     @Operation(summary = "Validated token", description = "Returns boolean .")
     @PostMapping("/introspect")
-    public ApiResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest introspectRequest){
+    public ApiResponse<IntrospectResponse> introspect(@Valid @RequestBody IntrospectRequest introspectRequest){
         return ApiResponse.<IntrospectResponse>builder()
                 .result(authenticationService.introspect(introspectRequest))
                 .build();
     }
     @Operation(summary = "Register account", description = "Returns a token.")
     @PostMapping("/register")
-    public ApiResponse<TokenResponse> register(@RequestBody RegisterRequest registerRequest){
+    public ApiResponse<TokenResponse> register(@Valid @RequestBody RegisterRequest registerRequest){
         boolean isExists =  userService.isExistsByEmail(registerRequest.getEmail());
         if(isExists){
             throw new CustomRuntimeException(ErrorCode.EMAIL_EXIST);
@@ -81,7 +82,7 @@ public class AuthenticationController {
     }
     @Operation(summary = "Forgot password")
     @PostMapping("/forgot-password")
-    public ApiResponse<Void> forgotPassword(@RequestBody UserForgotPassRequest forgotPassRequest){
+    public ApiResponse<Void> forgotPassword(@Valid @RequestBody UserForgotPassRequest forgotPassRequest){
         authenticationService.forgotPassword(forgotPassRequest);
         return ApiResponse.<Void>builder()
                 .message("")
@@ -89,7 +90,7 @@ public class AuthenticationController {
     }
     @Operation(summary = "Change password", description = "Returns a notification.")
     @PutMapping("/change-password")
-    public ApiResponse<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest){
+    public ApiResponse<String> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println(authentication);
         return ApiResponse.<String>builder()

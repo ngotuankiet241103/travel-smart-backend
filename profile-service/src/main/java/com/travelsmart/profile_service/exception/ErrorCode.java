@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999,"Uncategorized error",HttpStatus.INTERNAL_SERVER_ERROR),
-    FIRSTNAME_INVALID(1003, "First name must be not empty", HttpStatus.BAD_REQUEST),
-    LASTNAME_INVALID(1004,"Last name must be not empty",HttpStatus.BAD_REQUEST),
+    FIRST_NAME_INVALID(1003, "First name must be not empty", HttpStatus.BAD_REQUEST),
+    LAST_NAME_INVALID(1004,"Last name must be not empty",HttpStatus.BAD_REQUEST),
     FILE_INVALID(1003, "File must be not null", HttpStatus.BAD_REQUEST),
     FORBIDDEN(1003, "You don't have permission to access resources", HttpStatus.FORBIDDEN),
     UNAUTHORIZED(1003, "Unauthorizated user", HttpStatus.UNAUTHORIZED),

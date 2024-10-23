@@ -8,6 +8,14 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999,"Uncategorized error",HttpStatus.INTERNAL_SERVER_ERROR),
+    TITLE_INVALID(1003,"Title must be not empty",HttpStatus.BAD_REQUEST),
+    CONTENT_INVALID(1003,"Content must be not empty",HttpStatus.BAD_REQUEST),
+    TAG_INVALID(1003,"Tag must be not empty",HttpStatus.BAD_REQUEST),
+    CATEGORY_INVALID(1003,"Category must be not empty",HttpStatus.BAD_REQUEST),
+    IMAGE_INVALID(1003,"Image must be not empty",HttpStatus.BAD_REQUEST),
+    STATUS_INVALID(1003,"Status must be not empty",HttpStatus.BAD_REQUEST),
+    BLOG_ID_INVALID(1003,"Blog id must be not null",HttpStatus.BAD_REQUEST),
+    NAME_INVALID(1003,"Name must be not empty",HttpStatus.BAD_REQUEST),
     BLOG_NOT_FOUND(1004,"Blog not found",HttpStatus.NOT_FOUND),
     IMAGE_NOT_FOUND(1004,"Blog not found",HttpStatus.NOT_FOUND),
     COMMENT_NOT_FOUND(1004,"Comment not found",HttpStatus.NOT_FOUND),
