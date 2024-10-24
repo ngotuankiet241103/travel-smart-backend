@@ -21,9 +21,9 @@ public class LocationUpdateRequest {
     private String lat;
     @NotEmpty(message = "NAME_INVALID")
     private String name;
-    @NotEmpty(message = "TYPE_INVALID")
+    @NotNull(message = "TYPE_INVALID")
     private LocationType type;
-    @NotEmpty(message = "ADDRESS_INVALID")
+    @NotNull(message = "ADDRESS_INVALID")
     private Address address;
     @NotNull(message = "IMAGE_INVALID")
     private Long imageId;
