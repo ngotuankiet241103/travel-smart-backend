@@ -49,4 +49,6 @@ public interface LocationRepository extends JpaRepository<LocationEntity,Long> {
     LocationEntity findByLonAndLat(String s, String s1);
 
     List<LocationEntity> findByTypeAndStatus(LocationType locationType, LocationStatus locationStatus);
+
+    List<LocationEntity> findByType(LocationType locationType);
 }

@@ -2,6 +2,7 @@ package com.travelsmart.profile_service.service.impl;
 
 import com.travelsmart.event.dto.ProfileRequest;
 import com.travelsmart.profile_service.dto.request.AvatarRequest;
+import com.travelsmart.profile_service.dto.request.HobbyRequest;
 import com.travelsmart.profile_service.dto.request.ProfileUpdateAvatar;
 import com.travelsmart.profile_service.dto.request.ProfileUpdateRequest;
 import com.travelsmart.profile_service.dto.response.AvatarResponse;
@@ -9,6 +10,7 @@ import com.travelsmart.profile_service.dto.response.MediaHttpResponse;
 import com.travelsmart.profile_service.dto.response.ProfileInternalResponse;
 import com.travelsmart.profile_service.dto.response.ProfileResponse;
 import com.travelsmart.profile_service.entity.AvatarEntity;
+import com.travelsmart.profile_service.entity.LocationType;
 import com.travelsmart.profile_service.entity.ProfileEntity;
 import com.travelsmart.profile_service.exception.CustomRuntimeException;
 import com.travelsmart.profile_service.exception.ErrorCode;
@@ -112,7 +114,18 @@ public class ProfileServiceImpl implements ProfileService {
                 .id(userId)
                 .userName(profile.getFirstName() + " " + profile.getLastName())
                 .avatar(avatar !=  null ? avatar.getUrl() : null)
+                .email(profile.getEmail())
+                .hobbies(profile.getHobbies().stream().map(hobby -> hobby).toList())
                 .build();
+    }
+
+    @Override
+    public ProfileResponse updateHobbies(HobbyRequest hobbyRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        ProfileEntity profile = profileRepository.findById(authentication.getName())
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.USER_NOT_FOUND));
+        profile.setHobbies(hobbyRequest.getHobbies().stream().map(LocationType::toString).toList());
+        return mappingOne(profileRepository.save(profile));
     }
 
     private ProfileResponse mappingOne(ProfileEntity profileEntity){

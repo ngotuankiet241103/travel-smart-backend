@@ -1,4 +1,4 @@
-package com.travelsmart.profile_service.dto.response;
+package com.travelsmart.trip_service.dto.response.httpclient;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

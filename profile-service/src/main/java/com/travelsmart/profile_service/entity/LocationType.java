@@ -1,5 +1,6 @@
-package com.travelsmart.trip_service.constant;
+package com.travelsmart.profile_service.entity;
 
+import com.travelsmart.profile_service.dto.response.LocationTypeResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -32,4 +33,12 @@ public enum LocationType {
         return Arrays.asList(LocationType.values());
     }
 
+    public static List<LocationTypeResponse> getHobbies() {
+        return getLocationTypes().stream()
+                .map(locationType -> LocationTypeResponse.builder()
+                        .label(locationType.toString())
+                        .image(locationType.getImage())
+                        .build()
+                ).toList();
+    }
 }

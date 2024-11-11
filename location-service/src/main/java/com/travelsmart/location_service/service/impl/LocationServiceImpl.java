@@ -127,7 +127,7 @@ public class LocationServiceImpl implements LocationService {
         if( type == LocationType.ADMINISTRATIVE){
             return mappingList(locationRepository.findByTypeAndStatus(LocationType.ADMINISTRATIVE,LocationStatus.ACCEPT));
         }
-        search = StringUtils.buildParamSearch(search);
+        search = StringUtils.buildParamSearch(search.trim());
       return mappingList(locationRepository.findBySearchParam(pageable,search, LocationStatus.ACCEPT));
     }
 
@@ -236,6 +236,11 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public List<LocationResponse> findByType(Long id ,List<LocationType> types) {
         return mappingList(locationRepository.findByTypeIn(id,types));
+    }
+
+    @Override
+    public List<LocationResponse> findAllByType(LocationType locationType) {
+        return mappingList(locationRepository.findByType(locationType));
     }
 
     private List<LocationResponse> mappingList(List<LocationEntity> e){

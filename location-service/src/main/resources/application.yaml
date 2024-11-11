@@ -45,6 +45,14 @@ openapi: "3.0.0"
 app:
   cors:
     allowedOrigins: http://localhost:3000,http://localhost:8888
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "metrics,health"   # Bật các endpoint `metrics` và `health`
+  endpoint:
+    metrics:
+      enabled: true
 logging:
   level:
     org.hibernate.SQL: DEBUG

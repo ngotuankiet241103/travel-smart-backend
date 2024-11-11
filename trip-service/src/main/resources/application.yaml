@@ -29,7 +29,14 @@ geoapify:
   reverse: /v1/geocode/reverse
   placeDetail: /v2/place-details
   routing: /v1/routing
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "metrics,health"   # Bật các endpoint `metrics` và `health`
+  endpoint:
+    metrics:
+      enabled: true                 # Kích hoạt endpoint `metrics`
 springdoc:
   api-docs:
     path: /v3/api-docs

@@ -1,13 +1,13 @@
 package com.travelsmart.profile_service.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.travelsmart.profile_service.utils.StringListConverter;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "profile")
@@ -24,5 +24,6 @@ public class ProfileEntity {
     private String firstName;
     @Column(columnDefinition = "NVARCHAR(30)")
     private String lastName;
-
+    @Convert(converter = StringListConverter.class)
+    private List<String> hobbies;
 }

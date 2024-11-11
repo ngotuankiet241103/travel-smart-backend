@@ -6,10 +6,7 @@ import com.travelsmart.trip_service.dto.request.TripGenerateRequest;
 import com.travelsmart.trip_service.dto.request.TripRequest;
 import com.travelsmart.trip_service.dto.request.TripShareRequest;
 import com.travelsmart.trip_service.dto.request.TripUpdateRequest;
-import com.travelsmart.trip_service.dto.response.ItineraryResponse;
-import com.travelsmart.trip_service.dto.response.LocationResponse;
-import com.travelsmart.trip_service.dto.response.TripGenerateResponse;
-import com.travelsmart.trip_service.dto.response.TripResponse;
+import com.travelsmart.trip_service.dto.response.*;
 import com.travelsmart.trip_service.entity.TripEntity;
 import com.travelsmart.trip_service.entity.UserTripEntity;
 import com.travelsmart.trip_service.exception.CustomRuntimeException;
@@ -20,10 +17,12 @@ import com.travelsmart.trip_service.repository.UserTripRepository;
 import com.travelsmart.trip_service.repository.httpclient.GeoapifyClient;
 import com.travelsmart.trip_service.repository.httpclient.IdentityClient;
 import com.travelsmart.trip_service.repository.httpclient.LocationClient;
+import com.travelsmart.trip_service.repository.httpclient.ProfileClient;
 import com.travelsmart.trip_service.service.ItineraryService;
 import com.travelsmart.trip_service.service.TripService;
 import com.travelsmart.trip_service.utils.DateUtils;
 import com.travelsmart.trip_service.utils.HandleString;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,6 +40,7 @@ public class TripServiceImpl implements TripService {
     private final LocationClient locationClient;
     private final UserTripRepository userTripRepository;
     private final IdentityClient identityClient;
+    private final ProfileClient profileClient;
 
     @Override
     public TripResponse create(TripRequest tripRequest) {
@@ -139,6 +139,33 @@ public class TripServiceImpl implements TripService {
                 .endDate(tripGenerateRequest.getEndDate())
                 .permission(TripPermission.OWNER)
                 .build();
+    }
+
+    @Override
+    public List<UserTripResponse> getAllUserInTrip(Long id) {
+        List<UserTripEntity> userTripEntities = userTripRepository.findByTripId(id);
+
+        return userTripEntities.stream()
+                .map(userTripEntity -> {
+                    return UserTripResponse.builder()
+                            .email(profileClient.getUserById(userTripEntity.getUserId()).getResult().getEmail())
+                            .tripPermission(userTripEntity.getPermission())
+                            .build();
+                }).toList();
+    }
+    @Transactional
+    @Override
+    public String deleteById(Long id) {
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserTripEntity userTripEntity = userTripRepository.findByUserIdAndTripId(userName,id)
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TRIP_NOT_FOUND));
+        if(!userTripEntity.getPermission().equals(TripPermission.OWNER)){
+            throw new CustomRuntimeException(ErrorCode.TRIP_DENIED);
+        }
+        itineraryService.deleteByTripId(id);
+        userTripRepository.deleteByTripId(id);
+        tripRepository.deleteById(id);
+        return "Delete trip success";
     }
 
     private TripResponse mappingOne(TripEntity trip){

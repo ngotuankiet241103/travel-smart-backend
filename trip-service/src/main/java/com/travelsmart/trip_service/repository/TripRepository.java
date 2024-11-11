@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface TripRepository extends JpaRepository<TripEntity,Long> {
-    @Query("SELECT t FROM TripEntity t JOIN UserTripEntity u ON t.id = u.trip.id WHERE u.userId = ?1")
+    @Query("SELECT t FROM TripEntity t JOIN UserTripEntity u ON t.id = u.trip.id WHERE u.userId = ?1 ORDER BY t.id DESC")
     List<TripEntity> findMyTrip(String name);
 }

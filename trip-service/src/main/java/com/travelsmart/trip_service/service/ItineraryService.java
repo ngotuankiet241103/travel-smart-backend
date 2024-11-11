@@ -27,4 +27,8 @@ public interface ItineraryService {
     List<ItineraryResponse> generateTrip(TripEntity trip, List<LocationType> types);
 
     List<ItineraryResponse> optimzeItinerariesInTrip(Long tripId);
+
+    void deleteByTripId(Long id);
+
+    ItineraryResponse updateItinerary(Long id, ItineraryNoteUpdateRequest updateRequest);
 }

@@ -4,12 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travelsmart.event.dto.EmailRequest;
 import com.travelsmart.event.dto.ProfileRequest;
 import com.travelsmart.profile_service.dto.request.AvatarRequest;
+import com.travelsmart.profile_service.dto.request.HobbyRequest;
 import com.travelsmart.profile_service.dto.request.ProfileUpdateAvatar;
 import com.travelsmart.profile_service.dto.request.ProfileUpdateRequest;
-import com.travelsmart.profile_service.dto.response.ApiResponse;
-import com.travelsmart.profile_service.dto.response.AvatarResponse;
-import com.travelsmart.profile_service.dto.response.ProfileInternalResponse;
-import com.travelsmart.profile_service.dto.response.ProfileResponse;
+import com.travelsmart.profile_service.dto.response.*;
+import com.travelsmart.profile_service.entity.LocationType;
 import com.travelsmart.profile_service.service.ProfileService;
 import com.travelsmart.saga.profile.command.ProfileCommand;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -90,7 +89,18 @@ public class ProfileController {
                 .result(profileService.findInternalById(userId))
                 .build();
     }
-
+    @PutMapping("/hobbies")
+    public ApiResponse<ProfileResponse> updateHobbies(@RequestBody HobbyRequest hobbyRequest){
+        return ApiResponse.<ProfileResponse>builder()
+                .result(profileService.updateHobbies(hobbyRequest))
+                .build();
+    }
+    @GetMapping("/hobbies")
+    public ApiResponse<List<LocationTypeResponse>> getHobbies(){
+        return ApiResponse.<List<LocationTypeResponse>>builder()
+                .result(LocationType.getHobbies())
+                .build();
+    }
     @KafkaListener(topics = "createUser-success",groupId = "profile-group")
     public void createProfile(ProfileCommand object){
         System.out.println(object);

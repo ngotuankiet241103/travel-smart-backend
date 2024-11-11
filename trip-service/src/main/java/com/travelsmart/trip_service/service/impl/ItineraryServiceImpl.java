@@ -6,6 +6,7 @@ import com.travelsmart.trip_service.dto.response.DestinationResponse;
 import com.travelsmart.trip_service.dto.response.ItineraryResponse;
 import com.travelsmart.trip_service.dto.response.LocationResponse;
 import com.travelsmart.trip_service.dto.response.httpclient.DistanceResponse;
+import com.travelsmart.trip_service.dto.response.httpclient.ProfileResponse;
 import com.travelsmart.trip_service.entity.DestinationEntity;
 import com.travelsmart.trip_service.entity.ItineraryEntity;
 import com.travelsmart.trip_service.entity.TripEntity;
@@ -17,10 +18,13 @@ import com.travelsmart.trip_service.repository.ItineraryRepository;
 import com.travelsmart.trip_service.repository.TripRepository;
 import com.travelsmart.trip_service.repository.httpclient.GeoapifyClient;
 import com.travelsmart.trip_service.repository.httpclient.LocationClient;
+import com.travelsmart.trip_service.repository.httpclient.ProfileClient;
 import com.travelsmart.trip_service.service.ItineraryService;
 import com.travelsmart.trip_service.utils.NearestNeighborTSP;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,7 +41,7 @@ public class ItineraryServiceImpl implements ItineraryService {
     private final DestinationRepository destinationRepository;
     private final LocationClient locationClient;
     private final GeoapifyClient geoapifyClient;
-
+    private final ProfileClient profileClient;
 
     @Override
     public void creatItinerariesByTrip(TripEntity trip) {
@@ -195,6 +199,7 @@ public class ItineraryServiceImpl implements ItineraryService {
 
     @Override
     public List<ItineraryResponse>  generateTrip(TripEntity trip, List<LocationType> types) {
+
         List<LocationResponse> locationResponses = locationClient.getByTypes(types,trip.getLocationId()).getResult();
         System.out.println(locationResponses.size());
         int col = 0;
@@ -375,6 +380,25 @@ public class ItineraryServiceImpl implements ItineraryService {
 
 
         return null;
+    }
+
+    @Override
+    public void deleteByTripId(Long id) {
+        List<ItineraryEntity> itineraries = itineraryRepository.findByTripId(id);
+        itineraries.stream().forEach(itineraryEntity ->  {
+            List<DestinationEntity> destinations = destinationRepository.findByItineraryIdOrderByPosition(itineraryEntity.getId());
+            destinationRepository.deleteAll(destinations);
+            itineraryRepository.delete(itineraryEntity);
+        });
+
+    }
+
+    @Override
+    public ItineraryResponse updateItinerary(Long id, ItineraryNoteUpdateRequest updateRequest) {
+        ItineraryEntity itineraryEntity = itineraryRepository.findById(id)
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.ITINERARY_NOT_FOUND));
+        itineraryEntity.setNote(updateRequest.getNote());
+        return mappingOne(itineraryRepository.save(itineraryEntity));
     }
 
     private ItineraryResponse mappingOne(ItineraryEntity itineraryEntity){

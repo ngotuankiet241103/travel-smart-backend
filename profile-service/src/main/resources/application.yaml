@@ -10,7 +10,7 @@ spring:
     password: 1234
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       enable_lazy_load_no_trans: true
   cloud:
     compatibility-verifier:

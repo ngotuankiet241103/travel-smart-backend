@@ -41,4 +41,6 @@ public interface LocationService {
     PageableResponse<List<LocationResponse>> findAll(Pageable pageable);
 
     List<LocationResponse> findByType(Long id,List<LocationType> types);
+
+    List<LocationResponse> findAllByType(LocationType locationType);
 }

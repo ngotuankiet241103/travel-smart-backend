@@ -3,6 +3,7 @@ create table profile (
     email varchar(50),
     first_name varchar(50),
     last_name varchar(50),
+    hobbies text,
     primary key (id)
 
 );

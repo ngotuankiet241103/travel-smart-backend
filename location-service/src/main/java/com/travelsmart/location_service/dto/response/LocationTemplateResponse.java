@@ -1,5 +1,6 @@
 package com.travelsmart.location_service.dto.response;
 
+import com.travelsmart.location_service.constant.LocationStatus;
 import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.entity.Address;
 import lombok.Data;
@@ -18,5 +19,6 @@ public class LocationTemplateResponse {
     private List<String> boundingbox;
     private Double starRate;
     private int timeVisit;
+    private LocationStatus status;
 
 }

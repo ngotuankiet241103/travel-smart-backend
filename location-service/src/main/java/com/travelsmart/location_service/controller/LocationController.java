@@ -108,12 +108,19 @@ public class LocationController {
                 .result(locationService.update(id,locationUpdateRequest))
                 .build();
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update status location",description = "Returns single location")
     @PutMapping("/status/{place-id}")
     public ApiResponse<LocationResponse> updateLocationStatus(@PathVariable("place-id") Long id,@Valid @RequestBody LocationStatusRequest locationStatusRequest){
         return ApiResponse.<LocationResponse>builder()
                 .result(locationService.updateStatus(id, locationStatusRequest))
+                .build();
+    }
+    @GetMapping("/location-type/{locationType}")
+    public ApiResponse<List<LocationResponse>> getLocationByType(@PathVariable("locationType") LocationType locationType){
+        return ApiResponse.<List<LocationResponse>>builder()
+                .result(locationService.findAllByType(locationType))
                 .build();
     }
     @GetMapping("/type")
