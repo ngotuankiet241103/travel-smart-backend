@@ -43,4 +43,6 @@ public interface LocationService {
     List<LocationResponse> findByType(Long id,List<LocationType> types);
 
     List<LocationResponse> findAllByType(LocationType locationType);
+
+    List<LocationResponse> findByRadius(String lon, String lat, double radius, String search, LocationType type);
 }

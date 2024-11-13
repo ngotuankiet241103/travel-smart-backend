@@ -3,6 +3,13 @@ server:
 spring:
   application:
     name: profile-service
+  sleuth:
+    propagation-keys:
+      - X-B3-TraceId
+      - X-B3-SpanId
+      - X-B3-ParentSpanId
+      - X-B3-Sampled
+      - X-B3-Flags
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/profile_travel_db
@@ -31,7 +38,7 @@ spring:
 management:
   tracing:
     sampling:
-      probability:1.0
+      probability: 1.0
   metrics:
     distribution:
       percentiles-histogram:
@@ -40,6 +47,13 @@ management:
             requests: true
     tags:
       application: ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: "metrics,health"   # Bật các endpoint `metrics` và `health`
+  endpoint:
+    metrics:
+      enabled: true                 # Kích hoạt endpoint `metrics`
   
 
 
@@ -71,6 +85,7 @@ token:
 #  level:
 #    io.eventuate.tram: DEBUG
 #    org.apache.kafka: DEBUG
+
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -81,3 +96,4 @@ openapi: "3.0.0"
 app:
   cors:
     allowedOrigins: http://localhost:8888
+

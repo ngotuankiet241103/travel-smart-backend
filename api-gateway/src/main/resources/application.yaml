@@ -101,4 +101,12 @@ springdoc:
         name: Profile Service
       - url: http://localhost:8085/v3/api-docs
         name: Trip Service
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "metrics,health"   # Bật các endpoint `metrics` và `health`
+  endpoint:
+    metrics:
+      enabled: true
 

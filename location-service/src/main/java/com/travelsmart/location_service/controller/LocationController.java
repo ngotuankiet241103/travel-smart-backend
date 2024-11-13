@@ -117,6 +117,7 @@ public class LocationController {
                 .result(locationService.updateStatus(id, locationStatusRequest))
                 .build();
     }
+    @Operation(summary = "Get locations by type",description = "Returns list location")
     @GetMapping("/location-type/{locationType}")
     public ApiResponse<List<LocationResponse>> getLocationByType(@PathVariable("locationType") LocationType locationType){
         return ApiResponse.<List<LocationResponse>>builder()
@@ -127,6 +128,16 @@ public class LocationController {
     public ApiResponse<List<LocationType>> getLocationTypes(){
         return ApiResponse.<List<LocationType>>builder()
                 .result(LocationType.getLocationTypes())
+                .build();
+    }
+    @GetMapping("/radius")
+    public ApiResponse<List<LocationResponse>> getLocationInRadius(@RequestParam("lon") String lon,
+                                                                   @RequestParam("lat") String lat,
+                                                                   @RequestParam("radius") double radius,
+                                                                   @RequestParam(value = "q",defaultValue = "") String search,
+                                                                   @RequestParam(value = "type",defaultValue = "ADMINISTRATIVE") LocationType type){
+        return ApiResponse.<List<LocationResponse>>builder()
+                .result(locationService.findByRadius(lon,lat,radius,search,type))
                 .build();
     }
 

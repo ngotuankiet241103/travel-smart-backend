@@ -5,6 +5,13 @@ api:
 spring:
   application:
     name: review-service
+  sleuth:
+    propagation-keys:
+      - X-B3-TraceId
+      - X-B3-SpanId
+      - X-B3-ParentSpanId
+      - X-B3-Sampled
+      - X-B3-Flags
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/review_travel_db
@@ -24,6 +31,24 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+management:
+  tracing:
+
+    sampling:
+      probability: 1.0
+#  micrometer:
+#    tracing:
+#      reporting:
+#        zipkin:
+#          enabled: true
+#          endpoint: http://localhost:9411/api/v2/spans  # Replace with your Zipkin server URL
+  endpoints:
+    web:
+      exposure:
+        include: "metrics,health"   # Bật các endpoint `metrics` và `health`
+  endpoint:
+    metrics:
+      enabled: true                 # Kích hoạt endpoint `metrics`
 swagger: "2.0"
 openapi: "3.0.0"
 app:

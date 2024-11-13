@@ -2,13 +2,13 @@ package com.travelsmart.trip_service.controller;
 
 import com.travelsmart.trip_service.dto.request.*;
 import com.travelsmart.trip_service.dto.response.ApiResponse;
+import com.travelsmart.trip_service.dto.response.DestinationResponse;
 import com.travelsmart.trip_service.dto.response.ItineraryResponse;
 import com.travelsmart.trip_service.service.ItineraryService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.apache.kafka.shaded.com.google.protobuf.Api;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -56,6 +56,14 @@ public class ItineraryController {
                 .result(itineraryService.updateItinerary(id, updateRequest))
                 .build();
     }
+    @Operation(summary = "Replace destination",description = "Returns single response")
+    @PutMapping("/{destination-id}")
+    public ApiResponse<DestinationResponse> replaceLocation(@PathVariable("destination-id") Long destinationId,
+                                                            @RequestBody DestinationReplaceRequest destinationReplaceRequest){
+        return ApiResponse.<DestinationResponse>builder()
+                .result(itineraryService.replaceLocationInDestination(destinationId,destinationReplaceRequest))
+                .build();
+    }
     @Operation(summary = "Optimize itineraries in trip",description = "Returns list itinerary")
     @PutMapping("/optimize/{trip-id}")
     public ApiResponse<List<ItineraryResponse>> optimizeItinerary(@PathVariable("trip-id") Long tripId){
@@ -63,6 +71,7 @@ public class ItineraryController {
                 .result(itineraryService.optimzeItinerariesInTrip(tripId))
                 .build();
     }
+
     @Operation(summary = "Delete itinerary")
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteById(@PathVariable("id") Long id,
@@ -71,8 +80,6 @@ public class ItineraryController {
         return ApiResponse.<Void>builder()
                 .build();
     }
-
-
 
     @Operation(summary = "Delete destination in itinerary")
     @DeleteMapping("/{destination-id}/destination")

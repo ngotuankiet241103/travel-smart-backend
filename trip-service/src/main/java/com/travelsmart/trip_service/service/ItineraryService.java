@@ -2,6 +2,7 @@ package com.travelsmart.trip_service.service;
 
 import com.travelsmart.trip_service.constant.LocationType;
 import com.travelsmart.trip_service.dto.request.*;
+import com.travelsmart.trip_service.dto.response.DestinationResponse;
 import com.travelsmart.trip_service.dto.response.ItineraryResponse;
 import com.travelsmart.trip_service.entity.TripEntity;
 
@@ -31,4 +32,6 @@ public interface ItineraryService {
     void deleteByTripId(Long id);
 
     ItineraryResponse updateItinerary(Long id, ItineraryNoteUpdateRequest updateRequest);
+
+    DestinationResponse replaceLocationInDestination(Long destinationId, DestinationReplaceRequest destinationReplaceRequest);
 }

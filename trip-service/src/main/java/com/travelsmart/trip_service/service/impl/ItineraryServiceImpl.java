@@ -401,6 +401,15 @@ public class ItineraryServiceImpl implements ItineraryService {
         return mappingOne(itineraryRepository.save(itineraryEntity));
     }
 
+    @Override
+    public DestinationResponse replaceLocationInDestination(Long destinationId, DestinationReplaceRequest destinationReplaceRequest) {
+        DestinationEntity destination = destinationRepository.findById(destinationId)
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.DESTINATION_NOT_FOUND));
+        destination.setLocationId(destinationReplaceRequest.getLocationId());
+
+        return buildDestinationResponse( destinationRepository.save(destination));
+    }
+
     private ItineraryResponse mappingOne(ItineraryEntity itineraryEntity){
         ItineraryResponse itineraryResponse = ItineraryResponse.builder()
                 .id(itineraryEntity.getId())
@@ -409,16 +418,17 @@ public class ItineraryServiceImpl implements ItineraryService {
                 .build();
         List<DestinationResponse> destinations = destinationRepository.findByItineraryIdOrderByPosition(itineraryEntity.getId())
                 .stream()
-                .map(destinationEntity -> {
-                    return DestinationResponse.builder()
-                            .position(destinationEntity.getPosition())
-                            .location(locationClient.getLocationById(destinationEntity.getLocationId()).getResult())
-                            .id(destinationEntity.getId())
-                            .build();
-                })
+                .map(this::buildDestinationResponse)
                 .toList();
         itineraryResponse.setDestinations(destinations);
         return  itineraryResponse;
+    }
+    private DestinationResponse buildDestinationResponse(DestinationEntity destinationEntity){
+        return DestinationResponse.builder()
+                .position(destinationEntity.getPosition())
+                .location(locationClient.getLocationById(destinationEntity.getLocationId()).getResult())
+                .id(destinationEntity.getId())
+                .build();
     }
     private List<ItineraryResponse> mappingList(List<ItineraryEntity> e){
         return e.stream()

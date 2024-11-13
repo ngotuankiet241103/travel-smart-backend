@@ -3,6 +3,17 @@ server:
 spring:
   application:
     name: location-service
+  sleuth:
+    enabled: true
+    sampler:
+      probability: 1.0  # Adjust trace sample rate if needed
+    web:
+      client:
+        enabled: true  # If you want to trace web client calls
+    exporter:
+      zipkin:
+        enabled: true
+        baseUrl: http://localhost:9411/api/v2/spans  # Change this to your Zipkin server URL
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/location_travel_db
@@ -46,6 +57,16 @@ app:
   cors:
     allowedOrigins: http://localhost:3000,http://localhost:8888
 management:
+  tracing:
+
+    sampling:
+      probability: 1.0
+#  micrometer:
+#    tracing:
+#      reporting:
+#        zipkin:
+#          enabled: true
+#          endpoint: http://localhost:9411/api/v2/spans  # Replace with your Zipkin server URL
   endpoints:
     web:
       exposure:

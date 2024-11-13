@@ -1,4 +1,9 @@
 # Travel smart app
+## Technologies and frameworks
+- Java 17
+- Spring boot 3.3
+- Kafka
+
 ## Run the application
 - Run file docker compose:
 ``docker-compose up -d``
@@ -11,3 +16,4 @@
 - blog-service: ``http:localhost:8082/swagger-ui/index.html``
 - location-service: ``http:localhost:8084/swagger-ui/index.html``
 - trip-service: ``http:localhost:8085/swagger-ui/index.html``
+- review-service ``http:localhost:8086/swagger-ui/index.html``

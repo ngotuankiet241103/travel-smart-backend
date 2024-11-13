@@ -30,7 +30,8 @@ public interface LocationRepository extends JpaRepository<LocationEntity,Long> {
             AND type != 14
             """,nativeQuery = true)
     LocationEntity findByCoordinates(String lon, String lat);
-
+    @Query(value = "SELECT l.* FROM location l WHERE l.lat >= ?1 AND l.lat <= ?2 AND l.lon >= ?3 AND l.lon <= ?4 AND l.display_name LIKE ?5 AND l.type != ?6",nativeQuery = true)
+    List<LocationEntity> findByRadius(String minLat,String maxLat,String minLon,String maxLon,String search,LocationType locationType);
     List<LocationEntity> findByCategoryIn(List<String> categories);
     @Transactional
     @Modifying
@@ -51,4 +52,6 @@ public interface LocationRepository extends JpaRepository<LocationEntity,Long> {
     List<LocationEntity> findByTypeAndStatus(LocationType locationType, LocationStatus locationStatus);
 
     List<LocationEntity> findByType(LocationType locationType);
+    @Query(value = "SELECT l.* FROM location l WHERE l.lat >= ?1 AND l.lat <= ?2 AND l.lon >= ?3 AND l.lon <= ?4 AND l.display_name LIKE ?5 AND l.type = ?6",nativeQuery = true)
+    List<LocationEntity> findByRadiusAndSearchAndType(String s, String s1, String s2, String s3, String search, LocationType type);
 }

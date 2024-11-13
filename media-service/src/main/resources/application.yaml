@@ -12,7 +12,14 @@ spring:
       enable_lazy_load_no_trans: true
   liquibase:
     enabled: true
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "metrics,health"   # Bật các endpoint `metrics` và `health`
+  endpoint:
+    metrics:
+      enabled: true                 # Kích hoạt endpoint `metrics`
 server:
   port: 8088
 api:

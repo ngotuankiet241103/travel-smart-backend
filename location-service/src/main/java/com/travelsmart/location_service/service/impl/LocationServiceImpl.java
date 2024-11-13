@@ -19,16 +19,9 @@ import com.travelsmart.location_service.repository.httpclient.MediaClient;
 import com.travelsmart.location_service.repository.httpclient.ReviewClient;
 import com.travelsmart.location_service.service.LocationService;
 import com.travelsmart.location_service.utils.ConvertUtils;
-import com.travelsmart.location_service.utils.GeoJsonConverter;
 import com.travelsmart.location_service.utils.StringUtils;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Location;
-import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.io.WKTWriter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,11 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +42,7 @@ public class LocationServiceImpl implements LocationService {
     private final LocationRepository locationRepository;
     private final MediaClient mediaClient;
     private final ReviewClient reviewClient;
+    private static final double EARTH_RADIUS = 111.32;
     @Override
     public List<LocationTemplateResponse> findBySearch(String search, int limit) {
         return locationClient.getBySearch(search,limit)
@@ -241,6 +231,32 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public List<LocationResponse> findAllByType(LocationType locationType) {
         return mappingList(locationRepository.findByType(locationType));
+    }
+
+    @Override
+    public List<LocationResponse> findByRadius(String lon, String lat, double radius, String search, LocationType type) {
+        double latitude = Double.parseDouble(lat); // Điền giá trị vĩ độ tại điểm bạn muốn
+        double longitude = Double.parseDouble(lon);
+        double deltaLat = radius / EARTH_RADIUS;
+        double deltaLon = radius / (EARTH_RADIUS * Math.cos(Math.toRadians(latitude)));
+        System.out.println(search);
+        // Tính tọa độ của bounding box
+        double latMin = latitude - deltaLat;
+        double latMax = latitude + deltaLat;
+        double lonMin = longitude - deltaLon;
+        double lonMax = longitude + deltaLon;
+        search = StringUtils.buildParamSearch(search);
+        System.out.println(search);
+        if(type.equals(LocationType.ADMINISTRATIVE)){
+            return mappingList(locationRepository.findByRadius(String.valueOf(latMin),String.valueOf(latMax),
+                    String.valueOf(lonMin),String.valueOf(lonMax),search,LocationType.ADMINISTRATIVE));
+        }
+        else{
+            return mappingList(locationRepository.findByRadiusAndSearchAndType(String.valueOf(latMin),String.valueOf(latMax),
+                    String.valueOf(lonMin),String.valueOf(lonMax),search,type));
+        }
+
+
     }
 
     private List<LocationResponse> mappingList(List<LocationEntity> e){

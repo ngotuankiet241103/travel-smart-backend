@@ -1,6 +1,9 @@
 spring:
   application:
     name: identity-service
+  zipkin:
+    enabled: true
+    base-url: http://127.0.0.1:9411/
   kafka:
     bootstrap-servers: localhost:9094
     producer:
@@ -26,19 +29,30 @@ spring:
     enabled: true
   main:
     allow-bean-definition-overriding: true
+  cloud:
+    compatibility-verifier:
+      enabled: false
 
 management:
   tracing:
     sampling:
-      probability:1.0
+      probability: 1.0
   metrics:
     distribution:
       percentiles-histogram:
         http:
           server:
             requests: true
+
     tags:
       application: ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: "metrics,health"   # Bật các endpoint `metrics` và `health`
+  endpoint:
+    metrics:
+      enabled: true
 #
 #eventuatelocal:
 #  kafka:
@@ -62,6 +76,9 @@ token:
 #  level:
 #    io.eventuate.tram: DEBUG
 #    org.apache.kafka: DEBUG
+logging:
+  pattern:
+    level: "%5p [${spring.zipkin.service.name:${spring.application.name:}},%X{traceId:-},%X{spanId:-}]"
 springdoc:
   api-docs:
     path: /v3/api-docs
