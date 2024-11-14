@@ -1,7 +1,8 @@
 package com.travelsmart.notification_service.dto.request;
 
 
-import com.travelsmart.saga.notication.command.NotificationCommand;
+
+import com.travelsmart.event.dto.NotificationCommand;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

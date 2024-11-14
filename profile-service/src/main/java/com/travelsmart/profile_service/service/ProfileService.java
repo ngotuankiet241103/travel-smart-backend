@@ -1,5 +1,6 @@
 package com.travelsmart.profile_service.service;
 
+import com.travelsmart.event.dto.ProfileCommand;
 import com.travelsmart.event.dto.ProfileRequest;
 import com.travelsmart.profile_service.dto.request.AvatarRequest;
 import com.travelsmart.profile_service.dto.request.HobbyRequest;
@@ -8,7 +9,7 @@ import com.travelsmart.profile_service.dto.request.ProfileUpdateRequest;
 import com.travelsmart.profile_service.dto.response.AvatarResponse;
 import com.travelsmart.profile_service.dto.response.ProfileInternalResponse;
 import com.travelsmart.profile_service.dto.response.ProfileResponse;
-import com.travelsmart.saga.profile.command.ProfileCommand;
+
 
 public interface ProfileService {
     void create(ProfileCommand profileCommand);

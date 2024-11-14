@@ -8,7 +8,7 @@ spring:
     bootstrap-servers: localhost:9094
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: com.identity_service.identity.config.CustomSerializer
     consumer:
       group-id: identity
       auto-offset-reset: earliest
@@ -17,7 +17,7 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
   datasource:
-    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/identity_travel_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/identity_travel_db}
     driverClassName: "com.mysql.cj.jdbc.Driver"
     password: ${DBMS_PASSWORD:1234}
     username: ${DBMS_USERNAME:root}

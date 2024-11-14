@@ -1,4 +1,4 @@
-package com.travelsmart.saga.notication.command;
+package com.travelsmart.event.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

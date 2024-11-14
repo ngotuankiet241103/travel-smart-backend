@@ -15,36 +15,95 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    networks:
+      - travel
+
+#  mysql:
+#    image: mysql:8.0.0
+#    container_name: mysql
+#    environment:
+#      MYSQL_ROOT_PASSWORD: 1234
+#      MYSQL_USER: admin
+#      MYSQL_PASSWORD: adminpassword
+#    ports:
+#      - "3307:3306"
+#    volumes:
+#      - mysql_data:/var/lib/mysql
+#      - ./initDB.sql:/docker-entrypoint-initdb.d/initDB.sql
+#    networks:
+#
+#      - travel
+
   zipkin:
     image: 'openzipkin/zipkin'
     container_name: zipkin
     hostname: zipkin
     ports:
       - '9411:9411'
-  ## Prometheus
-#  prometheus:
-#    image: prom/prometheus:v2.37.1
-#    container_name: prometheus
-#    restart: unless-stopped
+    networks:
+      - travel
+#  api-gateway:
+#    build:
+#      context: ./api-gateway
+#      dockerfile: Dockerfile
+#    image: api-gateway:0.0.1
+#    container_name: api-gateway
 #    ports:
-#      - "9090:9090"
-#    volumes:
-#      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#        - "8888:8888"
+#    expose:
+#        - "8888"
 #
-#
-#  grafana:
-#    image: grafana/grafana-oss:8.5.2
-#    container_name: grafana
-#    restart: unless-stopped
-#    ports:
-#      - "3000:3000"
-#    links:
-#      - prometheus:prometheus
-#    volumes:
-#      - ./grafana:/var/lib/grafana
+#    depends_on:
+#        - zipkin
+#        - mysql
+#    networks:
+#      - travel
+#  identity-service:
+#    build:
+#      context: ./identity-service
+#      dockerfile: Dockerfile
+#    image: identity-service:0.0.1
+#    container_name: identity-service
 #    environment:
-#      - GF_SECURITY_ADMIN_USER=admin
-#      - GF_SECURITY_ADMIN_PASSWORD=password
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/identity_travel_db?useSSL=false&serverTimezone=UTC
+#      DBMS_USERNAME: root
+#      DBMS_PASSWORD: 1234
+#
+#    ports:
+#      - "8080:8080"
+#    expose:
+#      - "8080"
+#
+#    depends_on:
+#      - zipkin
+#      - mysql
+#    networks:
+#      - travel
+
+    ## Prometheus
+  prometheus:
+    image: prom/prometheus:v2.37.1
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+
+  grafana:
+    image: grafana/grafana-oss:8.5.2
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    links:
+      - prometheus:prometheus
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
 #  otelcol:
 #    image: otel/opentelemetry-collector-contrib:0.87.0
 #    container_name: collector
@@ -140,9 +199,10 @@ services:
 #      retries: 10
 #      test: wget --no-verbose --tries=1 --spider http://localhost:3200/status || exit 1
 
-    networks:
-        - yas-network
+#    networks:
+#        - yas-network
+volumes:
+  mysql_data:
 networks:
-  yas-network:
-    name: yas-network
-    external: true
+  travel:
+  mysql_net:

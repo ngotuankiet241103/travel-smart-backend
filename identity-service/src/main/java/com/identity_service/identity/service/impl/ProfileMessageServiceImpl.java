@@ -1,2 +1,3 @@
-package com.identity_service.identity.service.impl;public class ProfileMessageServiceImpl {
+package com.identity_service.identity.service.impl;
+public class ProfileMessageServiceImpl {
 }

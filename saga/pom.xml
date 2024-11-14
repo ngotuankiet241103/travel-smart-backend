@@ -6,7 +6,7 @@
 		<groupId>com.travelsmart</groupId>
 		<artifactId>backend</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+
 	</parent>
 	<artifactId>saga</artifactId>
 	<version>${revision}</version>
@@ -37,22 +37,7 @@
 			<version>${org.lombok.version}</version>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>io.eventuate.tram.core</groupId>
-			<artifactId>eventuate-tram-spring-optimistic-locking</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.eventuate.tram.core</groupId>
-			<artifactId>eventuate-tram-spring-jdbc-kafka</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.eventuate.tram.sagas</groupId>
-			<artifactId>eventuate-tram-sagas-spring-orchestration-simple-dsl-starter</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.eventuate.tram.sagas</groupId>
-			<artifactId>eventuate-tram-sagas-spring-participant-starter</artifactId>
-		</dependency>
+
 
 	</dependencies>
 

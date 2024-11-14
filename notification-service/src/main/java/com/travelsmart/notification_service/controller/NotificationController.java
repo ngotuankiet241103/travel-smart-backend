@@ -1,11 +1,12 @@
 package com.travelsmart.notification_service.controller;
 
+import com.travelsmart.event.dto.NotificationCommand;
 import com.travelsmart.event.dto.NotificationEvent;
 import com.travelsmart.notification_service.dto.request.EmailRequest;
 import com.travelsmart.notification_service.dto.request.Recipient;
 import com.travelsmart.notification_service.service.EmailService;
 
-import com.travelsmart.saga.notication.command.NotificationCommand;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;

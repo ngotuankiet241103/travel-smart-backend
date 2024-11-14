@@ -1,5 +1,6 @@
 package com.travelsmart.profile_service.service.impl;
 
+import com.travelsmart.event.dto.ProfileCommand;
 import com.travelsmart.event.dto.ProfileRequest;
 import com.travelsmart.profile_service.dto.request.AvatarRequest;
 import com.travelsmart.profile_service.dto.request.HobbyRequest;
@@ -20,7 +21,7 @@ import com.travelsmart.profile_service.repository.AvatarRepository;
 import com.travelsmart.profile_service.repository.ProfileRepository;
 import com.travelsmart.profile_service.repository.httpclient.MediaClient;
 import com.travelsmart.profile_service.service.ProfileService;
-import com.travelsmart.saga.profile.command.ProfileCommand;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;

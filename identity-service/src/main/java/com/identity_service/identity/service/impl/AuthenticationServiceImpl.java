@@ -1,6 +1,8 @@
 package com.identity_service.identity.service.impl;
 
+import com.identity_service.event.dto.NotificationCommand;
 import com.identity_service.event.dto.NotificationEvent;
+import com.identity_service.event.dto.ProfileCommand;
 import com.identity_service.identity.constaint.ConfirmTokenType;
 import com.identity_service.identity.constaint.PredefinedRole;
 import com.identity_service.identity.dto.request.*;
@@ -23,8 +25,7 @@ import com.identity_service.identity.service.TokenProviderService;
 import com.identity_service.identity.utils.CalendarUtils;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
-import com.travelsmart.saga.notication.command.NotificationCommand;
-import com.travelsmart.saga.profile.command.ProfileCommand;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;

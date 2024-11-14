@@ -2,6 +2,7 @@ package com.travelsmart.profile_service.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travelsmart.event.dto.EmailRequest;
+import com.travelsmart.event.dto.ProfileCommand;
 import com.travelsmart.event.dto.ProfileRequest;
 import com.travelsmart.profile_service.dto.request.AvatarRequest;
 import com.travelsmart.profile_service.dto.request.HobbyRequest;
@@ -10,7 +11,7 @@ import com.travelsmart.profile_service.dto.request.ProfileUpdateRequest;
 import com.travelsmart.profile_service.dto.response.*;
 import com.travelsmart.profile_service.entity.LocationType;
 import com.travelsmart.profile_service.service.ProfileService;
-import com.travelsmart.saga.profile.command.ProfileCommand;
+
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
