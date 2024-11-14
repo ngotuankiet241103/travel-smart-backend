@@ -1,17 +1,23 @@
 server:
   port: 8086
+  servlet:
+    context-path: /review
 api:
   prefix: /review
 spring:
   application:
     name: review-service
   sleuth:
-    propagation-keys:
-      - X-B3-TraceId
-      - X-B3-SpanId
-      - X-B3-ParentSpanId
-      - X-B3-Sampled
-      - X-B3-Flags
+    enabled: true
+    sampler:
+      probability: 1.0  # Adjust trace sample rate if needed
+    web:
+      client:
+        enabled: true  # If you want to trace web client calls
+    exporter:
+      zipkin:
+        enabled: true
+        baseUrl: http://172.30.0.4:9411/api/v2/spans  # Change this to your Zipkin server URL
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/review_travel_db
@@ -35,7 +41,7 @@ management:
   tracing:
 
     sampling:
-      probability: 1.0
+      probability: 0.1
 #  micrometer:
 #    tracing:
 #      reporting:
@@ -45,7 +51,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "metrics,health"   # Bật các endpoint `metrics` và `health`
+        include: "prometheus"   # Bật các endpoint `metrics` và `health`
   endpoint:
     metrics:
       enabled: true                 # Kích hoạt endpoint `metrics`

@@ -29,7 +29,7 @@ public class WebSecurityConfig {
     private final JwtDecoder jwtDecoder;
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        String[] apis = Arrays.stream(permitApi).map(url -> api + url).toArray(String[]::new);
+        String[] apis = Arrays.stream(permitApi).toArray(String[]::new);
         System.out.println(Arrays.toString(Arrays.stream(permitApi).map(url -> api + url).toArray()));
         http
 
@@ -37,9 +37,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers(apis).permitAll()
-                        .requestMatchers(HttpMethod.GET,api + "/introduces/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/introduces/**").permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,api+ "/locations/news").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/locations/news").permitAll()
                         .anyRequest()
                         .authenticated())
                 .oauth2ResourceServer(rss -> rss.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)

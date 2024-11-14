@@ -32,8 +32,8 @@ public class WebSecurityConfig {
     private final JwtDecoder jwtDecoder;
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        String[] apis = Arrays.stream(permitApi).map(url -> api + url).toArray(String[]::new);
-        System.out.println(Arrays.toString(Arrays.stream(permitApi).map(url -> api + url).toArray()));
+        String[] apis = Arrays.stream(permitApi).toArray(String[]::new);
+
         http
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

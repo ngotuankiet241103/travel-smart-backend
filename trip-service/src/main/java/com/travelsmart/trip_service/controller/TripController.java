@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("${api.prefix}/trips")
+@RequestMapping("/trips")
 @RequiredArgsConstructor
 public class TripController {
     private final TripService tripService;

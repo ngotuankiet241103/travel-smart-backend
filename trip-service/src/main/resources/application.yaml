@@ -1,5 +1,7 @@
 server:
   port: 8085
+  servlet:
+    context-path: /trip
 api:
   prefix: /trip
 spring:
@@ -33,7 +35,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "metrics,health"   # Bật các endpoint `metrics` và `health`
+        include: "prometheus"   # Bật các endpoint `metrics` và `health`
   endpoint:
     metrics:
       enabled: true                 # Kích hoạt endpoint `metrics`

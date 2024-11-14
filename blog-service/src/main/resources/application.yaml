@@ -1,8 +1,13 @@
 server:
   port: 8082
+  servlet:
+    context-path: /blog
 spring:
   application:
     name: blog-service
+  security:
+    metrics:
+      enabled: false  # Tắt metrics bảo mật của Spring Security
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/blog_travel_db}
     driverClassName: "com.mysql.cj.jdbc.Driver"
@@ -20,10 +25,20 @@ spring:
 api:
   prefix: /blog
 management:
+  tracing:
+    sampling:
+      probability: 0.1
+  metrics:
+    enable:
+      hikari: false
+    export:
+      prometheus:
+        enabled: true
+        use-exemplars: false  # Tắt exemplars cho Prometheus metrics
   endpoints:
     web:
       exposure:
-        include: "metrics,health"   # Bật các endpoint `metrics` và `health`
+        include: "prometheus,health"   # Bật các endpoint `metrics` và `health`
   endpoint:
     metrics:
       enabled: true                 # Kích hoạt endpoint `metrics`

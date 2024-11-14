@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 
 @RestController
-@RequestMapping("${api.prefix}/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;

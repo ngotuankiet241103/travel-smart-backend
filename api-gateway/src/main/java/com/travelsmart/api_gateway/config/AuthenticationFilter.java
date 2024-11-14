@@ -49,7 +49,13 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/users/registration",
             "/notification/email/send",
             "/blog/blogs/*",
-            "/location/locations/news"
+            "/location/locations/news",
+            "/profile/actuator/prometheus",
+            "/identity/actuator/prometheus",
+            "/review/actuator/prometheus",
+            "/trip/actuator/prometheus",
+            "/blog/actuator/prometheus",
+            "/location/actuator/prometheus"
     };
 
     @Value("${api.prefix}")

@@ -1,0 +1,41 @@
+global:
+  scrape_interval:     10s
+  evaluation_interval: 10s
+
+scrape_configs:
+  - job_name: 'blog_service'
+    metrics_path: '/api/v1/blog/actuator/prometheus'
+    static_configs:
+      - targets: ['192.168.1.108:8888']
+        labels:
+          application: 'Blog Service Application'
+  - job_name: 'location_service'
+    metrics_path: '/api/v1/location/actuator/prometheus'
+    static_configs:
+      - targets: ['192.168.1.108:8888']
+        labels:
+          application: 'Location Service Application'
+  - job_name: 'review_service'
+    metrics_path: '/api/v1/review/actuator/prometheus'
+    static_configs:
+      - targets: ['192.168.1.108:8888']
+        labels:
+          application: 'Review Service Application'
+  - job_name: 'profile_service'
+    metrics_path: '/api/v1/profile/actuator/prometheus'
+    static_configs:
+      - targets: ['192.168.1.108:8888']
+        labels:
+          application: 'Profile Service Application'
+  - job_name: 'trip_service'
+    metrics_path: '/api/v1/trip/actuator/prometheus'
+    static_configs:
+      - targets: [ '192.168.1.108:8888' ]
+        labels:
+          application: 'Trip Service Application'
+  - job_name: 'identity_service'
+    metrics_path: '/api/v1/identity/actuator/prometheus'
+    static_configs:
+      - targets: [ '192.168.1.108:8888' ]
+        labels:
+          application: 'Identity Service Application'
