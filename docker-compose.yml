@@ -18,30 +18,30 @@ services:
     networks:
       - travel
 
-#  mysql:
-#    image: mysql:8.0.0
-#    container_name: mysql
-#    environment:
-#      MYSQL_ROOT_PASSWORD: 1234
-#      MYSQL_USER: admin
-#      MYSQL_PASSWORD: adminpassword
-#    ports:
-#      - "3307:3306"
-#    volumes:
-#      - mysql_data:/var/lib/mysql
-#      - ./initDB.sql:/docker-entrypoint-initdb.d/initDB.sql
-#    networks:
-#
-#      - travel
-
-  zipkin:
-    image: 'openzipkin/zipkin'
-    container_name: zipkin
-    hostname: zipkin
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: adminpassword
     ports:
-      - '9411:9411'
+      - "3307:3306"
+    volumes:
+      - mysqlv8_data:/var/lib/mysql
+      - ./initDB.sql:/docker-entrypoint-initdb.d/initDB.sql
     networks:
+
       - travel
+
+#  zipkin:
+#    image: 'openzipkin/zipkin'
+#    container_name: zipkin
+#    hostname: zipkin
+#    ports:
+#      - '9411:9411'
+#    networks:
+#      - travel
 #  api-gateway:
 #    build:
 #      context: ./api-gateway
@@ -58,52 +58,177 @@ services:
 #        - mysql
 #    networks:
 #      - travel
-#  identity-service:
-#    build:
-#      context: ./identity-service
-#      dockerfile: Dockerfile
-#    image: identity-service:0.0.1
-#    container_name: identity-service
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/identity_travel_db?useSSL=false&serverTimezone=UTC
-#      DBMS_USERNAME: root
-#      DBMS_PASSWORD: 1234
-#
-#    ports:
-#      - "8080:8080"
-#    expose:
-#      - "8080"
-#
-#    depends_on:
-#      - zipkin
-#      - mysql
-#    networks:
-#      - travel
+  identity-service:
+    build:
+      context: ./identity-service
+      dockerfile: Dockerfile
+    image: identity-service:0.0.1
+    container_name: identity-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/identity_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      DBMS_USERNAME: root
+      DBMS_PASSWORD: 1234
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    depends_on:
+      - mysql
+    networks:
+      - travel
+  profile-service:
+    build:
+      context: ./profile-service
+      dockerfile: Dockerfile
+    image: profile-service:0.0.1
+    container_name: profile-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/profile_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      DBMS_USERNAME: root
+      DBMS_PASSWORD: 1234
+    ports:
+      - "8081:8081"
+    expose:
+      - "8081"
+    depends_on:
+      - mysql
+    networks:
+      - travel
+  blog-service:
+    build:
+      context: ./blog-service
+      dockerfile: Dockerfile
+    image: blog-service:0.0.1
+    container_name: blog-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/blog_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      DBMS_USERNAME: root
+      DBMS_PASSWORD: 1234
+    ports:
+      - "8082:8082"
+    expose:
+      - "8082"
+    depends_on:
+      - mysql
+    networks:
+      - travel
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    image: notification-service:0.0.1
+    container_name: notification-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/media_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      DBMS_USERNAME: root
+      DBMS_PASSWORD: 1234
+    ports:
+      - "8083:8083"
+    expose:
+      - "8083"
+    depends_on:
+      - mysql
+    networks:
+      - travel
+  location-service:
+    build:
+      context: ./location-service
+      dockerfile: Dockerfile
+    image: location-service:0.0.1
+    container_name: location-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/location_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      DBMS_USERNAME: root
+      DBMS_PASSWORD: 1234
+    ports:
+      - "8084:8084"
+    expose:
+      - "8084"
+    depends_on:
+      - mysql
+    networks:
+      - travel
+
+  trip-service:
+    build:
+      context: ./trip-service
+      dockerfile: Dockerfile
+    image: trip-service:0.0.1
+    container_name: trip-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/trip_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      DBMS_USERNAME: root
+      DBMS_PASSWORD: 1234
+    ports:
+      - "8085:8085"
+    expose:
+      - "8085"
+    depends_on:
+      - mysql
+    networks:
+      - travel
+  review-service:
+    build:
+      context: ./review-service
+      dockerfile: Dockerfile
+    image: review-service:0.0.1
+    container_name: review-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/review_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      DBMS_USERNAME: root
+      DBMS_PASSWORD: 1234
+    ports:
+      - "8086:8086"
+    expose:
+      - "8086"
+    depends_on:
+      - mysql
+    networks:
+      - travel
+  media-service:
+    build:
+      context: ./media-service
+      dockerfile: Dockerfile
+    image: media-service:0.0.1
+    container_name: media-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/media_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      DBMS_USERNAME: root
+      DBMS_PASSWORD: 1234
+    ports:
+      - "8088:8088"
+    expose:
+      - "8088"
+    depends_on:
+      - mysql
+    networks:
+      - travel
+
 
     ## Prometheus
-  prometheus:
-    image: prom/prometheus:v2.37.1
-    container_name: prometheus
-    restart: unless-stopped
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-
-
-  grafana:
-    image: grafana/grafana-oss:8.5.2
-    container_name: grafana
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    links:
-      - prometheus:prometheus
-    volumes:
-      - ./grafana:/var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=password
+#  prometheus:
+#    image: prom/prometheus:v2.37.1
+#    container_name: prometheus
+#    restart: unless-stopped
+#    ports:
+#      - "9090:9090"
+#    volumes:
+#      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#
+#
+#  grafana:
+#    image: grafana/grafana-oss:8.5.2
+#    container_name: grafana
+#    restart: unless-stopped
+#    ports:
+#      - "3000:3000"
+#    links:
+#      - prometheus:prometheus
+#    volumes:
+#      - ./grafana:/var/lib/grafana
+#    environment:
+#      - GF_SECURITY_ADMIN_USER=admin
+#      - GF_SECURITY_ADMIN_PASSWORD=password
 #  otelcol:
 #    image: otel/opentelemetry-collector-contrib:0.87.0
 #    container_name: collector
@@ -202,7 +327,7 @@ services:
 #    networks:
 #        - yas-network
 volumes:
-  mysql_data:
+  mysqlv8_data:
 networks:
   travel:
   mysql_net:

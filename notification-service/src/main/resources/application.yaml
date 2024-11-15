@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8083
 spring:
   kafka:
     bootstrap-servers: localhost:9094
@@ -14,9 +14,9 @@ spring:
         spring.json.trusted.packages: "*"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/profile_travel_db}
-    username: root
-    password: 1234
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/media_travel_db}
+    password: ${DBMS_PASSWORD:1234}
+    username: ${DBMS_USERNAME:root}
   cloud:
     compatibility-verifier:
       enabled: false
@@ -51,7 +51,7 @@ api:
 notification:
   email:
     brevo-url: https://api.brevo.com
-    brevo-apiKey: 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
+    brevo-apiKey: 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
 ## Additional configuration if needed
 #logging:
 #  level:

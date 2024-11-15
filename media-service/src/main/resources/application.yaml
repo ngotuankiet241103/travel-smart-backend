@@ -3,9 +3,9 @@ spring:
     name: media-service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/media_travel_db
-    username: root
-    password: 1234
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/media_travel_db}
+    password: ${DBMS_PASSWORD:1234}
+    username: ${DBMS_USERNAME:root}
   jpa:
     hibernate:
       ddl-auto: none

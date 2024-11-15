@@ -1,14 +1,16 @@
+create table role (
+    name varchar(50) not null,
+    description varchar(255),
+    primary key (name)
+);
+
 create table permission (
     name varchar(50) not null,
     description varchar(255),
     primary key (name)
 );
 
-create table role (
-    name varchar(50) not null,
-    description varchar(255),
-    primary key (name)
-);
+
 
 create table role_permissions (
     role_name varchar(50) not null,

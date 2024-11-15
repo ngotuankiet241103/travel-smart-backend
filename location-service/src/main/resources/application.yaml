@@ -18,9 +18,9 @@ spring:
         baseUrl: http://172.30.0.4:9411/api/v2/spans  # Change this to your Zipkin server URL
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/location_travel_db
-    username: root
-    password: 1234
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/location_travel_db}
+    password: ${DBMS_PASSWORD:1234}
+    username: ${DBMS_USERNAME:root}
   jpa:
     hibernate:
       ddl-auto: update
