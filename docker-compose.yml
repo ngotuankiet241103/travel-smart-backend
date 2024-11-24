@@ -58,151 +58,151 @@ services:
 #        - mysql
 #    networks:
 #      - travel
-  identity-service:
-    build:
-      context: ./identity-service
-      dockerfile: Dockerfile
-    image: identity-service:0.0.1
-    container_name: identity-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/identity_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-      DBMS_USERNAME: root
-      DBMS_PASSWORD: 1234
-    ports:
-      - "8080:8080"
-    expose:
-      - "8080"
-    depends_on:
-      - mysql
-    networks:
-      - travel
-  profile-service:
-    build:
-      context: ./profile-service
-      dockerfile: Dockerfile
-    image: profile-service:0.0.1
-    container_name: profile-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/profile_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-      DBMS_USERNAME: root
-      DBMS_PASSWORD: 1234
-    ports:
-      - "8081:8081"
-    expose:
-      - "8081"
-    depends_on:
-      - mysql
-    networks:
-      - travel
-  blog-service:
-    build:
-      context: ./blog-service
-      dockerfile: Dockerfile
-    image: blog-service:0.0.1
-    container_name: blog-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/blog_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-      DBMS_USERNAME: root
-      DBMS_PASSWORD: 1234
-    ports:
-      - "8082:8082"
-    expose:
-      - "8082"
-    depends_on:
-      - mysql
-    networks:
-      - travel
-  notification-service:
-    build:
-      context: ./notification-service
-      dockerfile: Dockerfile
-    image: notification-service:0.0.1
-    container_name: notification-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/media_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-      DBMS_USERNAME: root
-      DBMS_PASSWORD: 1234
-    ports:
-      - "8083:8083"
-    expose:
-      - "8083"
-    depends_on:
-      - mysql
-    networks:
-      - travel
-  location-service:
-    build:
-      context: ./location-service
-      dockerfile: Dockerfile
-    image: location-service:0.0.1
-    container_name: location-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/location_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-      DBMS_USERNAME: root
-      DBMS_PASSWORD: 1234
-    ports:
-      - "8084:8084"
-    expose:
-      - "8084"
-    depends_on:
-      - mysql
-    networks:
-      - travel
-
-  trip-service:
-    build:
-      context: ./trip-service
-      dockerfile: Dockerfile
-    image: trip-service:0.0.1
-    container_name: trip-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/trip_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-      DBMS_USERNAME: root
-      DBMS_PASSWORD: 1234
-    ports:
-      - "8085:8085"
-    expose:
-      - "8085"
-    depends_on:
-      - mysql
-    networks:
-      - travel
-  review-service:
-    build:
-      context: ./review-service
-      dockerfile: Dockerfile
-    image: review-service:0.0.1
-    container_name: review-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/review_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-      DBMS_USERNAME: root
-      DBMS_PASSWORD: 1234
-    ports:
-      - "8086:8086"
-    expose:
-      - "8086"
-    depends_on:
-      - mysql
-    networks:
-      - travel
-  media-service:
-    build:
-      context: ./media-service
-      dockerfile: Dockerfile
-    image: media-service:0.0.1
-    container_name: media-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/media_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
-      DBMS_USERNAME: root
-      DBMS_PASSWORD: 1234
-    ports:
-      - "8088:8088"
-    expose:
-      - "8088"
-    depends_on:
-      - mysql
-    networks:
-      - travel
+#  identity-service:
+#    build:
+#      context: ./identity-service
+#      dockerfile: Dockerfile
+#    image: identity-service:0.0.1
+#    container_name: identity-service
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/identity_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+#      DBMS_USERNAME: root
+#      DBMS_PASSWORD: 1234
+#    ports:
+#      - "8080:8080"
+#    expose:
+#      - "8080"
+#    depends_on:
+#      - mysql
+#    networks:
+#      - travel
+#  profile-service:
+#    build:
+#      context: ./profile-service
+#      dockerfile: Dockerfile
+#    image: profile-service:0.0.1
+#    container_name: profile-service
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/profile_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+#      DBMS_USERNAME: root
+#      DBMS_PASSWORD: 1234
+#    ports:
+#      - "8081:8081"
+#    expose:
+#      - "8081"
+#    depends_on:
+#      - mysql
+#    networks:
+#      - travel
+#  blog-service:
+#    build:
+#      context: ./blog-service
+#      dockerfile: Dockerfile
+#    image: blog-service:0.0.1
+#    container_name: blog-service
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/blog_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+#      DBMS_USERNAME: root
+#      DBMS_PASSWORD: 1234
+#    ports:
+#      - "8082:8082"
+#    expose:
+#      - "8082"
+#    depends_on:
+#      - mysql
+#    networks:
+#      - travel
+#  notification-service:
+#    build:
+#      context: ./notification-service
+#      dockerfile: Dockerfile
+#    image: notification-service:0.0.1
+#    container_name: notification-service
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/media_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+#      DBMS_USERNAME: root
+#      DBMS_PASSWORD: 1234
+#    ports:
+#      - "8083:8083"
+#    expose:
+#      - "8083"
+#    depends_on:
+#      - mysql
+#    networks:
+#      - travel
+#  location-service:
+#    build:
+#      context: ./location-service
+#      dockerfile: Dockerfile
+#    image: location-service:0.0.1
+#    container_name: location-service
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/location_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+#      DBMS_USERNAME: root
+#      DBMS_PASSWORD: 1234
+#    ports:
+#      - "8084:8084"
+#    expose:
+#      - "8084"
+#    depends_on:
+#      - mysql
+#    networks:
+#      - travel
+#
+#  trip-service:
+#    build:
+#      context: ./trip-service
+#      dockerfile: Dockerfile
+#    image: trip-service:0.0.1
+#    container_name: trip-service
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/trip_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+#      DBMS_USERNAME: root
+#      DBMS_PASSWORD: 1234
+#    ports:
+#      - "8085:8085"
+#    expose:
+#      - "8085"
+#    depends_on:
+#      - mysql
+#    networks:
+#      - travel
+#  review-service:
+#    build:
+#      context: ./review-service
+#      dockerfile: Dockerfile
+#    image: review-service:0.0.1
+#    container_name: review-service
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/review_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+#      DBMS_USERNAME: root
+#      DBMS_PASSWORD: 1234
+#    ports:
+#      - "8086:8086"
+#    expose:
+#      - "8086"
+#    depends_on:
+#      - mysql
+#    networks:
+#      - travel
+#  media-service:
+#    build:
+#      context: ./media-service
+#      dockerfile: Dockerfile
+#    image: media-service:0.0.1
+#    container_name: media-service
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/media_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+#      DBMS_USERNAME: root
+#      DBMS_PASSWORD: 1234
+#    ports:
+#      - "8088:8088"
+#    expose:
+#      - "8088"
+#    depends_on:
+#      - mysql
+#    networks:
+#      - travel
 
 
     ## Prometheus

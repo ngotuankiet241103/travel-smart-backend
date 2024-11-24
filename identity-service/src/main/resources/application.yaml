@@ -26,7 +26,7 @@ spring:
       ddl-auto: none
       enable_lazy_load_no_trans: true
   liquibase:
-    enabled: true
+    enabled: false
   main:
     allow-bean-definition-overriding: true
   cloud:
