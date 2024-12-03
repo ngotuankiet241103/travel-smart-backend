@@ -7,6 +7,7 @@ import com.travelsmart.trip_service.dto.request.TripRequest;
 import com.travelsmart.trip_service.dto.request.TripShareRequest;
 import com.travelsmart.trip_service.dto.request.TripUpdateRequest;
 import com.travelsmart.trip_service.dto.response.*;
+import com.travelsmart.trip_service.dto.response.httpclient.ProfileResponse;
 import com.travelsmart.trip_service.entity.TripEntity;
 import com.travelsmart.trip_service.entity.UserTripEntity;
 import com.travelsmart.trip_service.exception.CustomRuntimeException;
@@ -101,6 +102,10 @@ public class TripServiceImpl implements TripService {
         TripEntity trip = tripRepository.findById(id)
                 .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TRIP_NOT_FOUND));
         String userId = identityClient.getUserToShare(tripShareRequest.getEmail()).getResult();
+        boolean isExits = userTripRepository.existsByUserIdAndTripId(id,userId);
+        if(isExits) {
+            throw  new CustomRuntimeException(ErrorCode.TRIP_WAS_SHARED);
+        }
         UserTripEntity userTripEntity = UserTripEntity.builder()
                 .permission(tripShareRequest.getTripPermission())
                 .userId(userId)
@@ -147,9 +152,12 @@ public class TripServiceImpl implements TripService {
 
         return userTripEntities.stream()
                 .map(userTripEntity -> {
+                    ProfileResponse userTripResponse =  profileClient.getUserById(userTripEntity.getUserId()).getResult();
                     return UserTripResponse.builder()
-                            .email(profileClient.getUserById(userTripEntity.getUserId()).getResult().getEmail())
+                            .email(userTripResponse.getEmail())
                             .tripPermission(userTripEntity.getPermission())
+                            .name(userTripResponse.getFirstName() + " " + userTripResponse.getLastName())
+                            .avatar(userTripResponse.getAvatar())
                             .build();
                 }).toList();
     }

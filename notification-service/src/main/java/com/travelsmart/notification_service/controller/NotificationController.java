@@ -8,8 +8,11 @@ import com.travelsmart.notification_service.service.EmailService;
 
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -20,14 +23,16 @@ import java.util.List;
 public class NotificationController {
     private final EmailService emailService;
     private final KafkaTemplate<String,Object> template;
-    @KafkaListener(topics = "notification",groupId = "notification-group")
+
+    @KafkaListener(topics = "notification", groupId = "notification-group")
     void notificationEvent(NotificationCommand notificationCommand){
         System.out.println(notificationCommand);
         if(notificationCommand.getChanel().equals("EMAIL")){
             emailService.sendEmail(EmailRequest.buildEmailRequest(notificationCommand));
-            if(!notificationCommand.getNextEvent().isEmpty()){
+            if(notificationCommand.getNextEvent() != null && !notificationCommand.getNextEvent().isEmpty()){
                 template.send(notificationCommand.getNextEvent(),"Send email success");
             }
+
         }
     }
 

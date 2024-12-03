@@ -231,7 +231,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
         template.send("notification",notificationCommand);
         confirmTokenRepository.save(confirmTokenEntity);
-        System.out.println(token);
+        System.out.println("token" +  token);
 
     }
 

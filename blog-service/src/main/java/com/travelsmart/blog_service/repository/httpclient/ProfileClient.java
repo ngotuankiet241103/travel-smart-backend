@@ -5,7 +5,7 @@ import com.travelsmart.blog_service.dto.response.ProfileUserResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-@FeignClient(name = "profile-service", url = "http://localhost:8081/profile/users")
+@FeignClient(name = "profile-service", url = "${feign.url.profile}/profile/users")
 public interface ProfileClient {
     @GetMapping("/internal/profile/{user-id}")
     ApiResponse<ProfileUserResponse> getUserById(@PathVariable("user-id") String id);

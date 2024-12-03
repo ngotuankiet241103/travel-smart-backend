@@ -1,0 +1,402 @@
+## Role: Chỉ định quyền list/watch/get cho tài nguyên services
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: Role
+#metadata:
+#  name: list-services-role
+#  namespace: dev
+#rules:
+#  - apiGroups: [""]
+#    resources: ["services"]
+#    verbs: ["get", "list", "watch"]
+#
+## RoleBinding: Gắn Role với ServiceAccount
+#---
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: RoleBinding
+#metadata:
+#  name: list-services-rolebinding
+#  namespace: dev
+#subjects:
+#  - kind: ServiceAccount
+#    name: default
+#    namespace: dev
+#roleRef:
+#  kind: Role
+#  name: list-services-role
+#  apiGroup: rbac.authorization.k8s.io
+
+
+
+
+
+
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: mysql-pv
+#spec:
+#  capacity:
+#    storage: 1Gi
+#  accessModes:
+#    - ReadWriteOnce
+#  hostPath:
+#    path: /mnt/data/mysql  # You can change this path based on your environment (local, cloud, etc.)
+#  persistentVolumeReclaimPolicy: Retain
+#  storageClassName: standard  # Optional: can be specified based on your environment
+#---
+
+#apiVersion: v1
+#kind: Pod
+#metadata:
+#  name: mysql
+#  namespace: dev
+#spec:
+#  containers:
+#    - name: mysql
+#      image: mysql:8.0.33
+#      env:
+#        - name: MYSQL_ROOT_PASSWORD
+#          value: "1234"
+#        - name: MYSQL_USER
+#          value: "admin"
+#        - name: MYSQL_PASSWORD
+#          value: "adminpassword"
+#      ports:
+#        - containerPort: 3306
+#      volumeMounts:
+#        - mountPath: /var/lib/mysql
+#          name: mysql-storage
+#  volumes:
+#    - name: mysql-storage
+#      persistentVolumeClaim:
+#        claimName: mysql-pvc
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  labels:
+    app: appication
+  namespace: dev
+spec:
+
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: api-gateway
+          image: ntkiet2411/api-gateway:0.0.3
+          env:
+            - name: IDENTITY-SERVICE-URL
+              value: http://identity-service.dev.svc.cluster.local:8080
+            - name: PROFILE-SERVICE-URL
+              value: http://profile-service.dev.svc.cluster.local:8081
+            - name: BLOG-SERVICE-URL
+              value: http://blog-service.dev.svc.cluster.local:8082
+            - name : LOCATION-SERVICE-URL
+              value : http://location-service.dev.svc.cluster.local:8084
+            - name: TRIP-SERVICE-URL
+              value: http://trip-service.dev.svc.cluster.local:8085
+            - name: REVIEW-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8086
+
+          ports:
+            - containerPort: 8888
+
+#---
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: blog-service
+#  labels:
+#    app: appication
+#  namespace: dev
+#spec:
+#
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: blog-service
+#  template:
+#    metadata:
+#      labels:
+#        app: blog-service
+#    spec:
+#      serviceAccountName: default
+#      containers:
+#        - name: blog-service
+#          image: ntkiet2411/blog-service:0.0.2
+#          env:
+#            - name: IDENTITY-SERVICE-URL
+#              value: http://identity-service.dev.svc.cluster.local:8080
+#            - name: PROFILE-SERVICE-URL
+#              value: http://profile-service.dev.svc.cluster.local:8081
+#            - name: BLOG-SERVICE-URL
+#              value: http://blog-service.dev.svc.cluster.local:8082
+#            - name : LOCATION-SERVICE-URL
+#              value : http://location-service.dev.svc.cluster.local:8084
+#            - name: TRIP-SERVICE-URL
+#              value: http://trip-service.dev.svc.cluster.local:8085
+#            - name: REVIEW-SERVICE-URL
+#              value: http://review-service.dev.svc.cluster.local:8086
+#            - name: SPRING_DATASOURCE_URL
+#              value: "jdbc:mysql://10.101.103.91:3306/blog_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+#            - name: DBMS_USERNAME
+#              value: "root"
+#            - name: DBMS_PASSWORD
+#              value: "1234"
+#          ports:
+#            - containerPort: 8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-service
+  labels:
+    app: appication
+  namespace: dev
+spec:
+
+  replicas: 1
+  selector:
+    matchLabels:
+      app: profile-service
+  template:
+    metadata:
+      labels:
+        app: profile-service
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: profile-service
+          image: ntkiet2411/profile-service:0.0.2
+          env:
+            - name: IDENTITY-SERVICE-URL
+              value: http://identity-service.dev.svc.cluster.local:8080
+            - name: PROFILE-SERVICE-URL
+              value: http://profile-service.dev.svc.cluster.local:8081
+            - name: BLOG-SERVICE-URL
+              value: http://blog-service.dev.svc.cluster.local:8082
+            - name : LOCATION-SERVICE-URL
+              value : http://location-service.dev.svc.cluster.local:8084
+            - name: TRIP-SERVICE-URL
+              value: http://trip-service.dev.svc.cluster.local:8085
+            - name: REVIEW-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8086
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/profile_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+            - name: DBMS_USERNAME
+              value: "root"
+            - name: DBMS_PASSWORD
+              value: "1234"
+          ports:
+            - containerPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: location-service
+  labels:
+    app: appication
+  namespace: dev
+spec:
+
+  replicas: 2
+  selector:
+    matchLabels:
+      app: location-service
+  template:
+    metadata:
+      labels:
+        app: location-service
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: location-service
+          image: ntkiet2411/location-service:0.0.2
+          env:
+            - name: IDENTITY-SERVICE-URL
+              value: http://identity-service.dev.svc.cluster.local:8080
+            - name: PROFILE-SERVICE-URL
+              value: http://profile-service.dev.svc.cluster.local:8081
+            - name: BLOG-SERVICE-URL
+              value: http://blog-service.dev.svc.cluster.local:8082
+            - name : LOCATION-SERVICE-URL
+              value : http://location-service.dev.svc.cluster.local:8084
+            - name: TRIP-SERVICE-URL
+              value: http://trip-service.dev.svc.cluster.local:8085
+            - name: REVIEW-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8086
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/location_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+            - name: DBMS_USERNAME
+              value: "root"
+            - name: DBMS_PASSWORD
+              value: "1234"
+          ports:
+            - containerPort: 8084
+#---
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: trip-service
+#  labels:
+#    app: appication
+#  namespace: dev
+#spec:
+#
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: trip-service
+#  template:
+#    metadata:
+#      labels:
+#        app: trip-service
+#    spec:
+#      serviceAccountName: default
+#      containers:
+#        - name: trip-service
+#          image: ntkiet2411/trip-service:0.0.2
+#          env:
+#            - name: IDENTITY-SERVICE-URL
+#              value: http://identity-service.dev.svc.cluster.local:8080
+#            - name: PROFILE-SERVICE-URL
+#              value: http://profile-service.dev.svc.cluster.local:8081
+#            - name: BLOG-SERVICE-URL
+#              value: http://blog-service.dev.svc.cluster.local:8082
+#            - name : LOCATION-SERVICE-URL
+#              value : http://location-service.dev.svc.cluster.local:8084
+#            - name: TRIP-SERVICE-URL
+#              value: http://trip-service.dev.svc.cluster.local:8085
+#            - name: REVIEW-SERVICE-URL
+#              value: http://review-service.dev.svc.cluster.local:8086
+#            - name: SPRING_DATASOURCE_URL
+#              value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/trip_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+#            - name: DBMS_USERNAME
+#              value: "root"
+#            - name: DBMS_PASSWORD
+#              value: "1234"
+#          ports:
+#            - containerPort: 8085
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-service
+  labels:
+    app: appication
+  namespace: dev
+spec:
+
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-service
+  template:
+    metadata:
+      labels:
+        app: review-service
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: review-service
+          image: ntkiet2411/review-service:0.0.2
+          env:
+            - name: IDENTITY-SERVICE-URL
+              value: http://identity-service.dev.svc.cluster.local:8080
+            - name: PROFILE-SERVICE-URL
+              value: http://profile-service.dev.svc.cluster.local:8081
+            - name: BLOG-SERVICE-URL
+              value: http://blog-service.dev.svc.cluster.local:8082
+            - name : LOCATION-SERVICE-URL
+              value : http://location-service.dev.svc.cluster.local:8084
+            - name: TRIP-SERVICE-URL
+              value: http://trip-service.dev.svc.cluster.local:8085
+            - name: REVIEW-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8086
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/review_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+            - name: DBMS_USERNAME
+              value: "root"
+            - name: DBMS_PASSWORD
+              value: "1234"
+          ports:
+            - containerPort: 8086
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-service
+  labels:
+    app: appication
+  namespace: dev
+spec:
+
+  replicas: 1
+  selector:
+    matchLabels:
+      app: media-service
+  template:
+    metadata:
+      labels:
+        app: media-service
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: media-service
+          image: ntkiet2411/media-service:0.0.1
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/media_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+            - name: DBMS_USERNAME
+              value: "root"
+            - name: DBMS_PASSWORD
+              value: "1234"
+
+          ports:
+            - containerPort: 8088
+#apiVersion: v1
+#kind: Namespace
+#metadata:
+#  name: dev
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-service
+  labels:
+    app: appication
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-service
+  template:
+    metadata:
+      labels:
+        app: identity-service
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: identity-service
+          image: ntkiet2411/identity-service:0.0.1
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/identity_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+            - name: DBMS_USERNAME
+              value: "root"
+            - name: DBMS_PASSWORD
+              value: "1234"
+          ports:
+            - containerPort: 8080

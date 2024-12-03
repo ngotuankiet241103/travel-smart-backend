@@ -1,6 +1,10 @@
 spring:
   application:
     name: identity-service
+  kubernetes:
+    discovery:
+      enabled: true  # Enable Kubernetes-based service discovery
+      all-namespaces: true  # Optional: Discover services only in the same namespace
   zipkin:
     enabled: true
     base-url: http://127.0.0.1:9411/

@@ -5,6 +5,10 @@ server:
 spring:
   application:
     name: blog-service
+  kubernetes:
+    discovery:
+      enabled: true  # Enable Kubernetes-based service discovery
+      all-namespaces: true  # Optional: Discover services only in the same namespace
   security:
     metrics:
       enabled: false  # Tắt metrics bảo mật của Spring Security
@@ -47,6 +51,10 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+feign:
+  url:
+    media: ${MEDIA-SERVICE-URL:http://localhost:8088}
+    profile: ${MEDIA-SERVICE-URL:http://localhost:8081}
 swagger: "2.0"
 openapi: "3.0.0"
 app:

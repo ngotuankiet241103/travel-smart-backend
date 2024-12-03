@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@FeignClient(name = "media-service", url = "http://localhost:8088/api/v1/medias")
+@FeignClient(name = "media-service", url = "${feign.url.media}/api/v1/medias")
 public interface MediaClient {
     @GetMapping("/{id}")
     ApiResponse<MediaHttpResponse> getById(@PathVariable("id") Long id);

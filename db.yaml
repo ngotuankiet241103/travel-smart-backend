@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: dev
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard  # Optional: should match the storage class of the PV
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-db-script
+  namespace: dev
+data:
+  initDB.sql: |
+    -- Add your SQL commands here
+    CREATE DATABASE IF NOT EXISTS  identity_travel_db;
+    CREATE DATABASE IF NOT EXISTS  trip_travel_db;
+    CREATE DATABASE IF NOT EXISTS  profile_travel_db;
+    CREATE DATABASE IF NOT EXISTS  media_travel_db;
+    CREATE DATABASE IF NOT EXISTS  location_travel_db;
+    CREATE DATABASE IF NOT EXISTS  blog_travel_db;
+    CREATE DATABASE IF NOT EXISTS  review_travel_db;
+    CREATE USER 'root'@'%' IDENTIFIED BY '1234';
+    GRANT ALL PRIVILEGES ON my_database.* TO 'root'@'%';
+    FLUSH PRIVILEGES;
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql
+  namespace: dev
+  labels:
+    name: mysql
+spec:
+  containers:
+    - name: mysql
+      image: mysql:8.0.33
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "1234"
+        - name: MYSQL_USER
+          value: "admin"
+        - name: MYSQL_PASSWORD
+          value: "adminpassword"
+      ports:
+        - containerPort: 3306
+      volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-storage
+        - mountPath: /docker-entrypoint-initdb.d/initDB.sql
+          name: init-db-script
+          subPath: initDB.sql
+      readinessProbe:
+        tcpSocket:
+          port: 3306
+        initialDelaySeconds: 120  # Delay to allow MySQL to start
+        periodSeconds: 5         # Check every 5 seconds after the initial delay
+  volumes:
+    - name: mysql-storage
+      persistentVolumeClaim:
+        claimName: mysql-pvc
+    - name: init-db-script
+      configMap:
+        name: init-db-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: dev
+spec:
+  selector:
+    name: mysql  # This should match the label on the MySQL pod or deployment
+  ports:
+    - port: 3306           # The port on which MySQL is running inside the pod
+      targetPort: 3306      # The same port as in the container
+      protocol: TCP

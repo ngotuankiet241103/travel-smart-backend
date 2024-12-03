@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "location-service", url = "http://localhost:8084/location/locations")
+@FeignClient(name = "location-service", url = "${feign.url.location}/location/locations")
 public interface LocationClient {
     @GetMapping("/internal/{id}")
     ApiResponse<LocationResponse> getLocationById(@PathVariable("id") Long id);

@@ -12,5 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UserTripResponse {
     private String email;
+    private String name;
+    private String avatar;
     private TripPermission tripPermission;
 }

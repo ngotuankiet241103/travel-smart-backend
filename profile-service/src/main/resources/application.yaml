@@ -5,6 +5,10 @@ server:
 spring:
   application:
     name: profile-service
+  kubernetes:
+    discovery:
+      enabled: true  # Enable Kubernetes-based service discovery
+      all-namespaces: true  # Optional: Discover services only in the same namespace
   sleuth:
     propagation-keys:
       - X-B3-TraceId
@@ -87,6 +91,9 @@ token:
 #  level:
 #    io.eventuate.tram: DEBUG
 #    org.apache.kafka: DEBUG
+feign:
+  url:
+    media: ${MEDIA-SERVICE-URL:http://localhost:8088}
 
 springdoc:
   api-docs:

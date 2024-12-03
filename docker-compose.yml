@@ -18,21 +18,21 @@ services:
     networks:
       - travel
 
-  mysql:
-    image: mysql:8.0.33
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: adminpassword
-    ports:
-      - "3307:3306"
-    volumes:
-      - mysqlv8_data:/var/lib/mysql
-      - ./initDB.sql:/docker-entrypoint-initdb.d/initDB.sql
-    networks:
-
-      - travel
+#  mysql:
+#    image: mysql:8.0.33
+#    container_name: mysql
+#    environment:
+#      MYSQL_ROOT_PASSWORD: 1234
+#      MYSQL_USER: admin
+#      MYSQL_PASSWORD: adminpassword
+#    ports:
+#      - "3307:3306"
+#    volumes:
+#      - mysqlv8_data:/var/lib/mysql
+#      - ./initDB.sql:/docker-entrypoint-initdb.d/initDB.sql
+#    networks:
+#
+#      - travel
 
 #  zipkin:
 #    image: 'openzipkin/zipkin'

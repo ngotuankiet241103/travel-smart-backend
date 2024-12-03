@@ -25,6 +25,7 @@ public enum ErrorCode {
     DESTINATION_NOT_FOUND(1004,"Destination not found",HttpStatus.NOT_FOUND),
     DESTINATION_INVALID(1004,"Destination not valid",HttpStatus.BAD_REQUEST),
     TRIP_DENIED(1004,"This trip not belong to user",HttpStatus.BAD_REQUEST),
+    TRIP_WAS_SHARED(1004,"User was shared",HttpStatus.BAD_REQUEST),
     IMAGE_NOT_FOUND(1004,"Image of location not exists",HttpStatus.NOT_FOUND),
     FILE_INVALID(1003, "File must be not null", HttpStatus.BAD_REQUEST),
     FORBIDDEN(1003, "You don't have permission to access resources", HttpStatus.FORBIDDEN),

@@ -22,6 +22,10 @@ spring:
       enabled: false
   application:
     name: notification-service
+  kubernetes:
+    discovery:
+      enabled: true  # Enable Kubernetes-based service discovery
+      all-namespaces: true  # Optional: Discover services only in the same namespace
 
 management:
   tracing:
@@ -51,7 +55,7 @@ api:
 notification:
   email:
     brevo-url: https://api.brevo.com
-    brevo-apiKey: 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
+    brevo-apiKey: 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
 ## Additional configuration if needed
 #logging:
 #  level:

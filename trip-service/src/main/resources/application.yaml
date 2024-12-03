@@ -24,6 +24,10 @@ spring:
       enable_lazy_load_no_trans: true
   liquibase:
     enabled: true
+  kubernetes:
+    discovery:
+      enabled: true  # Enable Kubernetes-based service discovery
+      all-namespaces: true  # Optional: Discover services only in the same namespace
 geoapify:
   key: d1e2afb1ba924f9ebbbb3bd407e72b63
   url: https://api.geoapify.com/
@@ -31,6 +35,11 @@ geoapify:
   reverse: /v1/geocode/reverse
   placeDetail: /v2/place-details
   routing: /v1/routing
+feign:
+  url:
+    identity: ${IDENTITY-SERVICE-URL:http://localhost:8080}
+    profile: ${PROFILE-SERVICE-URL:http://localhost:8081}
+    location: ${PROFILE-SERVICE-URL:http://localhost:8084}
 management:
   endpoints:
     web:

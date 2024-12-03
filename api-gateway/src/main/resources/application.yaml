@@ -8,7 +8,15 @@ spring:
   liquibase:
     enabled: true
   cloud:
+    kubernetes:
+      discovery:
+        enabled: true  # Enable Kubernetes-based service discovery
+        all-namespaces: true  # Optional: Discover services only in the same namespace
+
     gateway:
+#      discovery:
+#        locator:
+#          enabled: true
 #      globalcors:
 #        corsConfigurations:
 #          '[/**]':
@@ -31,37 +39,37 @@ spring:
           filters:
               - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
         - id: identity-service
-          uri: http://localhost:8080
+          uri:  ${IDENTITY-SERVICE-URL:http://localhost:8080}
           predicates:
             - Path=${api.prefix}/identity/**
           filters:
             - StripPrefix=2
         - id: profile-service
-          uri: http://localhost:8081
+          uri: ${PROFILE-SERVICE-URL:http://localhost:8081}
           predicates:
             - Path=${api.prefix}/profile/**
           filters:
             - StripPrefix=2
-        - id: profile-service
-          uri: http://localhost:8082
+        - id: blog-service
+          uri: ${BLOG-SERVICE-URL:http://localhost:8082}
           predicates:
             - Path=${api.prefix}/blog/**
           filters:
             - StripPrefix=2
         - id: location-service
-          uri: http://localhost:8084
+          uri: ${LOCATION-SERVICE-URL:http://localhost:8084}
           predicates:
             - Path=${api.prefix}/location/**
           filters:
             - StripPrefix=2
         - id: trip-service
-          uri: http://localhost:8085
+          uri: ${TRIP-SERVICE-URL:http://localhost:8085}
           predicates:
             - Path=${api.prefix}/trip/**
           filters:
             - StripPrefix=2
         - id: review-service
-          uri: http://localhost:8086
+          uri: ${REVIEW-SERVICE-URL:http://localhost:8086}
           predicates:
             - Path=${api.prefix}/review/**
           filters:
@@ -109,4 +117,7 @@ management:
   endpoint:
     metrics:
       enabled: true
+feign:
+  url:
+    identity:  ${IDENTITY-SERVICE-URL:http://localhost:8080}
 

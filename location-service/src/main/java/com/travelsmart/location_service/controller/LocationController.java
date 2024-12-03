@@ -1,5 +1,6 @@
 package com.travelsmart.location_service.controller;
 
+import com.travelsmart.location_service.constant.LocationStatus;
 import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.dto.request.*;
 import com.travelsmart.location_service.dto.response.*;
@@ -92,6 +93,13 @@ public class LocationController {
     public ApiResponse<LocationImageResponse> createImageLocation(@Valid @ModelAttribute ImageCreateRequest imageCreateRequest){
         return ApiResponse.<LocationImageResponse>builder()
                 .result(locationService.createImageLocation(imageCreateRequest))
+                .build();
+    }
+    @Operation(summary = "Get all location status ",description = "Returns list location statuses")
+    @GetMapping("/status")
+    public ApiResponse<List<LocationStatus>>  getLocationStatuses(){
+        return ApiResponse.<List<LocationStatus>>builder()
+                .result(LocationStatus.getStatuses())
                 .build();
     }
     @Operation(summary = "Delete location image by id")

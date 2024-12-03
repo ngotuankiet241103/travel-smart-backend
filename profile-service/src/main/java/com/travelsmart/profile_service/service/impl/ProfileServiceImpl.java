@@ -133,7 +133,9 @@ public class ProfileServiceImpl implements ProfileService {
         ProfileResponse profileResponse = profileMapper.toProfileResponse(profileEntity);
         AvatarEntity avatar = avatarRepository.findByProfileId(profileEntity.getId());
         profileResponse.setAvatar(avatar != null ? avatar.getUrl() : null);
-        profileResponse.setHobbies(profileEntity.getHobbies() != null ? profileEntity.getHobbies().stream().map(LocationType::valueOf).toList() : null);
+
+        profileResponse.setHobbies(profileEntity.getHobbies() != null  && !profileEntity.getHobbies().isEmpty() ? profileEntity.getHobbies().stream().filter(type -> !type.isEmpty()).map(LocationType::valueOf).toList() : null);
+
         return  profileResponse;
     }
 }
