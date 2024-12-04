@@ -17,5 +17,6 @@ public class ProfileResponse {
     private String firstName;
     private String lastName;
     private String avatar;
+    private String userName;
     private List<String> hobbies;
 }

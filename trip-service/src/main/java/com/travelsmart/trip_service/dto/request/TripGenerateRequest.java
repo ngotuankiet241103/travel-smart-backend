@@ -1,5 +1,6 @@
 package com.travelsmart.trip_service.dto.request;
 
+import com.travelsmart.trip_service.constant.HobbyType;
 import com.travelsmart.trip_service.constant.LocationType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -11,5 +12,5 @@ import java.util.List;
 @Data
 public class TripGenerateRequest extends TripRequest {
     @NotNull(message = "TYPES_INVALID")
-    private List<LocationType> type;
+    private List<HobbyType> type;
 }

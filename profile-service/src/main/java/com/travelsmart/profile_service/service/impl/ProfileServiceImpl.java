@@ -11,6 +11,7 @@ import com.travelsmart.profile_service.dto.response.MediaHttpResponse;
 import com.travelsmart.profile_service.dto.response.ProfileInternalResponse;
 import com.travelsmart.profile_service.dto.response.ProfileResponse;
 import com.travelsmart.profile_service.entity.AvatarEntity;
+import com.travelsmart.profile_service.entity.HobbyType;
 import com.travelsmart.profile_service.entity.LocationType;
 import com.travelsmart.profile_service.entity.ProfileEntity;
 import com.travelsmart.profile_service.exception.CustomRuntimeException;
@@ -125,7 +126,7 @@ public class ProfileServiceImpl implements ProfileService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         ProfileEntity profile = profileRepository.findById(authentication.getName())
                 .orElseThrow(() -> new CustomRuntimeException(ErrorCode.USER_NOT_FOUND));
-        profile.setHobbies(hobbyRequest.getHobbies().stream().map(LocationType::toString).toList());
+        profile.setHobbies(hobbyRequest.getHobbies().stream().map(HobbyType::toString).toList());
         return mappingOne(profileRepository.save(profile));
     }
 

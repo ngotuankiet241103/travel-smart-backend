@@ -1,6 +1,7 @@
 package com.travelsmart.trip_service.service.impl;
 
 import com.travelsmart.location_service.dto.response.LocationImageResponse;
+import com.travelsmart.trip_service.constant.LocationType;
 import com.travelsmart.trip_service.constant.TripPermission;
 import com.travelsmart.trip_service.dto.request.TripGenerateRequest;
 import com.travelsmart.trip_service.dto.request.TripRequest;
@@ -29,8 +30,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -102,9 +103,12 @@ public class TripServiceImpl implements TripService {
         TripEntity trip = tripRepository.findById(id)
                 .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TRIP_NOT_FOUND));
         String userId = identityClient.getUserToShare(tripShareRequest.getEmail()).getResult();
-        boolean isExits = userTripRepository.existsByUserIdAndTripId(id,userId);
-        if(isExits) {
-            throw  new CustomRuntimeException(ErrorCode.TRIP_WAS_SHARED);
+        UserTripEntity userTrip= userTripRepository.findByUserIdAndTripId(userId,id)
+                .orElse(null);
+        if(userTrip != null) {
+            userTrip.setPermission(tripShareRequest.getTripPermission());
+            userTripRepository.save(userTrip);
+            return "Share email " + tripShareRequest.getEmail() + " success";
         }
         UserTripEntity userTripEntity = UserTripEntity.builder()
                 .permission(tripShareRequest.getTripPermission())
@@ -134,7 +138,12 @@ public class TripServiceImpl implements TripService {
         trip.setImage(locationImageResponse != null ? locationImageResponse.getUrl() : "");
         tripRepository.save(trip);
         buildUserTrip(trip);
-        List<ItineraryResponse> itineraries  = itineraryService.generateTrip(trip,tripGenerateRequest.getType());
+        Set<LocationType> locationTypes = new HashSet<>();
+        tripGenerateRequest.getType().forEach(data -> {
+            locationTypes.addAll(data.getTypes());
+
+        });
+        List<ItineraryResponse> itineraries  = itineraryService.generateTrip(trip, new ArrayList<>(locationTypes));
 
         return TripGenerateResponse.builder()
                 .id(trip.getId())
@@ -156,7 +165,7 @@ public class TripServiceImpl implements TripService {
                     return UserTripResponse.builder()
                             .email(userTripResponse.getEmail())
                             .tripPermission(userTripEntity.getPermission())
-                            .name(userTripResponse.getFirstName() + " " + userTripResponse.getLastName())
+                            .name(userTripResponse.getUserName())
                             .avatar(userTripResponse.getAvatar())
                             .build();
                 }).toList();
