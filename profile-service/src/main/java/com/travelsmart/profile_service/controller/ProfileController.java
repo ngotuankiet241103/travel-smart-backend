@@ -9,6 +9,7 @@ import com.travelsmart.profile_service.dto.request.HobbyRequest;
 import com.travelsmart.profile_service.dto.request.ProfileUpdateAvatar;
 import com.travelsmart.profile_service.dto.request.ProfileUpdateRequest;
 import com.travelsmart.profile_service.dto.response.*;
+import com.travelsmart.profile_service.entity.HobbyType;
 import com.travelsmart.profile_service.entity.LocationType;
 import com.travelsmart.profile_service.service.ProfileService;
 
@@ -99,7 +100,7 @@ public class ProfileController {
     @GetMapping("/hobbies")
     public ApiResponse<List<LocationTypeResponse>> getHobbies(){
         return ApiResponse.<List<LocationTypeResponse>>builder()
-                .result(LocationType.getHobbies())
+                .result(HobbyType.getHobbies())
                 .build();
     }
     @KafkaListener(topics = "createUser-success",groupId = "profile-group")

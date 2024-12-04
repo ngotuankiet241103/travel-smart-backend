@@ -1,8 +1,10 @@
 package com.travelsmart.profile_service.entity;
 
+import com.travelsmart.profile_service.dto.response.LocationTypeResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -26,57 +28,15 @@ public enum HobbyType {
     private final List<LocationType> types;
     private final String image;
     // const travelCategories = {
-//   CULTURAL_TOURISM: {
-//     vietnameseName: "Du lịch văn hóa",
-//     types: ["CULTURAL_SITE", "TOURIST_ATTRACTION","SHOPPING"],
-//   },
-//   RELAXATION_TOURISM: {
-//     vietnameseName: "Du lịch nghỉ dưỡng",
-//     types: ["ACCOMMODATION", "PARK", "HEALTH_WELLNESS","TRANSPORT_HUB"],
-//   },
-//   EXPLORATION_TOURISM: {
-//     vietnameseName: "Du lịch khám phá",
-//     types: ["TOURIST_ATTRACTION", "CULTURAL_SITE", "ADVENTURE","ADMINISTRATIVE","SHOPPING","ENTERTAINMENT"],
-//   },
-//   ECO_TOURISM: {
-//     vietnameseName: "Du lịch sinh thái",
-//     types: ["PARK","ADMINISTRATIVE","CULTURAL_SITE","TOURIST_ATTRACTION","TRANSPORT_HUB"],
-//   },
-//   ADVENTURE_TOURISM: {
-//     vietnameseName: "Du lịch mạo hiểm",
-//     types: ["ADVENTURE","HEALTH_WELLNESS","CULTURAL_SITE","TOURIST_ATTRACTION"],
-//   },
-//   CULINARY_TOURISM: {
-//     vietnameseName: "Du lịch ẩm thực",
-//     types: ["RESTAURANT","SHOPPING","TOURIST_ATTRACTION"],
-//   },
-//   SPIRITUAL_TOURISM: {
-//     vietnameseName: "Du lịch tâm linh",
-//     types: ["CULTURAL_SITE","HEALTH_WELLNESS","TRANSPORT_HUB"],
-//   },
-//   EDUCATIONAL_TOURISM: {
-//     vietnameseName: "Du lịch giáo dục",
-//     types: ["EDUCATIONAL","ADMINISTRATIVE","ENTERTAINMENT","TRANSPORT_HUB"],
-//   },
-//   ISLAND_TOURISM: {
-//     vietnameseName: "Du lịch biển đảo",
-//     types: ["TOURIST_ATTRACTION", "HEALTH_WELLNESS","TRANSPORT_HUB"],
-//   },
-//   COMMUNITY_TOURISM: {
-//     vietnameseName: "Du lịch cộng đồng",
-//     types: ["FUNCTIONAL","ADMINISTRATIVE","ENTERTAINMENT","CULTURAL_SITE","TOURIST_ATTRACTION","TRANSPORT_HUB"],
-//   },
-//   FESTIVAL_TOURISM: {
-//     vietnameseName: "Du lịch mùa lễ hội",
-//     types: ["EVENT","SHOPPING","ENTERTAINMENT","CULTURAL_SITE","TOURIST_ATTRACTION"],
-//   },
-//   SPORT_TOURISM: {
-//     vietnameseName: "Du lịch thể thao",
-//     types: ["HEALTH_WELLNESS","CULTURAL_SITE","TOURIST_ATTRACTION"],
-//   },
-//   HONEYMOON_TOURISM: {
-//     vietnameseName: "Du lịch tuần trăng mật",
-//     types: ["ACCOMMODATION","ENTERTAINMENT","SHOPPING","HEALTH_WELLNESS"],
-//   },
-// };
+    public static List<HobbyType> getLocationTypes(){
+        return Arrays.asList(HobbyType.values());
+    }
+    public static List<LocationTypeResponse> getHobbies() {
+        return getLocationTypes().stream()
+                .map(locationType -> LocationTypeResponse.builder()
+                        .label(locationType.toString())
+                        .image(locationType.getImage())
+                        .build()
+                ).toList();
+    }
 }
