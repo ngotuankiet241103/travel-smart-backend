@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface LocationRepository extends JpaRepository<LocationEntity,Long> {
-    @Query(value = "SELECT l.* FROM location l WHERE l.state LIKE ?1 OR l.city LIKE ?1 OR l.display_name LIKE ?1 AND l.status = ?2 AND type != 14 ",nativeQuery = true)
+    @Query(value = "SELECT l.* FROM location l WHERE l.state LIKE ?1 OR l.city LIKE ?1 OR l.name LIKE ?1 l.display_name LIKE ?1 AND l.status = ?2 AND type != 14 ",nativeQuery = true)
     List<LocationEntity> findBySearchParam(Pageable pageable, String search, LocationStatus status);
     @Query(value = """
             SELECT * FROM location
