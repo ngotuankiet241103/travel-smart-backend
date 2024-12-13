@@ -32,7 +32,7 @@ public class BlogController {
     }
     @Operation(summary = "Get blogs ",description = "Returns list blog")
     @GetMapping
-    public ApiResponse<PageableResponse<List<BlogResponse>>> getAll( @RequestParam("q") String search, @RequestParam(value = "page",defaultValue = "1") int page,
+    public ApiResponse<PageableResponse<List<BlogResponse>>> getAll( @RequestParam(value = "q",defaultValue = "") String search, @RequestParam(value = "page",defaultValue = "1") int page,
                                                 @RequestParam(value = "limit",defaultValue = "5") int limit){
         Pageable pageable = PageRequest.of(page - 1,limit);
         return ApiResponse.<PageableResponse<List<BlogResponse>>>builder()

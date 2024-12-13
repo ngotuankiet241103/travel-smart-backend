@@ -55,7 +55,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/review/actuator/prometheus",
             "/trip/actuator/prometheus",
             "/blog/actuator/prometheus",
-            "/location/actuator/prometheus"
+            "/location/actuator/prometheus",
+            "/blog/comments/*"
     };
 
     @Value("${api.prefix}")
