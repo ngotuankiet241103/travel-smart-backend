@@ -84,7 +84,7 @@ public class BlogServiceImpl implements BlogService {
         search = HandleString.buildSearchParam(search);
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(role -> role.toString().equals("ROLE_ADMIN"));
-        Page<BlogEntity> page = isAdmin ? blogRepository.findAllTitleLike(pageable,search) : blogRepository.findByStatusAndTitleLike(pageable, BlogStatus.ACCEPT,search);
+        Page<BlogEntity> page = isAdmin ? blogRepository.findAllByTitleLike(pageable,search) : blogRepository.findByStatusAndTitleLike(pageable, BlogStatus.ACCEPT,search);
         Paging paging = Paging.buildPaging(pageable,page.getTotalPages());
         return PageableResponse.<List<BlogResponse>>builder()
                 .data(mappingList(page.getContent()))

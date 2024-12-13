@@ -23,5 +23,7 @@ public interface BlogRepository extends JpaRepository<BlogEntity,Long> {
 
     Page<BlogEntity> findByStatusAndTitleLike(Pageable pageable, BlogStatus blogStatus, String search);
 
-    Page<BlogEntity> findAllTitleLike(Pageable pageable, String search);
+
+
+    Page<BlogEntity> findAllByTitleLike(Pageable pageable, String search);
 }
