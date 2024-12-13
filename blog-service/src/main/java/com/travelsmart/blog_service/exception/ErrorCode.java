@@ -30,6 +30,7 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND( 1004,"Resource not found",HttpStatus.NOT_FOUND),
     TOKEN_NOT_EXISTS(1004,"Token not exists",HttpStatus.BAD_REQUEST),
     TOKEN_EXPIRED(1004,"Token is expired",HttpStatus.BAD_REQUEST),
+    BLOG_NOT_BELONG(1004,"Blog not belong to you",HttpStatus.BAD_REQUEST),
     EMAIL_IS_VERIFIED(1004,"Email is verified",HttpStatus.BAD_REQUEST),
     CONFIRMTOKEN_NOT_FOUND( 1004,"Confirm token not found",HttpStatus.NOT_FOUND),
     CONFIRMTOKEN_IS_EXPIRED( 1004,"Confirn token is expired",HttpStatus.BAD_REQUEST),

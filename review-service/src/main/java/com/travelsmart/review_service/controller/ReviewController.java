@@ -77,6 +77,14 @@ public class ReviewController {
                 .result(reviewService.getAverageRatingByLocation(locationId))
                 .build();
     }
+    @Operation(summary = "Delete review by id")
+    @DeleteMapping("/{review-id}")
+    public ApiResponse<String> deleteReviewById(@PathVariable("review-id") Long id){
+
+        return ApiResponse.<String>builder()
+                .result(reviewService.deleteById(id))
+                .build();
+    }
 
 
 }

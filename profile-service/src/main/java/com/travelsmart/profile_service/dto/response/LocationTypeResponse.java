@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class LocationTypeResponse {
     private String label;
     private String image;
+    private String name;
 
 }

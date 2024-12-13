@@ -1,5 +1,6 @@
 package com.travelsmart.profile_service.dto.response;
 
+import com.travelsmart.profile_service.entity.HobbyType;
 import com.travelsmart.profile_service.entity.LocationType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +19,5 @@ public class ProfileResponse {
     private String firstName;
     private String lastName;
     private String avatar;
-    private List<LocationType> hobbies;
+    private List<HobbyType> hobbies;
 }

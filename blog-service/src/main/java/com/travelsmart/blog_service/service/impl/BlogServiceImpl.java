@@ -78,18 +78,18 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public PageableResponse<List<BlogResponse>> findAll(Pageable pageable) {
+    public PageableResponse<List<BlogResponse>> findAll(String search,Pageable pageable) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
+        search = HandleString.buildSearchParam(search);
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(role -> role.toString().equals("ROLE_ADMIN"));
-        Page<BlogEntity> page = isAdmin ? blogRepository.findAll(pageable) : blogRepository.findByStatus(pageable, BlogStatus.ACCEPT);
+        Page<BlogEntity> page = isAdmin ? blogRepository.findAllTitleLike(pageable,search) : blogRepository.findByStatusAndTitleLike(pageable, BlogStatus.ACCEPT,search);
         Paging paging = Paging.buildPaging(pageable,page.getTotalPages());
-        PageableResponse<List<BlogResponse>> response = PageableResponse.<List<BlogResponse>>builder()
+        return PageableResponse.<List<BlogResponse>>builder()
                 .data(mappingList(page.getContent()))
                 .paging(paging)
                 .build();
-        return response;
     }
 
     @Override
@@ -204,6 +204,19 @@ public class BlogServiceImpl implements BlogService {
     public void deleteImage(Long id) {
         mediaClient.deleteById(id);
         blogImageRepository.deleteById(id);
+    }
+
+    @Override
+    public String deleteBlogById(Long id) {
+
+        BlogEntity blog = blogRepository.findById(id)
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.BLOG_NOT_FOUND));
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!blog.getUserId().equals(userId)){
+            throw new CustomRuntimeException(ErrorCode.BLOG_NOT_BELONG);
+        }
+        blogRepository.deleteById(id);
+        return "Delete blog success";
     }
 
     private List<BlogResponse> mappingList(List<BlogEntity> e){

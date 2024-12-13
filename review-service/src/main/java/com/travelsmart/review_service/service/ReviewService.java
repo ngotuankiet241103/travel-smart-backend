@@ -24,4 +24,6 @@ public interface ReviewService {
     Double getAverageRatingByLocation(Long locationId);
 
     ReviewResponse getDetailReviewByUser(Long locationId,String name);
+
+    String deleteById(Long id);
 }

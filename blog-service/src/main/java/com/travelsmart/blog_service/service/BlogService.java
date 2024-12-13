@@ -11,7 +11,7 @@ import java.util.List;
 public interface BlogService {
     BlogResponse create(BlogRequest blogRequest);
 
-    PageableResponse<List<BlogResponse>> findAll(Pageable pageable);
+    PageableResponse<List<BlogResponse>> findAll(String search,Pageable pageable);
 
     PageableResponse<List<BlogResponse>> findByCategoryCode(String categoryCode,
                                                             Pageable pageable);
@@ -31,4 +31,6 @@ public interface BlogService {
     BlogImageResponse uploadImage(BlogImageRequest blogImageRequest);
 
     void deleteImage(Long id);
+
+    String deleteBlogById(Long id);
 }

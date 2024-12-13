@@ -36,6 +36,7 @@ public enum HobbyType {
                 .map(locationType -> LocationTypeResponse.builder()
                         .label(locationType.toString())
                         .image(locationType.getImage())
+                        .name(locationType.getName())
                         .build()
                 ).toList();
     }

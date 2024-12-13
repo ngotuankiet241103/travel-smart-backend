@@ -142,6 +142,17 @@ public class ReviewServiceImpl implements ReviewService {
         return mappingOne(reviewEntity,reviewImageEntities);
     }
 
+    @Override
+    public String deleteById(Long id) {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean isExists = reviewRepository.existsByIdAndUserId(id,userId);
+        if(!isExists){
+            throw new CustomRuntimeException(ErrorCode.REVIEW_NOT_FOUND);
+        }
+        reviewRepository.deleteById(id);
+        return "Delete review success";
+    }
+
     private void deleteImageById(Long id){
         mediaClient.deleteById(id);
         reviewImageRepository.deleteById(id);

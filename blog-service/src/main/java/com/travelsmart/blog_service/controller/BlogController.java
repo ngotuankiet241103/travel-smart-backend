@@ -32,11 +32,11 @@ public class BlogController {
     }
     @Operation(summary = "Get blogs ",description = "Returns list blog")
     @GetMapping
-    public ApiResponse<PageableResponse<List<BlogResponse>>> getAll(@RequestParam(value = "page",defaultValue = "1") int page,
+    public ApiResponse<PageableResponse<List<BlogResponse>>> getAll( @RequestParam("q") String search, @RequestParam(value = "page",defaultValue = "1") int page,
                                                 @RequestParam(value = "limit",defaultValue = "5") int limit){
         Pageable pageable = PageRequest.of(page - 1,limit);
         return ApiResponse.<PageableResponse<List<BlogResponse>>>builder()
-                .result(blogService.findAll(pageable))
+                .result(blogService.findAll(search,pageable))
                 .build();
     }
     @Operation(summary = "Get blogs by category",description = "Returns list blog")
@@ -74,12 +74,7 @@ public class BlogController {
                 .result(blogService.update(blogId,blogUpdateRequest))
                 .build();
     }
-    @Operation(summary = "Delete blog by id")
-    @DeleteMapping("/{blog-id}")
-    public ApiResponse<Void> deleteById(@PathVariable("blog-id") Long blogId){
-        blogService.deleteById(blogId);
-        return ApiResponse.<Void>builder().build();
-    }
+
     @Operation(summary = "Like a blog",description = "Returns single blog")
     @PostMapping("/like")
     public ApiResponse<BlogResponse> likePost(@Valid @RequestBody BlogLikeRequest blogLikeRequest){
@@ -117,6 +112,15 @@ public class BlogController {
         return ApiResponse.<Void>builder()
                 .build();
     }
+    @Operation(summary = "Delete blog by id" )
+    @DeleteMapping("/{blog-id}")
+    public ApiResponse<String> deleteBlogById(@PathVariable("blog-id") Long id){
+
+        return ApiResponse.<String>builder()
+                .result(blogService.deleteBlogById(id))
+                .build();
+    }
+
 
 
 }

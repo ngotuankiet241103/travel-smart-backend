@@ -70,7 +70,36 @@
 #    - name: mysql-storage
 #      persistentVolumeClaim:
 #        claimName: mysql-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: travel-smart-fontend
+  labels:
+    app: appication
+  namespace: dev
+spec:
 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: travel-smart-fontend
+  template:
+    metadata:
+      labels:
+        app: travel-smart-fontend
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: travel-smart-fontend
+          image: ntkiet2411/travel-smart-fontend:0.0.1
+          env:
+#            - name: VITE_BASE_FRONTEND
+#              value: http://travel-smart-fontend.dev.svc.cluster.local:3000
+#            - name: VITE_BASE_URL
+#              value: http://api-gateway.dev.svc.cluster.local:8888
+          ports:
+            - containerPort: 3000
 
 ---
 apiVersion: apps/v1

@@ -19,4 +19,9 @@ public interface BlogRepository extends JpaRepository<BlogEntity,Long> {
     Page<BlogEntity> findByStatus(Pageable pageable, BlogStatus blogStatus);
     @Query(value = "SELECT b.*,c.* FROM blog b JOIN blog_category c ON b.id = c.blog_id WHERE c.category_name = ?1 AND b.status = ?2",nativeQuery = true)
     Page<BlogEntity> findByCategoryNameAndStatus(Pageable pageable, String name, BlogStatus blogStatus);
+
+
+    Page<BlogEntity> findByStatusAndTitleLike(Pageable pageable, BlogStatus blogStatus, String search);
+
+    Page<BlogEntity> findAllTitleLike(Pageable pageable, String search);
 }

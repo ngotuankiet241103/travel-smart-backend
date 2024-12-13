@@ -15,4 +15,8 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity,Long> {
     Double averageRatingByLocation(Long locationId);
 
     Optional<ReviewEntity> findByLocationIdAndUserId(Long locationId, String name);
+
+    Optional<ReviewEntity> findByIdAndUserId(Long id, String userId);
+
+    boolean existsByIdAndUserId(Long id, String userId);
 }
