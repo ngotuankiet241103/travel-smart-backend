@@ -137,19 +137,23 @@ public class LocationServiceImpl implements LocationService {
 
         location = locationMapper.toLocationEntity(locationUpdateRequest);
         location.setPlace_id(placeId);
+        System.out.println(locationUpdateRequest.getType());
+        location.setType(locationUpdateRequest.getType());
         if(locationUpdateRequest.getImageId() != null){
             if(thumbnail == null){
                 LocationImageEntity locationImageEntity = locationImageRepository.findById(locationUpdateRequest.getImageId())
                         .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND));
                 location.setThumbnail(locationImageEntity);
+                locationRepository.save(location);
             }
             else{
                if (!thumbnail.getId().equals(locationUpdateRequest.getImageId())){
                    LocationImageEntity locationImageEntity = locationImageRepository.findById(locationUpdateRequest.getImageId())
                            .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND));
-                   location.setThumbnail(locationImageEntity);
+
                    locationRepository.save(location);
-                   locationImageRepository.deleteById(location.getThumbnail().getId());
+
+                   locationImageRepository.deleteById(thumbnail.getId());
 
                }
             }
