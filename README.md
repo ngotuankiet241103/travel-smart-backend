@@ -13,8 +13,7 @@
 - Need to set up connect mysql with ``username: root`` and ``password: 1234``
 - Start all service
 - The notification service won't active if don't have api key from brevo 
-- So you need to have account brevo and paste it to file application.yaml in notification-service where ```
--  ${BREVO-API-KEY:YOUR_API_KEY}```
+- So you need to have account brevo and paste it to file application.yaml in notification-service where ```${BREVO-API-KEY:YOUR_API_KEY}```
 ### Swagger service
 - identity-service: ``http:localhost:8080/identity/swagger-ui/index.html``
 - profile-service: ``http:localhost:8081/profile/swagger-ui/index.html``
@@ -24,7 +23,7 @@
 - review-service ``http:localhost:8086/review/swagger-ui/index.html``
 --------------------------------------------------------------------
 ##  Run all app With docker compose 
-- You need to build all services 
+- You need to build all services to file jar
 - Uncomment all services in file docker-compose.yaml
 - Run file docker compose
   ``docker-compose up -d``
