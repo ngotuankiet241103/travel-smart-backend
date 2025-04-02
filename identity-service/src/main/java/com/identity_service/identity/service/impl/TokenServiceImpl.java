@@ -1,10 +1,12 @@
 package com.identity_service.identity.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.identity_service.identity.dto.response.TokenResponse;
 import com.identity_service.identity.entity.TokenEntity;
 import com.identity_service.identity.entity.UserEntity;
 import com.identity_service.identity.repository.TokenRepository;
 import com.identity_service.identity.service.TokenProviderService;
+import com.identity_service.identity.service.TokenRedisService;
 import com.identity_service.identity.service.TokenService;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.text.ParseException;
 public class TokenServiceImpl implements TokenService {
     private final TokenRepository tokenRepository;
     private final TokenProviderService tokenProviderService;
+    private final TokenRedisService tokenRedisService;
 
     @Override
     public TokenResponse buildToken(UserEntity userEntity) {
@@ -33,19 +36,19 @@ public class TokenServiceImpl implements TokenService {
     @Async
     private void saveToken(String token,UserEntity userEntity)  {
         try{
-
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            System.out.println(signedJWT);
-
-
-            TokenEntity tokenEntity  = TokenEntity.builder()
-                    .token(signedJWT.getJWTClaimsSet().getJWTID())
-                    .user(userEntity)
-                    .build();
-            tokenRepository.save(tokenEntity);
+            tokenRedisService.setToken(token,userEntity);
+//            SignedJWT signedJWT = SignedJWT.parse(token);
+//            System.out.println(signedJWT);
+//
+//
+//            TokenEntity tokenEntity  = TokenEntity.builder()
+//                    .token(signedJWT.getJWTClaimsSet().getJWTID())
+//                    .user(userEntity)
+//                    .build();
+//            tokenRepository.save(tokenEntity);
         }
-        catch (ParseException e) {
-            System.out.println(e.getMessage());
+         catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
 
     }

@@ -1,11 +1,13 @@
 package com.identity_service.identity.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.identity_service.identity.dto.request.ChangePasswordRequest;
 import com.identity_service.identity.dto.request.RegisterRequest;
 import com.identity_service.identity.dto.request.UserBlockRequest;
 import com.identity_service.identity.dto.request.UserUpdatePermission;
 import com.identity_service.identity.dto.response.PageableResponse;
 import com.identity_service.identity.dto.response.Paging;
+import com.identity_service.identity.dto.response.ReportResponse;
 import com.identity_service.identity.dto.response.UserResponse;
 import com.identity_service.identity.entity.RoleEntity;
 import com.identity_service.identity.entity.UserEntity;
@@ -14,7 +16,9 @@ import com.identity_service.identity.exception.ErrorCode;
 import com.identity_service.identity.mapper.UserMapper;
 import com.identity_service.identity.repository.RoleRepository;
 import com.identity_service.identity.repository.UserRepository;
+import com.identity_service.identity.service.TokenRedisService;
 import com.identity_service.identity.service.UserService;
+import com.identity_service.identity.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +27,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +37,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenRedisService tokenRedisService;
     @Override
     public boolean isExistsByEmail(String email) {
         return userRepository.existsByEmail(email);
@@ -104,6 +109,31 @@ public class UserServiceImpl implements UserService {
         System.out.println(userBlockRequest.isBlock());
         user.setBlock(userBlockRequest.isBlock());
         return mappingOne(userRepository.save(user));
+    }
+
+    @Override
+    public ReportResponse getReport(Date from, Date to) {
+        LocalDate fromLocalDate = DateUtils.convertToLocalDate(from);
+        LocalDate toLocalDate = DateUtils.convertToLocalDate(to);
+        long total = DateUtils.calculateDays(fromLocalDate,toLocalDate);
+        if(total == 7 ){
+
+        }
+        return null;
+    }
+
+    @Override
+    public String getToken() throws JsonProcessingException {
+        return tokenRedisService.getToken();
+    }
+
+    @Override
+    public Map<String, Object> getStatistic() {
+        Map<String,Object> response = new HashMap<>();
+        long total = userRepository.count();
+        response.put("total", total);
+        response.put("label","user");
+        return response;
     }
 
     private List<UserResponse> mappingList(List<UserEntity> e){

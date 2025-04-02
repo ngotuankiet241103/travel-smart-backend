@@ -1,20 +1,19 @@
 package com.travelsmart.trip_service.controller;
 
 import com.travelsmart.trip_service.constant.TripPermission;
-import com.travelsmart.trip_service.dto.request.TripGenerateRequest;
-import com.travelsmart.trip_service.dto.request.TripRequest;
-import com.travelsmart.trip_service.dto.request.TripShareRequest;
-import com.travelsmart.trip_service.dto.request.TripUpdateRequest;
+import com.travelsmart.trip_service.dto.request.*;
 import com.travelsmart.trip_service.dto.response.*;
 import com.travelsmart.trip_service.service.TripService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.shaded.com.google.protobuf.Api;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/trips")
@@ -78,6 +77,21 @@ public class TripController {
 
         return ApiResponse.<String>builder()
                 .result(tripService.deleteById(id))
+                .build();
+    }
+    @Operation(summary = "Get trip report")
+    @GetMapping("/report")
+    public ApiResponse<TripReport> getReport(@RequestParam("type")ReportType type,
+                                             @RequestParam("year") Integer year,
+                                             @RequestParam("month") Integer month){
+        return ApiResponse.<TripReport>builder()
+                .result(tripService.getReport(type,year,month))
+                .build();
+    }
+    @GetMapping("/statistics")
+    public ApiResponse<Map<String,Object>> getStatistics(){
+        return ApiResponse.<Map<String,Object>>builder()
+                .result(tripService.getStatistics())
                 .build();
     }
 

@@ -7,6 +7,7 @@ spring:
     name: api-gateway
   liquibase:
     enabled: true
+
   cloud:
     kubernetes:
       discovery:

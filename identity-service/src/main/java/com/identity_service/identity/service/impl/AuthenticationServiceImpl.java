@@ -1,5 +1,6 @@
 package com.identity_service.identity.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.identity_service.event.dto.NotificationCommand;
 import com.identity_service.event.dto.NotificationEvent;
 import com.identity_service.event.dto.ProfileCommand;
@@ -22,6 +23,7 @@ import com.identity_service.identity.repository.TokenRepository;
 import com.identity_service.identity.repository.UserRepository;
 import com.identity_service.identity.service.AuthenticationService;
 import com.identity_service.identity.service.TokenProviderService;
+import com.identity_service.identity.service.TokenRedisService;
 import com.identity_service.identity.utils.CalendarUtils;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
@@ -49,6 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final ConfirmTokenRepository confirmTokenRepository;
     private final KafkaTemplate<String,Object> template;
     private final RoleRepository roleRepository;
+    private final TokenRedisService tokenRedisService;
     private  CountDownLatch latch;
     @Override
     public TokenResponse login(AuthenticationRequest authenticationRequest) {
@@ -152,19 +155,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private void saveToken(String token,UserEntity userEntity)  {
         try{
 
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            System.out.println(signedJWT);
-
-
-            TokenEntity tokenEntity  = TokenEntity.builder()
-                    .token(signedJWT.getJWTClaimsSet().getJWTID())
-                    .user(userEntity)
-                    .build();
-            tokenRepository.expiredAll(userEntity.getId());
-            tokenRepository.save(tokenEntity);
+            tokenRedisService.setToken(token,userEntity);
         }
-        catch (ParseException e) {
-            System.out.println(e.getMessage());
+         catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -264,39 +258,52 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void logout(RefreshRequest refreshRequest) throws ParseException, JOSEException {
-        SignedJWT signedJWT = tokenProviderService.verifyToken(refreshRequest.getToken(),true);
-        String jit = signedJWT.getJWTClaimsSet().getJWTID();
-
-        TokenEntity tokenEntity = tokenRepository.findByToken(jit)
-                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TOKEN_NOT_FOUND));
-        tokenEntity.setExpired(true);
-        tokenRepository.save(tokenEntity);
+    public void logout(RefreshRequest refreshRequest) throws ParseException, JOSEException, JsonProcessingException {
+        tokenRedisService.expiredToken(refreshRequest.getToken());
+//        SignedJWT signedJWT = tokenProviderService.verifyToken(refreshRequest.getToken(),true);
+//        String jit = signedJWT.getJWTClaimsSet().getJWTID();
+//
+//        TokenEntity tokenEntity = tokenRepository.findByToken(jit)
+//                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TOKEN_NOT_FOUND));
+//        tokenEntity.setExpired(true);
+//        tokenRepository.save(tokenEntity);
     }
 
     @Override
-    public TokenResponse refreshToken(RefreshRequest refreshRequest) throws ParseException {
+    public TokenResponse refreshToken(RefreshRequest refreshRequest) throws ParseException, JOSEException, JsonProcessingException {
         SignedJWT signedJWT = null;
-        try{
-             signedJWT =  tokenProviderService.verifyToken(refreshRequest.getToken(),true);
-             String jit = signedJWT.getJWTClaimsSet().getJWTID();
-            TokenEntity tokenEntity = tokenRepository.findByToken(jit)
-                    .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TOKEN_NOT_FOUND));
-            if(tokenEntity.isExpired()){
-                throw new CustomRuntimeException(ErrorCode.UNAUTHORIZED);
+
+            signedJWT =  tokenProviderService.parseToken(refreshRequest.getToken());
+            String userId = signedJWT.getJWTClaimsSet().getClaims().get("id").toString();
+            String tokenExists = tokenRedisService.getToken(refreshRequest.getToken(),true);
+            if(tokenExists != null){
+
+                throw new CustomRuntimeException(ErrorCode.TOKEN_EXPRIRED);
             }
+
+             String jit = signedJWT.getJWTClaimsSet().getJWTID();
+             String token = tokenRedisService.getToken(refreshRequest.getToken(),false);
+
+             if(!refreshRequest.getToken().equals(token)){
+
+                 throw new CustomRuntimeException(ErrorCode.UNAUTHORIZED);
+             }
+//            TokenEntity tokenEntity = tokenRepository.findByToken(jit)
+//                    .orElseThrow(() -> new CustomRuntimeException(ErrorCode.TOKEN_NOT_FOUND));
+//            if(tokenEntity.isExpired()){
+//                throw new CustomRuntimeException(ErrorCode.UNAUTHORIZED);
+//            }
 
              UserEntity user = userRepository.findById(signedJWT.getJWTClaimsSet().getClaims().get("id").toString())
                      .orElseThrow(() -> new CustomRuntimeException(ErrorCode.USER_NOT_FOUND));
-
+            System.out.println(user.getId());
              return buildTokenResponse(user);
-        }
-        catch (Exception exception){
-                tokenRepository.expiredToken(signedJWT.getJWTClaimsSet().getJWTID());
 
-                throw new CustomRuntimeException(ErrorCode.UNAUTHORIZED);
 
-        }
+
+//                tokenRepository.expiredToken(signedJWT.getJWTClaimsSet().getJWTID());
+
+
 
     }
 

@@ -20,10 +20,10 @@ spring:
     username: ${DBMS_USERNAME:root}
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       enable_lazy_load_no_trans: true
   liquibase:
-    enabled: true
+    enabled: false
   kubernetes:
     discovery:
       enabled: true  # Enable Kubernetes-based service discovery

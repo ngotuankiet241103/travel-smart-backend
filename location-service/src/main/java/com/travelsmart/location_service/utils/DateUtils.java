@@ -1,4 +1,4 @@
-package com.travelsmart.trip_service.utils;
+package com.travelsmart.location_service.utils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +23,10 @@ public class DateUtils {
     public static Date convertDateTimeToDate(LocalDateTime localDateTime){
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
+    public static Date convertLocalDateToDate(LocalDate localDate) {
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
 
 
 }

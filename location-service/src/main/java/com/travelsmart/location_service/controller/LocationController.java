@@ -3,6 +3,7 @@ package com.travelsmart.location_service.controller;
 import com.travelsmart.location_service.constant.LocationStatus;
 import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.dto.request.*;
+import com.travelsmart.location_service.dto.request.ReportType;
 import com.travelsmart.location_service.dto.response.*;
 import com.travelsmart.location_service.service.LocationService;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -16,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/locations")
@@ -160,6 +162,21 @@ public class LocationController {
     public ApiResponse<List<LocationResponse>> getById(@RequestParam("types") List<LocationType> types,@RequestParam("locationId") Long id){
         return ApiResponse.<List<LocationResponse>>builder()
                 .result(locationService.findByType(id,types))
+                .build();
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/report")
+    public ApiResponse<LocationReport> getLocationReport(@RequestParam("type") ReportType reportType,
+                                                         @RequestParam("year") Integer year,
+                                                         @RequestParam(value = "month",defaultValue = "0") Integer month){
+        return ApiResponse.<LocationReport>builder()
+                .result(locationService.getReport(reportType,year,month))
+                .build();
+    }
+    @GetMapping("/statistics")
+    public ApiResponse<Map<String, Object>> getStatistics(){
+        return ApiResponse.<Map<String,Object>>builder()
+                .result(locationService.getStatistics())
                 .build();
     }
 

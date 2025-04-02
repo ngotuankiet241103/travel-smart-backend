@@ -11,7 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserEntity {
+public class UserEntity  {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;

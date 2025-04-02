@@ -65,13 +65,13 @@ public class TokenProviderServiceImpl implements TokenProviderService {
     @Override
     public SignedJWT verifyToken(String token,boolean isRefresh) throws JOSEException, ParseException {
 
+
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+        SignedJWT signedJWT = parseToken(token);
 
-        SignedJWT signedJWT = SignedJWT.parse(token);
-
-        if (isRefresh && !tokenRepository.existsByToken(signedJWT.getJWTClaimsSet().getJWTID())){
-            throw new CustomRuntimeException(ErrorCode.TOKEN_NOT_FOUND);
-        }
+//        if (isRefresh && !tokenRepository.existsByToken(signedJWT.getJWTClaimsSet().getJWTID())){
+//            throw new CustomRuntimeException(ErrorCode.TOKEN_NOT_FOUND);
+//        }
 
         Date expiryTime =  signedJWT.getJWTClaimsSet().getExpirationTime();
         var verified = signedJWT.verify(verifier);
@@ -88,6 +88,8 @@ public class TokenProviderServiceImpl implements TokenProviderService {
 
         return signedJWT;
     }
+
+
     private String buildScope(UserEntity user) {
         StringJoiner stringJoiner = new StringJoiner(" ");
 
@@ -110,5 +112,13 @@ public class TokenProviderServiceImpl implements TokenProviderService {
     @Override
     public String buildRefreshToken(UserEntity userEntity) {
         return buildToken(userEntity,expiredRefreshToken);
+    }
+
+    @Override
+    public SignedJWT parseToken(String token) throws JOSEException, ParseException {
+
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        return signedJWT;
     }
 }

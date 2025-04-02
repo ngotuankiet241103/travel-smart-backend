@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travelsmart.location_service.constant.LocationStatus;
 import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.dto.request.*;
+import com.travelsmart.location_service.dto.request.ReportType;
 import com.travelsmart.location_service.dto.response.*;
 import com.travelsmart.location_service.dto.response.http.MediaHttpResponse;
 import com.travelsmart.location_service.entity.LocationEntity;
@@ -29,7 +30,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +63,7 @@ public class LocationServiceImpl implements LocationService {
 
         location.setStatus(isAdmin ?  LocationStatus.ACCEPT : LocationStatus.PENDING);
         location.setTimeVisit(locationRequest.getType().getTimeToVisitMinutes());
-
+        location.setDisplay_name(locationRequest.getDisplayName());
         if(locationRequest.getImageId() != null){
             LocationImageEntity locationImageEntity = locationImageRepository.findById(locationRequest.getImageId())
                     .orElseThrow(() -> new CustomRuntimeException(ErrorCode.IMAGE_NOT_FOUND));
@@ -114,10 +116,12 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public List<LocationResponse> findBySearchLocal(LocationType type,String search, Pageable pageable) {
-        if( type == LocationType.ADMINISTRATIVE){
-            return mappingList(locationRepository.findByTypeAndStatus(LocationType.ADMINISTRATIVE,LocationStatus.ACCEPT));
-        }
         search = StringUtils.buildParamSearch(search.trim());
+        if( type == LocationType.ADMINISTRATIVE){
+            System.out.println("type");
+            return mappingList(locationRepository.findByTypeAndStatusAndAddressStateLike(LocationType.ADMINISTRATIVE,LocationStatus.ACCEPT,search));
+        }
+
       return mappingList(locationRepository.findBySearchParam(pageable,search, LocationStatus.ACCEPT));
     }
 
@@ -133,13 +137,17 @@ public class LocationServiceImpl implements LocationService {
 
         LocationEntity location = locationRepository.findById(placeId)
                 .orElseThrow(() -> new CustomRuntimeException(ErrorCode.LOCATION_NOT_FOUND));
+        LocationStatus status =  location.getStatus();
         LocationImageEntity thumbnail = location.getThumbnail();
 
         location = locationMapper.toLocationEntity(locationUpdateRequest);
         location.setPlace_id(placeId);
+        location.setStatus(status);
         System.out.println(locationUpdateRequest.getType());
         location.setType(locationUpdateRequest.getType());
-       location.setThumbnail(thumbnail);
+        location.setThumbnail(thumbnail);
+        location.setDisplay_name(locationUpdateRequest.getDisplayName());
+
         if(locationUpdateRequest.getImageId() != null){
             if(thumbnail == null){
                 LocationImageEntity locationImageEntity = locationImageRepository.findById(locationUpdateRequest.getImageId())
@@ -266,6 +274,61 @@ public class LocationServiceImpl implements LocationService {
         }
 
 
+    }
+    private Integer getWeekOfMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.WEEK_OF_MONTH);
+    }
+
+
+    @Override
+    public LocationReport getReport(ReportType type,Integer year,Integer month) {
+        LocationReport locationReport = LocationReport.builder()
+                .report(new HashMap<>())
+                .build();
+        if(type == ReportType.YEAR && year != null){
+            int months = 12;
+            for(int i = 1; i <= months; i++){
+                long totalLocationCreated = locationRepository.countByMonthInYear(year,i);
+                locationReport.getReport().put(i+"", totalLocationCreated);
+            }
+
+        }
+        else if(year != null && month != null){
+
+            List<LocationEntity> locations = locationRepository.findByYearAndMonth(year, month);
+            Map<String,Long> response = locations.stream()
+                    .collect(Collectors.groupingBy(
+                            loc -> getWeekOfMonth(loc.getCreatedDate()).toString(),
+                            Collectors.counting()
+                    ));
+            locationReport.setReport(response);
+        }
+
+
+//        LocalDate today = LocalDate.now();
+//        LocalDate sevenDaysAgo = today.minusDays(7);
+//        while (today.isEqual(sevenDaysAgo) || today.isAfter(sevenDaysAgo)){
+//            LocalDateTime startOfDay = DateUtils.setStartTimeDay(sevenDaysAgo);
+//            LocalDateTime endOfDay = DateUtils.setEndTimeDay(sevenDaysAgo);
+//            long totalTripCreated = locationRepository.
+//                    countByCreatedDate(DateUtils.convertDateTimeToDate(startOfDay),
+//                            DateUtils.convertDateTimeToDate(endOfDay));
+//            locationReport.getReport().put(sevenDaysAgo.toString(), totalTripCreated);
+//            sevenDaysAgo = sevenDaysAgo.plusDays(1);
+//
+//        }
+        return locationReport;
+    }
+
+    @Override
+    public Map<String, Object> getStatistics() {
+        Map<String,Object> response = new HashMap<>();
+        long total = locationRepository.countByStatus(LocationStatus.ACCEPT);
+        response.put("total",total);
+        response.put("label","location");
+        return response;
     }
 
     private List<LocationResponse> mappingList(List<LocationEntity> e){

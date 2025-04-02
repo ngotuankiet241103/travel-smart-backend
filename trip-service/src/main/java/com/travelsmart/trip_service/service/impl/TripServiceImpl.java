@@ -3,10 +3,7 @@ package com.travelsmart.trip_service.service.impl;
 import com.travelsmart.location_service.dto.response.LocationImageResponse;
 import com.travelsmart.trip_service.constant.LocationType;
 import com.travelsmart.trip_service.constant.TripPermission;
-import com.travelsmart.trip_service.dto.request.TripGenerateRequest;
-import com.travelsmart.trip_service.dto.request.TripRequest;
-import com.travelsmart.trip_service.dto.request.TripShareRequest;
-import com.travelsmart.trip_service.dto.request.TripUpdateRequest;
+import com.travelsmart.trip_service.dto.request.*;
 import com.travelsmart.trip_service.dto.response.*;
 import com.travelsmart.trip_service.dto.response.httpclient.ProfileResponse;
 import com.travelsmart.trip_service.entity.TripEntity;
@@ -30,6 +27,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -183,6 +184,58 @@ public class TripServiceImpl implements TripService {
         userTripRepository.deleteByTripId(id);
         tripRepository.deleteById(id);
         return "Delete trip success";
+    }
+    private Integer getWeekOfMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.WEEK_OF_MONTH);
+    }
+    @Override
+    public TripReport getReport(ReportType type,Integer year,Integer month) {
+        TripReport tripReport = TripReport.builder()
+                .report(new HashMap<>())
+                .build();
+
+        if(type == ReportType.YEAR && year != null){
+            int months = 12;
+            for(int i = 1; i <= months; i++){
+                long totalLocationCreated = tripRepository.countByMonthInYear(year,i);
+                tripReport.getReport().put(i+"", totalLocationCreated);
+            }
+
+        }
+        else if(year != null && month != null){
+
+            List<TripEntity> locations = tripRepository.findByYearAndMonth(year, month);
+            Map<String,Long> response = locations.stream()
+                    .collect(Collectors.groupingBy(
+                            loc -> getWeekOfMonth(loc.getCreatedDate()).toString(),
+                            Collectors.counting()
+                    ));
+            tripReport.setReport(response);
+        }
+//        LocalDate today = LocalDate.now();
+//        LocalDate sevenDaysAgo = today.minusDays(7);
+//        while (today.isEqual(sevenDaysAgo) || today.isAfter(sevenDaysAgo)){
+//            LocalDateTime startOfDay = DateUtils.setStartTimeDay(sevenDaysAgo);
+//            LocalDateTime endOfDay = DateUtils.setEndTimeDay(sevenDaysAgo);
+//            long totalTripCreated = tripRepository.
+//                    countByCreatedDate(DateUtils.convertDateTimeToDate(startOfDay),
+//                            DateUtils.convertDateTimeToDate(endOfDay));
+//            tripReport.getReport().put(sevenDaysAgo.toString(), totalTripCreated);
+//            sevenDaysAgo = sevenDaysAgo.plusDays(1);
+//
+//        }
+        return tripReport;
+    }
+
+    @Override
+    public Map<String, Object> getStatistics() {
+        Map<String,Object> response = new HashMap<>();
+        long total = tripRepository.count();
+        response.put("total",total);
+        response.put("label", "trip");
+        return response;
     }
 
     private TripResponse mappingOne(TripEntity trip){

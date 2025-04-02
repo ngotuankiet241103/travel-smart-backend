@@ -273,50 +273,50 @@ spec:
               value: "1234"
           ports:
             - containerPort: 8084
-#---
-#apiVersion: apps/v1
-#kind: Deployment
-#metadata:
-#  name: trip-service
-#  labels:
-#    app: appication
-#  namespace: dev
-#spec:
-#
-#  replicas: 1
-#  selector:
-#    matchLabels:
-#      app: trip-service
-#  template:
-#    metadata:
-#      labels:
-#        app: trip-service
-#    spec:
-#      serviceAccountName: default
-#      containers:
-#        - name: trip-service
-#          image: ntkiet2411/trip-service:0.0.2
-#          env:
-#            - name: IDENTITY-SERVICE-URL
-#              value: http://identity-service.dev.svc.cluster.local:8080
-#            - name: PROFILE-SERVICE-URL
-#              value: http://profile-service.dev.svc.cluster.local:8081
-#            - name: BLOG-SERVICE-URL
-#              value: http://blog-service.dev.svc.cluster.local:8082
-#            - name : LOCATION-SERVICE-URL
-#              value : http://location-service.dev.svc.cluster.local:8084
-#            - name: TRIP-SERVICE-URL
-#              value: http://trip-service.dev.svc.cluster.local:8085
-#            - name: REVIEW-SERVICE-URL
-#              value: http://review-service.dev.svc.cluster.local:8086
-#            - name: SPRING_DATASOURCE_URL
-#              value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/trip_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
-#            - name: DBMS_USERNAME
-#              value: "root"
-#            - name: DBMS_PASSWORD
-#              value: "1234"
-#          ports:
-#            - containerPort: 8085
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trip-service
+  labels:
+    app: appication
+  namespace: dev
+spec:
+
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trip-service
+  template:
+    metadata:
+      labels:
+        app: trip-service
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: trip-service
+          image: ntkiet2411/trip-service:0.0.2
+          env:
+            - name: IDENTITY-SERVICE-URL
+              value: http://identity-service.dev.svc.cluster.local:8080
+            - name: PROFILE-SERVICE-URL
+              value: http://profile-service.dev.svc.cluster.local:8081
+            - name: BLOG-SERVICE-URL
+              value: http://blog-service.dev.svc.cluster.local:8082
+            - name : LOCATION-SERVICE-URL
+              value : http://location-service.dev.svc.cluster.local:8084
+            - name: TRIP-SERVICE-URL
+              value: http://trip-service.dev.svc.cluster.local:8085
+            - name: REVIEW-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8086
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/trip_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+            - name: DBMS_USERNAME
+              value: "root"
+            - name: DBMS_PASSWORD
+              value: "1234"
+          ports:
+            - containerPort: 8085
 ---
 apiVersion: apps/v1
 kind: Deployment

@@ -2,14 +2,13 @@ package com.travelsmart.location_service.service;
 
 import com.travelsmart.location_service.constant.LocationType;
 import com.travelsmart.location_service.dto.request.*;
-import com.travelsmart.location_service.dto.response.LocationImageResponse;
-import com.travelsmart.location_service.dto.response.LocationResponse;
-import com.travelsmart.location_service.dto.response.LocationTemplateResponse;
-import com.travelsmart.location_service.dto.response.PageableResponse;
+import com.travelsmart.location_service.dto.request.ReportType;
+import com.travelsmart.location_service.dto.response.*;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface LocationService {
     List<LocationTemplateResponse> findBySearch(String search, int limit);
@@ -45,4 +44,8 @@ public interface LocationService {
     List<LocationResponse> findAllByType(LocationType locationType);
 
     List<LocationResponse> findByRadius(String lon, String lat, double radius, String search, LocationType type);
+
+    LocationReport getReport(ReportType type,Integer year,Integer month);
+
+    Map<String, Object> getStatistics();
 }

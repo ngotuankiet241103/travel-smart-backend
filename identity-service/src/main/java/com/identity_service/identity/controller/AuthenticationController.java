@@ -1,5 +1,6 @@
 package com.identity_service.identity.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.identity_service.event.dto.EmailRequest;
 import com.identity_service.identity.dto.request.*;
 import com.identity_service.identity.dto.response.ApiResponse;
@@ -51,13 +52,13 @@ public class AuthenticationController {
     }
     @Operation(summary = "Logout")
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(@Valid @RequestBody RefreshRequest refreshRequest) throws ParseException, JOSEException {
+    public ApiResponse<Void> logout(@Valid @RequestBody RefreshRequest refreshRequest) throws ParseException, JOSEException, JsonProcessingException {
         authenticationService.logout(refreshRequest);
         return ApiResponse.<Void>builder().build();
     }
     @Operation(summary = "Refresh token", description = "Returns new token")
     @PostMapping("/refresh-token")
-    public ApiResponse<TokenResponse> refreshToken(@Valid @RequestBody RefreshRequest refreshRequest) throws ParseException {
+    public ApiResponse<TokenResponse> refreshToken(@Valid @RequestBody RefreshRequest refreshRequest) throws ParseException, JOSEException, JsonProcessingException {
         return ApiResponse.<TokenResponse>builder()
                 .result(authenticationService.refreshToken(refreshRequest))
                 .build();

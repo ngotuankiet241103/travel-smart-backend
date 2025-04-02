@@ -33,7 +33,7 @@ spring:
 #      hibernate:
 #        dialect: org.hibernate.spatial.dialect.mysql.MySQLSpatialDialect
   liquibase:
-    enabled: true
+    enabled: false
 
   cloud:
     compatibility-verifier:

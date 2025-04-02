@@ -10,5 +10,6 @@ public interface TokenProviderService {
 
     String buildAccessToken(UserEntity userEntity);
     String buildRefreshToken(UserEntity userEntity);
+    SignedJWT parseToken(String token) throws JOSEException, ParseException;
     SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException;
 }

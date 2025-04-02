@@ -1,5 +1,6 @@
 package com.identity_service.identity.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.identity_service.identity.dto.request.*;
 import com.identity_service.identity.dto.response.IntrospectResponse;
 import com.identity_service.identity.dto.response.TokenResponse;
@@ -22,7 +23,7 @@ public interface AuthenticationService {
 
     String resetPassword(ResetPasswordRequest resetPasswordRequest);
 
-    void logout(RefreshRequest refreshRequest) throws ParseException, JOSEException;
+    void logout(RefreshRequest refreshRequest) throws ParseException, JOSEException, JsonProcessingException;
 
-    TokenResponse refreshToken(RefreshRequest refreshRequest) throws ParseException;
+    TokenResponse refreshToken(RefreshRequest refreshRequest) throws ParseException, JOSEException, JsonProcessingException;
 }
