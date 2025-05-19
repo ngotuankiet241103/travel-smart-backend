@@ -3,6 +3,10 @@ server:
   servlet:
     context-path: /location
 spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   application:
     name: location-service
   kubernetes:
@@ -68,15 +72,8 @@ feign:
     review: ${REVIEW-SERVICE-URL:http://localhost:8086}
 management:
   tracing:
-
     sampling:
       probability: 0.1
-#  micrometer:
-#    tracing:
-#      reporting:
-#        zipkin:
-#          enabled: true
-#          endpoint: http://localhost:9411/api/v2/spans  # Replace with your Zipkin server URL
   endpoints:
     web:
       exposure:
@@ -84,6 +81,14 @@ management:
   endpoint:
     metrics:
       enabled: true
+
+#  micrometer:
+#    tracing:
+#      reporting:
+#        zipkin:
+#          enabled: true
+#          endpoint: http://localhost:9411/api/v2/spans  # Replace with your Zipkin server URL
+
 logging:
   level:
     org.hibernate.SQL: DEBUG

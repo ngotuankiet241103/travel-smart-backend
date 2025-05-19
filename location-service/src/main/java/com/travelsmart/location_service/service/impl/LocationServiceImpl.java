@@ -121,7 +121,7 @@ public class LocationServiceImpl implements LocationService {
             System.out.println("type");
             return mappingList(locationRepository.findByTypeAndStatusAndAddressStateLike(LocationType.ADMINISTRATIVE,LocationStatus.ACCEPT,search));
         }
-
+        System.out.println(search);
       return mappingList(locationRepository.findBySearchParam(pageable,search, LocationStatus.ACCEPT));
     }
 
@@ -230,13 +230,21 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public PageableResponse<List<LocationResponse>> findAll(Pageable pageable) {
-        Page<LocationEntity> page = locationRepository.findAll(pageable);
+    public PageableResponse<List<LocationResponse>> findAll(LocationType type, String search, Pageable pageable) {
+        search = StringUtils.buildParamSearch(search);
+      
+        Page<LocationEntity> page = type.equals(LocationType.ADMINISTRATIVE) ?
+            locationRepository.findAllByNameLike(pageable,search) : locationRepository.findAllByNameLikeAndType(pageable,search,type);
+
+
+
         Paging paging = Paging.buildPaging(pageable, page.getTotalPages());
         PageableResponse<List<LocationResponse>> response = PageableResponse.<List<LocationResponse>>builder()
                 .data(mappingList(page.getContent()))
                 .paging(paging)
                 .build();
+
+
         return response;
     }
 

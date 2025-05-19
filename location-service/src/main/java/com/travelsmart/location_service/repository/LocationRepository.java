@@ -68,4 +68,8 @@ public interface LocationRepository extends JpaRepository<LocationEntity,Long> {
             "FROM LocationEntity l " +
             "WHERE YEAR(l.createdDate) = ?1  AND MONTH(l.createdDate) = ?2 ")
     List<LocationEntity> findByYearAndMonth(Integer year, Integer month);
+
+    Page<LocationEntity> findAllByNameLike(Pageable pageable, String search);
+
+    Page<LocationEntity> findAllByNameLikeAndType(Pageable pageable, String search, LocationType type);
 }

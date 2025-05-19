@@ -10,12 +10,16 @@ spring:
       enabled: true  # Enable Kubernetes-based service discovery
       all-namespaces: true  # Optional: Discover services only in the same namespace
   sleuth:
-    propagation-keys:
-      - X-B3-TraceId
-      - X-B3-SpanId
-      - X-B3-ParentSpanId
-      - X-B3-Sampled
-      - X-B3-Flags
+    enabled: true
+    sampler:
+      probability: 1.0  # Adjust trace sample rate if needed
+    web:
+      client:
+        enabled: true  # If you want to trace web client calls
+    exporter:
+      zipkin:
+        enabled: true
+        baseUrl: http://172.30.0.4:9411/api/v2/spans  # Change this to your Zipkin server URL
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/profile_travel_db}

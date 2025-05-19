@@ -1,6 +1,17 @@
 spring:
   application:
     name: identity-service
+  sleuth:
+    enabled: true
+    sampler:
+      probability: 1.0  # Adjust trace sample rate if needed
+    web:
+      client:
+        enabled: true  # If you want to trace web client calls
+    exporter:
+      zipkin:
+        enabled: true
+        baseUrl: http://172.30.0.4:9411/api/v2/spans  # Change this to your Zipkin server URL
   redis:
     host: localhost
     port: 6379

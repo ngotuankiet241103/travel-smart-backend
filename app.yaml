@@ -110,7 +110,6 @@ metadata:
     app: appication
   namespace: dev
 spec:
-
   replicas: 1
   selector:
     matchLabels:
@@ -137,7 +136,6 @@ spec:
               value: http://trip-service.dev.svc.cluster.local:8085
             - name: REVIEW-SERVICE-URL
               value: http://review-service.dev.svc.cluster.local:8086
-
           ports:
             - containerPort: 8888
 

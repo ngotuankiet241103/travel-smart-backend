@@ -41,7 +41,7 @@ public class LocationRequest {
         StringBuilder builder = new StringBuilder(this.name);
         Map<String,Object> map = objectMapper.convertValue(this.getAddress(),Map.class);
         map.keySet().stream().forEach(key -> {
-            if(!Strings.isNullOrEmpty(map.get(key)+"")){
+            if(map.get(key) != null &&  !Strings.isNullOrEmpty(map.get(key)+"")){
                 builder.append(", ");
                 builder.append(map.get(key));
             }

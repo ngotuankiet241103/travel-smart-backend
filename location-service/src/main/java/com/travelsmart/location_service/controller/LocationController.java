@@ -60,11 +60,13 @@ public class LocationController {
 
     @Operation(summary = "Get all location",description = "Returns list location")
     @GetMapping("/all")
-    public ApiResponse<PageableResponse<List<LocationResponse>>> getAll(@RequestParam(value = "limit",defaultValue = "5") int limit,
+    public ApiResponse<PageableResponse<List<LocationResponse>>> getAll(@RequestParam(value = "type",defaultValue = "ADMINISTRATIVE" ) LocationType type,
+                                                                        @RequestParam(value = "q",defaultValue = "") String search,
+                                                                        @RequestParam(value = "limit",defaultValue = "5") int limit,
                                                                         @RequestParam(value = "page",defaultValue = "1") int page){
         Pageable pageable = PageRequest.of(page - 1,limit);
         return ApiResponse.<PageableResponse<List<LocationResponse>>>builder()
-                .result(locationService.findAll(pageable))
+                .result(locationService.findAll(type,search,pageable))
                 .build();
     }
     @Operation(summary = "Get newest location",description = "Returns list location")
@@ -111,6 +113,7 @@ public class LocationController {
         return ApiResponse.<Void>builder()
                 .build();
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update information location",description = "Returns single location image")
     @PutMapping("/{place-id}")
     public ApiResponse<LocationResponse> createImageLocation(@PathVariable("place-id") Long id,@Valid @RequestBody LocationUpdateRequest locationUpdateRequest){
