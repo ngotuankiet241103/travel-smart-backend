@@ -14,7 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("${api.prefix}/introduces")
+@RequestMapping("/introduces")
 @RequiredArgsConstructor
 public class IntroduceController {
     private final IntroduceService introduceService;

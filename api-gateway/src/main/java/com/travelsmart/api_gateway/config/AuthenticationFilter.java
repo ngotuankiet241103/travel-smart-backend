@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -48,7 +49,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/register",
             "/identity/users/registration",
             "/notification/email/send",
-            "/blog/blogs/*",
+            "/blog/blogs",
             "/location/locations/news",
             "/profile/actuator/prometheus",
             "/identity/actuator/prometheus",
@@ -56,7 +57,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/trip/actuator/prometheus",
             "/blog/actuator/prometheus",
             "/location/actuator/prometheus",
-            "/blog/comments/*"
+            "/blog/comments/*",
+            "/location/introduces/*/location",
+            "/review/reviews/*/location"
+
     };
 
     @Value("${api.prefix}")
@@ -67,9 +71,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         log.info("Enter authentication filter....");
 
-        if (isPublicEndpoint(exchange.getRequest()))
+        if (isPublicEndpoint(exchange.getRequest())) {
+            System.out.println(true);
             return chain.filter(exchange);
-
+        }
         // Get token from authorization header
         List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
         if (CollectionUtils.isEmpty(authHeader))
@@ -92,8 +97,15 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isPublicEndpoint(ServerHttpRequest request){
+        AntPathMatcher matcher = new AntPathMatcher();
         return Arrays.stream(publicEndpoints)
-                .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
+                .anyMatch(s -> {
+                    System.out.println(request.getURI().getPath());
+
+                    String patern  = apiPrefix + s;
+                    return matcher.match(patern, request.getURI().getPath());
+
+                });
     }
 
     Mono<Void> unauthenticated(ServerHttpResponse response){

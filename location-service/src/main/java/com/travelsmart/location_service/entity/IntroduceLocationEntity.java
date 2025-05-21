@@ -18,7 +18,7 @@ public class IntroduceLocationEntity {
 
     @Column
     private String title;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String content;
     @ManyToMany
     @JoinTable(

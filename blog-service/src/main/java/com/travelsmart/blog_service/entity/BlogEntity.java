@@ -32,7 +32,7 @@ public class BlogEntity {
     private String userName;
     @Column
     private String userId;
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String content;
     @Convert(converter = StringListConverter.class)
     private List<String> tags;
