@@ -5,5 +5,5 @@ import com.travelsmart.recommend.dto.request.CheckRequest;
 
 public interface CheckInService {
     void createNewCheckIn(CheckInRequest checkIn);
-    void createNewCheckIn(CheckRequest checkRequest);
+    Void createNewCheckIn(CheckRequest checkRequest);
 }
