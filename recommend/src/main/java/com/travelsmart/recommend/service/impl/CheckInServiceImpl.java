@@ -36,8 +36,12 @@ public class CheckInServiceImpl implements CheckInService {
     @Override
     public Void createNewCheckIn(CheckRequest checkRequest) {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        LocationType type = locationClient.getLocationById(checkRequest.getPlace_id()).getResult().getType();
-        saveCheckIn(type,userId);
+        checkRequest.getPlace_id()
+                .forEach(check -> {
+                    LocationType type = locationClient.getLocationById(check).getResult().getType();
+                    saveCheckIn(type,userId);
+                });
+
         return null;
 
     }

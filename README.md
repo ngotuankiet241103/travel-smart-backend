@@ -3,6 +3,7 @@
 - Java 17
 - Spring boot 3.3
 - Kafka
+- Redis
 
 ## Run the application
 - If you don't have database mysql local you need to uncomment mysql service in file docker compose
@@ -12,8 +13,10 @@
 - Create database like file initDB.sql in project
 - Need to set up connect mysql with ``username: root`` and ``password: 1234``
 - Start all service
-- The notification service won't active if don't have api key from brevo 
+- The notification service won't active if you don't have api key from brevo 
 - So you need to have account brevo and paste it to file application.yaml in notification-service where ```${BREVO-API-KEY:YOUR_API_KEY}```
+- To start suggest-service, you need to use command if your computer have installed python 
+``py -m uvicorn main:app --reload --port 8087``
 ### Swagger service
 - identity-service: ``http:localhost:8080/identity/swagger-ui/index.html``
 - profile-service: ``http:localhost:8081/profile/swagger-ui/index.html``
@@ -21,6 +24,7 @@
 - location-service: ``http:localhost:8084/location/swagger-ui/index.html``
 - trip-service: ``http:localhost:8085/trip/swagger-ui/index.html``
 - review-service ``http:localhost:8086/review/swagger-ui/index.html``
+- recommend-service ``http:localhost:8089/recommend/swagger-ui/index.html``
 --------------------------------------------------------------------
 ##  Run all app With docker compose 
 - You need to build all services to file jar
