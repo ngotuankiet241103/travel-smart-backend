@@ -1,6 +1,6 @@
 suggest-service/model/rf_recommender.pkl
 suggest-service/**.pkl
-/travel-smart-backend.git/
+travel-smart-backend.git/
 
 **.pkl
 HELP.md
