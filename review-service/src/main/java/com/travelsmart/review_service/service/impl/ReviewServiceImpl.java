@@ -1,5 +1,8 @@
 package com.travelsmart.review_service.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travelsmart.event.dto.CheckInRequest;
+import com.travelsmart.review_service.constant.LocationType;
 import com.travelsmart.review_service.dto.request.ReviewImageRequest;
 import com.travelsmart.review_service.dto.request.ReviewRequest;
 import com.travelsmart.review_service.dto.request.ReviewUpdateRequest;
@@ -7,6 +10,7 @@ import com.travelsmart.review_service.dto.response.PageableResponse;
 import com.travelsmart.review_service.dto.response.Paging;
 import com.travelsmart.review_service.dto.response.ReviewImageResponse;
 import com.travelsmart.review_service.dto.response.ReviewResponse;
+import com.travelsmart.review_service.dto.response.httpclient.LocationResponse;
 import com.travelsmart.review_service.dto.response.httpclient.MediaHttpResponse;
 import com.travelsmart.review_service.entity.ReviewEntity;
 import com.travelsmart.review_service.entity.ReviewImageEntity;
@@ -15,12 +19,16 @@ import com.travelsmart.review_service.exception.ErrorCode;
 import com.travelsmart.review_service.mapper.ReviewMapper;
 import com.travelsmart.review_service.repository.ReviewImageRepository;
 import com.travelsmart.review_service.repository.ReviewRepository;
+import com.travelsmart.review_service.repository.httpclient.LocationClient;
 import com.travelsmart.review_service.repository.httpclient.MediaClient;
 import com.travelsmart.review_service.repository.httpclient.ProfileClient;
 import com.travelsmart.review_service.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.converter.StringJsonMessageConverter;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -38,6 +46,9 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewMapper reviewMapper;
     private final ProfileClient profileClient;
     private final MediaClient mediaClient;
+    private final KafkaTemplate<String,Object> template;
+    private final LocationClient locationClient;
+    private final ObjectMapper objectMapper;
     @Override
     public ReviewResponse create(ReviewRequest reviewRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -55,9 +66,21 @@ public class ReviewServiceImpl implements ReviewService {
             }).toList();
            reviewImageRepository.saveAll(images);
         }
+        cacheLocation(reviewRequest.getLocationId(),userId);
         return mappingOne(reviewEntity,images);
     }
+    @Async
+    private void cacheLocation(Long place_id,String userId){
 
+        LocationType type = locationClient.getLocationById(place_id).getResult().getType();
+        CheckInRequest checkInRequest = CheckInRequest.builder()
+                .userId(userId)
+                .type(type)
+                .build();
+        template.setMessageConverter(new StringJsonMessageConverter(objectMapper));
+        template.send("new-checkIn", checkInRequest);
+        System.out.println("send success");
+    }
     @Override
     public PageableResponse<List<ReviewResponse>> getByLocationId(Long locationId, Pageable pageable) {
         Page<ReviewEntity> page = reviewRepository.findByLocationId(pageable,locationId);

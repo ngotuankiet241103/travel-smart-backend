@@ -19,5 +19,6 @@ public interface LocationClient {
 
     @GetMapping("/internal/type")
     ApiResponse<List<LocationResponse>> getByTypes(@RequestParam("types") List<LocationType> types,
-                                                   @RequestParam("locationId") Long locationId);
+                                                   @RequestParam("locationId") Long locationId,
+                                                   @RequestParam("total_day") int day);
 }

@@ -162,9 +162,9 @@ public class LocationController {
     }
     @Hidden
     @GetMapping("/internal/type")
-    public ApiResponse<List<LocationResponse>> getById(@RequestParam("types") List<LocationType> types,@RequestParam("locationId") Long id){
+    public ApiResponse<List<LocationResponse>> getById(@RequestParam("types") List<LocationType> types,@RequestParam("locationId") Long id,@RequestParam("total_day") int day){
         return ApiResponse.<List<LocationResponse>>builder()
-                .result(locationService.findByType(id,types))
+                .result(locationService.findByType(id,types,day))
                 .build();
     }
     @PreAuthorize("hasRole('ADMIN')")

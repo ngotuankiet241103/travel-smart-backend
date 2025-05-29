@@ -36,6 +36,7 @@ public class ProfileController {
 //    private final KafkaTemplate<String,Object> template;
     private final ObjectMapper objectMapper;
     private final KafkaTemplate<String,Object> template;
+
     @Operation(summary = "Update information of profile", description = "Returns single profile")
     @PutMapping("/profiles/{id}")
     public ApiResponse<ProfileResponse> update(@PathVariable("id") String id,

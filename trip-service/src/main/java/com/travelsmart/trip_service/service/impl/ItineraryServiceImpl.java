@@ -196,11 +196,25 @@ public class ItineraryServiceImpl implements ItineraryService {
         destinationRepository.updatePositionDown(destinationDeleteRequest.getItineraryId(),destination.getPosition());
         destinationRepository.deleteById(id);
     }
+    private double haversine(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Bán kính Trái Đất (km)
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Kết quả tính bằng km
+    }
+    private double estimateTravelTime(double distanceKm, double speedKmPerHour) {
+        return distanceKm / speedKmPerHour; // Kết quả là số giờ
+    }
+
 
     @Override
     public List<ItineraryResponse>  generateTrip(TripEntity trip, List<LocationType> types) {
 
-        List<LocationResponse> locationResponses = locationClient.getByTypes(types,trip.getLocationId()).getResult();
+        List<LocationResponse> locationResponses = locationClient.getByTypes(types,trip.getLocationId(),3).getResult();
         System.out.println(locationResponses.size());
         int col = 0;
         Map<String,DistanceResponse> table = new HashMap<>();
@@ -216,24 +230,35 @@ public class ItineraryServiceImpl implements ItineraryService {
                     distancesMatrix[j][col] = table.get(regex1);
                 }
                 else{
-                    StringBuilder waypoints = new StringBuilder();
-                    waypoints.append(locationResponses.get(i).getLat());
-                    waypoints.append(",");
-                    waypoints.append(locationResponses.get(i).getLon());
-                    waypoints.append("|");
-                    waypoints.append( locationResponses.get(j).getLat());
-                    waypoints.append(",");
-                    waypoints.append(locationResponses.get(j).getLon());
+//                    StringBuilder waypoints = new StringBuilder();
+//                    waypoints.append(locationResponses.get(i).getLat());
+//                    waypoints.append(",");
+//                    waypoints.append(locationResponses.get(i).getLon());
+//                    waypoints.append("|");
+//                    waypoints.append( locationResponses.get(j).getLat());
+//                    waypoints.append(",");
+//                    waypoints.append(locationResponses.get(j).getLon());
+//
+//                    Map<String,Object> objectMap = geoapifyClient.routingLocation(waypoints.toString());
+//                    System.out.println(objectMap);
+//                    List<Map<String,Object>> arr = (List<Map<String, Object>>) objectMap.get("features");
+//                    Map<String,Object> obj = arr.get(0);
+//                    Map<String,Object> properties = (Map<String, Object>) obj.get("properties");
+//                    double time  = Double.parseDouble(properties.get("time").toString());
+//                    double distance = Double.parseDouble(properties.get("distance").toString());
+//                    System.out.println("time" +  time);
+//                    System.out.println("distance" +  distance);
+                    double lat1 = Double.parseDouble(locationResponses.get(i).getLat());
+                    double lon1 = Double.parseDouble(locationResponses.get(i).getLon());
+                    double lat2 = Double.parseDouble(locationResponses.get(j).getLat());
+                    double lon2 = Double.parseDouble(locationResponses.get(j).getLon());
 
-                    Map<String,Object> objectMap = geoapifyClient.routingLocation(waypoints.toString());
-                    System.out.println(objectMap);
-                    List<Map<String,Object>> arr = (List<Map<String, Object>>) objectMap.get("features");
-                    Map<String,Object> obj = arr.get(0);
-                    Map<String,Object> properties = (Map<String, Object>) obj.get("properties");
-                    double time  = Double.parseDouble(properties.get("time").toString());
-                    double distance = Double.parseDouble(properties.get("distance").toString());
-                    System.out.println("time" +  time);
-                    System.out.println("distance" +  distance);
+                    double distance = haversine(lat1, lon1, lat2, lon2); // km
+                    double time = estimateTravelTime(distance, 40); // giả sử đi xe máy 40km/h
+
+                    System.out.println("Distance: " + distance + " km");
+                    System.out.println("Time: " + time + " giờ");
+
                     DistanceResponse distanceResponse = DistanceResponse.builder()
                             .distance(distance)
                             .time(time)

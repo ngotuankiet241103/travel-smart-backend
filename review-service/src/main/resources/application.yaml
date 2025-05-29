@@ -36,6 +36,17 @@ spring:
     discovery:
       enabled: true  # Enable Kubernetes-based service discovery
       all-namespaces: true  # Optional: Discover services only in the same namespace
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.travelsmart.review_service.config.CustomSerializer
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.travelsmart.review_service.config.CustomDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -45,6 +56,7 @@ feign:
   url:
     media: ${MEDIA-SERVICE-URL:http://localhost:8088}
     profile: ${MEDIA-SERVICE-URL:http://localhost:8081}
+    location: ${LOCATION-SERVICE-URL:http://localhost:8084}
 management:
   tracing:
 

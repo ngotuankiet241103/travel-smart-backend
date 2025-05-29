@@ -1,0 +1,40 @@
+server:
+  port: 8089
+  servlet:
+    context-path: /recommend
+spring:
+  application:
+    name: recommend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/recommend_travel_db}
+    password: ${DBMS_PASSWORD:1234}
+    username: ${DBMS_USERNAME:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+      enable_lazy_load_no_trans: true
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.travelsmart.recommend.config.CustomSerializer
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.travelsmart.recommend.config.CustomDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+  cloud:
+    compatibility-verifier:
+      enabled: false
+feign:
+  url:
+    location: ${LOCATION-SERVICE-URL:http://localhost:8084}
+    recommend: ${RECOMMEND-SERVICE-URL:http://localhost:8087}
+token:
+  tokenSecret: 04ca023b39512e46d0c2cf4b48d5aac61d34302994c87ed4eff225dcf3b0a218739f3897051a057f9b846a69ea2927a587044164b7bae5e1306219d50b588cb1
+  accessExpiration: 1500000
+  refreshExpiration: 604800000
+api:
+  prefix: /recommend

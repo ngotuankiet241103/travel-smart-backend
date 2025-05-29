@@ -5,3 +5,4 @@ CREATE DATABASE IF NOT EXISTS  media_travel_db;
 CREATE DATABASE IF NOT EXISTS  location_travel_db;
 CREATE DATABASE IF NOT EXISTS  blog_travel_db;
 CREATE DATABASE IF NOT EXISTS  review_travel_db;
+CREATE DATABASE IF NOT EXISTS  recommend_travel_db;

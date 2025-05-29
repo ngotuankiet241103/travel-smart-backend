@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.shaded.com.google.protobuf.Api;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TripController {
     private final TripService tripService;
+    @Operation(summary = "Get all trip",description = "Returns list trip")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public ApiResponse<PageableResponse<List<TripResponse>>> getAll(@RequestParam(value = "from",defaultValue = "null") Date from,
+                                                              @RequestParam(value = "to", defaultValue = "null") Date to,
+                                                              @RequestParam(value = "page",defaultValue = "1") int page,
+                                                              @RequestParam(value = "limit",defaultValue = "10") int limit){
+        return ApiResponse.<PageableResponse<List<TripResponse>>>builder()
+                .result(tripService.getAll(from,to,page,limit))
+                .build();
+    }
+
     @Operation(summary = "Create new trip",description = "Returns single trip")
     @PostMapping
     public ApiResponse<TripResponse> create(@Valid @RequestBody TripRequest tripRequest){

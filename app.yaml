@@ -122,7 +122,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: api-gateway
-          image: ntkiet2411/api-gateway:0.0.3
+          image: ntkiet2411/api-gateway:0.0.4
           env:
             - name: IDENTITY-SERVICE-URL
               value: http://identity-service.dev.svc.cluster.local:8080
@@ -136,6 +136,8 @@ spec:
               value: http://trip-service.dev.svc.cluster.local:8085
             - name: REVIEW-SERVICE-URL
               value: http://review-service.dev.svc.cluster.local:8086
+            - name: RECOMMEND-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8089
           ports:
             - containerPort: 8888
 
@@ -221,10 +223,13 @@ spec:
               value: http://review-service.dev.svc.cluster.local:8086
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/profile_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+            - name: RECOMMEND-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8089
             - name: DBMS_USERNAME
               value: "root"
             - name: DBMS_PASSWORD
               value: "1234"
+
           ports:
             - containerPort: 8081
 ---
@@ -249,7 +254,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: location-service
-          image: ntkiet2411/location-service:0.0.2
+          image: ntkiet2411/location-service:0.0.3
           env:
             - name: IDENTITY-SERVICE-URL
               value: http://identity-service.dev.svc.cluster.local:8080
@@ -263,6 +268,8 @@ spec:
               value: http://trip-service.dev.svc.cluster.local:8085
             - name: REVIEW-SERVICE-URL
               value: http://review-service.dev.svc.cluster.local:8086
+            - name: RECOMMEND-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8089
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/location_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
             - name: DBMS_USERNAME
@@ -271,6 +278,52 @@ spec:
               value: "1234"
           ports:
             - containerPort: 8084
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommend-service
+  labels:
+    app: appication
+  namespace: dev
+spec:
+
+  replicas: 1
+  selector:
+    matchLabels:
+      app: location-service
+  template:
+    metadata:
+      labels:
+        app: recommend-service
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: recommend-service
+          image: ntkiet2411/recommend-service:0.0.1
+          env:
+            - name: IDENTITY-SERVICE-URL
+              value: http://identity-service.dev.svc.cluster.local:8080
+            - name: PROFILE-SERVICE-URL
+              value: http://profile-service.dev.svc.cluster.local:8081
+            - name: BLOG-SERVICE-URL
+              value: http://blog-service.dev.svc.cluster.local:8082
+            - name : LOCATION-SERVICE-URL
+              value : http://location-service.dev.svc.cluster.local:8084
+            - name: TRIP-SERVICE-URL
+              value: http://trip-service.dev.svc.cluster.local:8085
+            - name: REVIEW-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8086
+            - name: RECOMMEND-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8089
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/location_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+            - name: DBMS_USERNAME
+              value: "root"
+            - name: DBMS_PASSWORD
+              value: "1234"
+          ports:
+            - containerPort: 8089
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -293,7 +346,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: trip-service
-          image: ntkiet2411/trip-service:0.0.2
+          image: ntkiet2411/trip-service:0.0.3
           env:
             - name: IDENTITY-SERVICE-URL
               value: http://identity-service.dev.svc.cluster.local:8080
@@ -307,6 +360,8 @@ spec:
               value: http://trip-service.dev.svc.cluster.local:8085
             - name: REVIEW-SERVICE-URL
               value: http://review-service.dev.svc.cluster.local:8086
+            - name: RECOMMEND-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8089
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/trip_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
             - name: DBMS_USERNAME
@@ -337,7 +392,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: review-service
-          image: ntkiet2411/review-service:0.0.2
+          image: ntkiet2411/review-service:0.0.3
           env:
             - name: IDENTITY-SERVICE-URL
               value: http://identity-service.dev.svc.cluster.local:8080
@@ -351,6 +406,8 @@ spec:
               value: http://trip-service.dev.svc.cluster.local:8085
             - name: REVIEW-SERVICE-URL
               value: http://review-service.dev.svc.cluster.local:8086
+            - name: RECOMMEND-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8089
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/review_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
             - name: DBMS_USERNAME
@@ -405,7 +462,7 @@ metadata:
     app: appication
   namespace: dev
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: identity-service
@@ -417,8 +474,10 @@ spec:
       serviceAccountName: default
       containers:
         - name: identity-service
-          image: ntkiet2411/identity-service:0.0.1
+          image: ntkiet2411/identity-service:0.0.2
           env:
+            - name: PROFILE-SERVICE-URL
+              value: http://review-service.dev.svc.cluster.local:8081
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:mysql://mysql.dev.svc.cluster.local:3306/identity_travel_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
             - name: DBMS_USERNAME

@@ -39,7 +39,7 @@ public interface LocationService {
 
     PageableResponse<List<LocationResponse>> findAll(LocationType type,String search,Pageable pageable);
 
-    List<LocationResponse> findByType(Long id,List<LocationType> types);
+    List<LocationResponse> findByType(Long id,List<LocationType> types,int day);
 
     List<LocationResponse> findAllByType(LocationType locationType);
 

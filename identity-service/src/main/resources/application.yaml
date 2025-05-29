@@ -113,6 +113,9 @@ openapi: "3.0.0"
 app:
   cors:
     allowedOrigins: http://localhost:3000,http://localhost:8888
+feign:
+  url:
+    profile: ${PROFILE-SERVICE-URL:http://localhost:8081}
 #springdoc:
 #  swagger-ui.path: /swagger-ui
 #  packagesToScan: com.backend.identity-service

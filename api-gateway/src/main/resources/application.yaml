@@ -56,6 +56,12 @@ spring:
             - Path=${api.prefix}/review/**
           filters:
             - StripPrefix=2
+        - id: recommend-service
+          uri: ${RECOMMEND-SERVICE-URL:http://localhost:8089}
+          predicates:
+            - Path=${api.prefix}/recommend/**
+          filters:
+            - StripPrefix=2
 springdoc:
   enable-native-support: true
   api-docs:

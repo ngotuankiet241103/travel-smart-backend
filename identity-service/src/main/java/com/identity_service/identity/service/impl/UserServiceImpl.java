@@ -16,6 +16,7 @@ import com.identity_service.identity.exception.ErrorCode;
 import com.identity_service.identity.mapper.UserMapper;
 import com.identity_service.identity.repository.RoleRepository;
 import com.identity_service.identity.repository.UserRepository;
+import com.identity_service.identity.repository.httpclient.ProfileClient;
 import com.identity_service.identity.service.TokenRedisService;
 import com.identity_service.identity.service.UserService;
 import com.identity_service.identity.utils.DateUtils;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenRedisService tokenRedisService;
+    private final ProfileClient profileClient;
     @Override
     public boolean isExistsByEmail(String email) {
         return userRepository.existsByEmail(email);
@@ -142,6 +144,8 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
     private UserResponse mappingOne(UserEntity user) {
-        return userMapper.toUserResponse(user);
+        UserResponse response = userMapper.toUserResponse(user);
+        response.setUserName(profileClient.getUserById(user.getId()).getResult().getUserName());
+        return response;
     }
 }

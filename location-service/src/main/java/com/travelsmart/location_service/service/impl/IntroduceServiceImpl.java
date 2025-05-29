@@ -1,5 +1,7 @@
 package com.travelsmart.location_service.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.travelsmart.event.dto.CheckInRequest;
 import com.travelsmart.location_service.dto.request.IntroduceRequest;
 import com.travelsmart.location_service.dto.request.IntroduceUpdateRequest;
 import com.travelsmart.location_service.dto.response.IntroduceResponse;
@@ -16,6 +18,11 @@ import com.travelsmart.location_service.repository.LocationRepository;
 import com.travelsmart.location_service.repository.httpclient.MediaClient;
 import com.travelsmart.location_service.service.IntroduceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.converter.StringJsonMessageConverter;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,7 +40,8 @@ public class IntroduceServiceImpl implements IntroduceService {
     private final LocationImageMapper locationImageMapper;
     private final MediaClient mediaClient;
     private final LocationRepository locationRepository;
-
+    private final KafkaTemplate<String,Object> template;
+    private final ObjectMapper objectMapper;
     @Override
     public IntroduceResponse create(IntroduceRequest introduceRequest) {
         IntroduceLocationEntity introduceLocationEntity = introduceMapper.
@@ -53,10 +61,25 @@ public class IntroduceServiceImpl implements IntroduceService {
 
     @Override
     public IntroduceResponse getByLocationId(Long locationId) {
+        cacheLocation(locationId);
         return mappingOne(repository.findByLocationId(locationId)
                 .orElse(null));
     }
-
+    @Async
+    private void cacheLocation(Long locationId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null) return;
+        String userId = authentication.getName();
+        LocationEntity location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new CustomRuntimeException(ErrorCode.LOCATION_NOT_FOUND));
+        CheckInRequest checkInRequest = CheckInRequest.builder()
+                .userId(userId)
+                .type(location.getType())
+                .build();
+        template.setMessageConverter(new StringJsonMessageConverter(objectMapper));
+        template.send("new-checkIn", checkInRequest);
+        System.out.println("send success");
+    }
     @Override
     public IntroduceResponse update(Long introduceId, IntroduceUpdateRequest updateRequest) {
         IntroduceLocationEntity introduceLocation = repository.findById(introduceId)

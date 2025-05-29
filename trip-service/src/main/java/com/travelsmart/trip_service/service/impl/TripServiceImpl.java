@@ -23,6 +23,9 @@ import com.travelsmart.trip_service.utils.DateUtils;
 import com.travelsmart.trip_service.utils.HandleString;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -235,6 +238,21 @@ public class TripServiceImpl implements TripService {
         long total = tripRepository.count();
         response.put("total",total);
         response.put("label", "trip");
+        return response;
+    }
+
+    @Override
+    public PageableResponse<List<TripResponse>> getAll(Date from, Date to, int page, int limit) {
+        Pageable pageable = PageRequest.of(page - 1,limit);
+        PageableResponse<List<TripResponse>> response = null;
+        if(from == null & to == null){
+            Page<TripEntity> pages = tripRepository.findAll(pageable);
+            response = PageableResponse.<List<TripResponse>>builder()
+                    .data(mappingList(pages.getContent()))
+                    .paging(Paging.buildPaging(pageable,pages.getTotalPages()))
+                    .build();
+        }
+
         return response;
     }
 

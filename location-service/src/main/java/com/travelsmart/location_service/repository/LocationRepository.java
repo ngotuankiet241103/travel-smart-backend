@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.net.ContentHandler;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -41,8 +40,8 @@ public interface LocationRepository extends JpaRepository<LocationEntity,Long> {
 
     @Query("SELECT l FROM LocationEntity l ORDER BY l.place_id DESC")
     Page<LocationEntity> findAllOrderByIdDesc(Pageable pageable);
-    @Query("SELECT l FROM LocationEntity l WHERE  l.type != 13 AND  l.type IN ?2 AND l.address.state = (SELECT s.address.state FROM LocationEntity s WHERE s.place_id = ?1) ORDER BY RAND()")
-    List<LocationEntity> findByTypeIn(Long id,List<LocationType> types);
+    @Query("SELECT l FROM LocationEntity l WHERE  l.type != 13 AND  l.type IN ?2 AND l.address.state = (SELECT s.address.state FROM LocationEntity s WHERE s.place_id = ?1) OR  l.address.city = (SELECT s.address.city FROM LocationEntity s WHERE s.place_id = ?1)  ORDER BY RAND()")
+    Page<LocationEntity> findByTypeIn(Pageable pageable, Long id, List<LocationType> types);
     @Query(value = "SELECT * FROM location WHERE place_id = ?1",nativeQuery = true)
     Optional<LocationEntity> findByPlaceId(Long id);
     @Query("SELECT l FROM LocationEntity l WHERE place_id > 3")

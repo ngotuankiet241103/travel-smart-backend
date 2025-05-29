@@ -249,8 +249,11 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public List<LocationResponse> findByType(Long id ,List<LocationType> types) {
-        return mappingList(locationRepository.findByTypeIn(id,types));
+    public List<LocationResponse> findByType(Long id ,List<LocationType> types,int day) {
+        Pageable pageable = PageRequest.of(0,5 * day);
+        Page<LocationEntity> page = locationRepository.findByTypeIn(pageable,id,types);
+        System.out.println(page.getContent().size());
+        return mappingList(page.getContent());
     }
 
     @Override

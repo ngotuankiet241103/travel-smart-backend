@@ -42,6 +42,17 @@ spring:
   cloud:
     compatibility-verifier:
       enabled: false
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.travelsmart.location_service.config.CustomSerializer
+    consumer:
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.travelsmart.location_service.config.CustomDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
 api:
   prefix: /location
 #geoapify:

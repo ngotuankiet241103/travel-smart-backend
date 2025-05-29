@@ -1,11 +1,9 @@
 package com.travelsmart.trip_service.service;
 
 import com.travelsmart.trip_service.dto.request.*;
-import com.travelsmart.trip_service.dto.response.TripGenerateResponse;
-import com.travelsmart.trip_service.dto.response.TripReport;
-import com.travelsmart.trip_service.dto.response.TripResponse;
-import com.travelsmart.trip_service.dto.response.UserTripResponse;
+import com.travelsmart.trip_service.dto.response.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,4 +25,6 @@ public interface TripService {
     TripReport getReport(ReportType type,Integer year,Integer month);
 
     Map<String, Object> getStatistics();
+
+    PageableResponse<List<TripResponse>> getAll(Date from, Date to, int page, int limit);
 }
