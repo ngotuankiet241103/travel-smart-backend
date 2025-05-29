@@ -1,5 +1,5 @@
-suggest-service/*.pkl
-suggest-service/**/*.pkl
+suggest-service/model/rf_recommender.pkl
+suggest-service/recommendation_model.pkl
 **.pkl
 HELP.md
 target/
