@@ -34,3 +34,4 @@ build/
 ./FontEndTravel
 *.pkl
 **/*.pkl
+**.pkl
