@@ -1,3 +1,6 @@
+suggest-service/*.pkl
+suggest-service/**/*.pkl
+**.pkl
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
@@ -32,6 +35,3 @@ build/
 ### VS Code ###
 .vscode/
 ./FontEndTravel
-*.pkl
-**/*.pkl
-**.pkl
