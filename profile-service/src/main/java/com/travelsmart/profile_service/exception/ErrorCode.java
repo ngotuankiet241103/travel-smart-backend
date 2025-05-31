@@ -17,6 +17,8 @@ public enum ErrorCode {
     AVATAR_NOT_FOUND(1003, "Avatar not found", HttpStatus.NOT_FOUND),
     PASSWORD_INVALID(1003, "Password must be greater than {min} characters", HttpStatus.BAD_REQUEST),
     PASSWORD_NOT_MATCH(1003, "Wrong password", HttpStatus.BAD_REQUEST),
+    ID_INVALID(1003, "Id must be not null", HttpStatus.BAD_REQUEST),
+    HOBBY_INVALID(1003, "Hobby must be not null", HttpStatus.BAD_REQUEST),
     UNUPLOADFILE_EXCEPTION( 1004,"Upload file failed",HttpStatus.BAD_REQUEST),
     RESOURCE_NOT_FOUND( 1004,"Resource not found",HttpStatus.NOT_FOUND),
     TOKEN_NOT_EXISTS(1004,"Token not exists",HttpStatus.BAD_REQUEST),

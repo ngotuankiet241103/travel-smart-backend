@@ -11,6 +11,7 @@ import com.identity_service.identity.dto.response.UserResponse;
 import com.identity_service.identity.service.UserService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +48,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/permissions/{user-id}/user")
     public ApiResponse<UserResponse> updatePermission(@PathVariable("user-id") String userId,
-                                                      @RequestBody UserUpdatePermission updatePermission){
+                                                      @RequestBody @Valid UserUpdatePermission updatePermission){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateRole(userId,updatePermission))
                 .build();
@@ -55,7 +56,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/block/{user-id}")
     public ApiResponse<UserResponse> blockUser(@PathVariable("user-id") String userId,
-                                               @RequestBody UserBlockRequest userBlockRequest){
+                                               @RequestBody @Valid UserBlockRequest userBlockRequest){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.blockUser(userId,userBlockRequest))
                 .build();

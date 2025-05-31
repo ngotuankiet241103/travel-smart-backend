@@ -80,14 +80,16 @@ public class NearestNeighborTSP {
 
             // Tính tổng thời gian (di chuyển và tham quan) cho địa điểm tiếp theo
             double travelTime = distanceMatrix[currentLocation][nextLocation].getTime(); // Thời gian di chuyển
-            double visitTime = visitTimes[nextLocation]; // Thời gian tham quan tại địa điểm
+            double visitTime = distanceMatrix[currentLocation][nextLocation].getTimeVisit() / 60; // Thời gian tham quan tại địa điểm
             System.out.println("travel time" + travelTime);
             System.out.println("visit time"  + visitTime);
             System.out.println("time" + totalHours + travelTime + visitTime);
             currentLocation = nextLocation;
+            System.out.println("max time" +  maxHoursPerDay);
             if (totalHours + travelTime + visitTime <= maxHoursPerDay) {
                 totalHours += travelTime + visitTime;
                 dailyItinerary.add(nextLocation);
+                System.out.println("total time" + totalHours) ;
                 visited[nextLocation] = true;
 
             } else {

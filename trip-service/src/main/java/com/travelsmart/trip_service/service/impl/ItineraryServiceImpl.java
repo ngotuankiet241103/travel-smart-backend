@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -209,12 +210,17 @@ public class ItineraryServiceImpl implements ItineraryService {
     private double estimateTravelTime(double distanceKm, double speedKmPerHour) {
         return distanceKm / speedKmPerHour; // Kết quả là số giờ
     }
-
+    private long calculateTotalDays(Date startDate, Date endDate) {
+        // Ensure startDate is before endDate
+        long diffInMillis = endDate.getTime() - startDate.getTime();
+        // Convert milliseconds to days
+        return TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+    }
 
     @Override
     public List<ItineraryResponse>  generateTrip(TripEntity trip, List<LocationType> types) {
 
-        List<LocationResponse> locationResponses = locationClient.getByTypes(types,trip.getLocationId(),3).getResult();
+        List<LocationResponse> locationResponses = locationClient.getByTypes(types,trip.getLocationId(),(int) calculateTotalDays(trip.getStartDate(), trip.getEndDate()) + 1).getResult();
         System.out.println(locationResponses.size());
         int col = 0;
         Map<String,DistanceResponse> table = new HashMap<>();
@@ -262,6 +268,7 @@ public class ItineraryServiceImpl implements ItineraryService {
                     DistanceResponse distanceResponse = DistanceResponse.builder()
                             .distance(distance)
                             .time(time)
+                            .timeVisit(locationResponses.get(i).getTimeVisit())
                             .build();
                     table.put(regex1,distanceResponse);
                     table.put(regex2,distanceResponse);
@@ -288,7 +295,7 @@ public class ItineraryServiceImpl implements ItineraryService {
 
         while (day.getTime().compareTo(trip.getEndDate()) <= 0){
 
-            Map<String,Object> response  = NearestNeighborTSP.planDay(distancesMatrix,visited,timeVisits,8 * 60,currentLocation);
+            Map<String,Object> response  = NearestNeighborTSP.planDay(distancesMatrix,visited,timeVisits,6 ,currentLocation);
 
             List<Integer> path = (List<Integer>) response.get("path");
             visited = (boolean[]) response.get("visited");

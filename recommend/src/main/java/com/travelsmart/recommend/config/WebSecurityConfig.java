@@ -34,7 +34,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/swagger-ui/**","/v3/api-docs/**").permitAll()
                         .anyRequest()
-                        .permitAll())
+                        .authenticated())
                 .oauth2ResourceServer(rss -> rss.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter() )));
 

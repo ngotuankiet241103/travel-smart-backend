@@ -15,6 +15,7 @@ import com.travelsmart.profile_service.service.ProfileService;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.shaded.com.google.protobuf.Api;
 //import org.springframework.kafka.annotation.KafkaListener;
@@ -72,7 +73,7 @@ public class ProfileController {
     }
     @Operation(summary = "Change avatar", description = "Returns single profile")
     @PutMapping("/change-avatar")
-    public ApiResponse<ProfileResponse> changeAvatar(@RequestBody ProfileUpdateAvatar profileUpdateAvatar) {
+    public ApiResponse<ProfileResponse> changeAvatar(@RequestBody @Valid ProfileUpdateAvatar profileUpdateAvatar) {
         return ApiResponse.<ProfileResponse>builder()
                 .result(profileService.changeAvatar(profileUpdateAvatar))
                 .build();
@@ -93,7 +94,7 @@ public class ProfileController {
                 .build();
     }
     @PutMapping("/hobbies")
-    public ApiResponse<ProfileResponse> updateHobbies(@RequestBody HobbyRequest hobbyRequest){
+    public ApiResponse<ProfileResponse> updateHobbies(@RequestBody @Valid   HobbyRequest hobbyRequest){
         return ApiResponse.<ProfileResponse>builder()
                 .result(profileService.updateHobbies(hobbyRequest))
                 .build();

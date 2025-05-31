@@ -38,6 +38,8 @@ public enum ErrorCode {
     COUPON_CODE_EXISTS(1004,"Coupon code is existed",HttpStatus.BAD_REQUEST),
     RATE_MIN(1002,"Rate min is 1",HttpStatus.BAD_REQUEST),
     RATE_MAX(1002,"Rate max is 5",HttpStatus.BAD_REQUEST),
+    NAMES_INVALID(1002,"Names must be not null",HttpStatus.BAD_REQUEST),
+    BLOCK_INVALID(1002,"Block must be not null",HttpStatus.BAD_REQUEST),
     NOTE_INVALID(1004,"Note must be not empty",HttpStatus.BAD_REQUEST),
     SECTION_SOURCE_INVALID(1004,"Section source must be not empty",HttpStatus.BAD_REQUEST),
     SECTION_DES_INVALID(1004,"Section des must be not empty",HttpStatus.BAD_REQUEST),

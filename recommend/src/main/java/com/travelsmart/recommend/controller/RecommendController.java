@@ -8,6 +8,7 @@ import com.travelsmart.recommend.dto.response.LocationResponse;
 import com.travelsmart.recommend.dto.response.RecommendResponse;
 import com.travelsmart.recommend.service.CheckInService;
 import com.travelsmart.recommend.service.RecommendService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Controller;
@@ -20,13 +21,13 @@ public class RecommendController {
     private final RecommendService recommendService;
     private final CheckInService checkInService;
     @PostMapping
-    public ApiResponse<RecommendResponse> getRecommends(@RequestBody RecommendRequest recommendRequest){
+    public ApiResponse<RecommendResponse> getRecommends(@RequestBody @Valid RecommendRequest recommendRequest){
         return ApiResponse.<RecommendResponse>builder()
                 .result(recommendService.getRecommend(recommendRequest))
                 .build();
     }
     @PostMapping("/check")
-    public ApiResponse<Void> createCheck(@RequestBody CheckRequest checkRequest){
+    public ApiResponse<Void> createCheck(@RequestBody @Valid CheckRequest checkRequest){
         return ApiResponse.<Void>builder()
                 .result(checkInService.createNewCheckIn(checkRequest))
                 .build();

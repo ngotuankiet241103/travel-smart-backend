@@ -59,7 +59,7 @@ public class ItineraryController {
     @Operation(summary = "Replace destination",description = "Returns single response")
     @PutMapping("/destination/{destination-id}")
     public ApiResponse<DestinationResponse> replaceLocation(@PathVariable("destination-id") Long destinationId,
-                                                            @RequestBody DestinationReplaceRequest destinationReplaceRequest){
+                                                            @RequestBody @Valid DestinationReplaceRequest destinationReplaceRequest){
         return ApiResponse.<DestinationResponse>builder()
                 .result(itineraryService.replaceLocationInDestination(destinationId,destinationReplaceRequest))
                 .build();

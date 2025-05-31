@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class DistanceResponse {
     private double distance = 0;
     private double time = 0;
+    private double timeVisit = 0;
 
 }

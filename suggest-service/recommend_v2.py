@@ -10,14 +10,14 @@ locs = pd.read_json("location.json", encoding="utf-8")
 
 # User input
 user_input = {
-    "current_lat": 10.95808685,
-    "current_lng": 106.8286239556445,
+    "current_lat": 16.061475,
+    "current_lng": 108.2328775,
     "visited_type_counts": {
-        "TOURIST_ATTRACTION": 10,
+        "TOURIST_ATTRACTION": 0,
         "RESTAURANT": 5,
-        "SHOPPING": 5,
+        "SHOPPING": 1,
         "PARK": 0,
-        "CULTURAL_SITE": 2,
+        "CULTURAL_SITE": 0,
         "ACCOMMODATION": 0,
         "ENTERTAINMENT": 0
     }
